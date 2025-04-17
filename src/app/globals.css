@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 :root {
   --bg: #fff;
@@ -13,3 +12,5 @@ body {
   background: var(--bg);
   color: var(--text);
 }
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));

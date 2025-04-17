@@ -1,4 +1,5 @@
-/** @type {import('tailwindcss').Config} */
+import typography from '@tailwindcss/typography'
+
 module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,7 +10,7 @@ module.exports = {
   theme: {
     extend: {}
   },
-  plugins: [],
+  plugins: [typography],
   // 禁用暗模式下的文本颜色变化
   variants: {
     extend: {

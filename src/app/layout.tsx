@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import type { Metadata } from 'next'
 
 import './globals.css'
+import 'highlight.js/styles/github.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

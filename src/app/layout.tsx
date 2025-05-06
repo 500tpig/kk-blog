@@ -1,10 +1,11 @@
+import Header from '@/components/layout/Header'
+
 import { ThemeProvider } from '@/contexts/ThemeContext'
 
 import type { Metadata } from 'next'
 
 import './globals.css'
 import 'highlight.js/styles/github.css'
-
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -19,7 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased`}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <Header />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

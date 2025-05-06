@@ -1,5 +1,7 @@
 'use client'
 
+import Switch from './ui/Switch'
+
 import { useTheme } from '@/contexts/ThemeContext'
 
 export default function ThemeToggle() {
@@ -39,8 +41,11 @@ export default function ThemeToggle() {
   }
 
   return (
-    <button onClick={e => toggleDark(e.nativeEvent)} className="p-2 rounded border">
-      {theme === 'dark' ? '🌙 暗黑' : '☀️ 明亮'}
+    // <button onClick={e => toggleDark(e.nativeEvent)} className="p-2 rounded border">
+    //   {theme === 'dark' ? '🌙 暗黑' : '☀️ 明亮'}
+    // </button>
+    <button onClick={e => toggleDark(e.nativeEvent)}>
+      <Switch />
     </button>
   )
 }

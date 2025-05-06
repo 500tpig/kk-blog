@@ -1,19 +1,19 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --bg: #fff;
-  --text: #222;
+  --text: #474c5d;
 }
 .dark {
-  --bg: #18181b;
-  --text: #fafafa;
+  --bg: #1f2328;
+  --text: #e3e7ed;
 }
 body {
   background: var(--bg);
   color: var(--text);
 }
-
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 ::view-transition-old(root),
 ::view-transition-new(root) {

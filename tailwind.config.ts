@@ -1,20 +1,21 @@
-import typography from '@tailwindcss/typography'
+// import typography from '@tailwindcss/typography'
 
-module.exports = {
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}'
-  ],
-  darkMode: 'class', // 使用 class 策略而不是 media 查询
-  theme: {
-    extend: {}
-  },
-  plugins: [typography],
-  // 禁用暗模式下的文本颜色变化
-  variants: {
-    extend: {
-      textColor: ['dark']
-    }
-  }
-}
+// module.exports = {
+//   content: [
+//     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+//     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+//     './src/app/**/*.{js,ts,jsx,tsx,mdx}'
+//   ],
+//   darkMode: 'class',
+//   theme: {
+//     extend: {}
+//   },
+//   plugins: [typography],
+//   variants: {
+//     extend: {
+//       textColor: ['dark'],
+//       backgroundColor: ['dark'],
+//       borderColor: ['dark']
+//     }
+//   }
+// }

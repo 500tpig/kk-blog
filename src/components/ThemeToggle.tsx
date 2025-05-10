@@ -1,5 +1,9 @@
 'use client'
 
+import { MouseEvent as ReactMouseEvent } from 'react'
+
+import Moon from './icons/Moon'
+import Sun from './icons/Sun'
 import Switch from './ui/Switch'
 
 import { useTheme } from '@/contexts/ThemeContext'
@@ -13,39 +17,46 @@ export default function ThemeToggle() {
     window.matchMedia('(prefers-reduced-motion: no-preference)').matches
 
   // 切换动画
-  async function toggleDark({ clientX: x, clientY: y }: MouseEvent) {
+  async function toggleDark(event: ReactMouseEvent<HTMLDivElement>) {
+    const { clientX: x, clientY: y } = event
     const isDark = theme === 'dark'
+    const willDark = !isDark
 
     if (!enableTransitions()) {
       toggleTheme()
       return
     }
 
+    const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))
     const clipPath = [
       `circle(0px at ${x}px ${y}px)`,
-      `circle(${Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))}px at ${x}px ${y}px)`
+      `circle(${endRadius}px at ${x}px ${y}px)`
     ]
 
-    await document.startViewTransition(async () => {
+    const transition = document.startViewTransition(() => {
       toggleTheme()
-    }).ready
+    })
+
+    await transition.ready
 
     document.documentElement.animate(
-      { clipPath: !isDark ? clipPath.reverse() : clipPath },
       {
-        duration: 300,
+        clipPath: willDark ? clipPath : [...clipPath].reverse()
+      },
+      {
+        duration: 500,
         easing: 'ease-in',
-        pseudoElement: `::view-transition-${!isDark ? 'old' : 'new'}(root)`
+        pseudoElement: willDark ? '::view-transition-new(root)' : '::view-transition-old(root)'
       }
     )
   }
 
   return (
-    // <button onClick={e => toggleDark(e.nativeEvent)} className="p-2 rounded border">
-    //   {theme === 'dark' ? '🌙 暗黑' : '☀️ 明亮'}
-    // </button>
-    <button onClick={e => toggleDark(e.nativeEvent)}>
-      <Switch />
-    </button>
+    <Switch
+      checked={theme === 'dark'}
+      onChange={toggleDark}
+      leftIcon={<Sun className="text-[#ffb300]" />}
+      rightIcon={<Moon className="text-[#1f2328]" />}
+    />
   )
 }

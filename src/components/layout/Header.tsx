@@ -4,7 +4,7 @@ import ThemeToggle from '@/components/ThemeToggle'
 export default function Header() {
   return (
     <header
-      className="w-full h-19 transition-colors flex items-center justify-center bg-primary"
+      className="w-full h-19 transition-colors flex items-center justify-center bg-headings-color"
       style={{
         boxShadow: '0 2px 20px 0 rgba(14,14,19,0.051)'
       }}

@@ -1,0 +1,67 @@
+@keyframes divider-heading-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes marquee-right {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(100% + 2.1875rem));
+  }
+}
+
+/* --- 视图转换 API (View Transitions API) 动画 --- */
+
+/* 定义圆形揭露动画的入场关键帧 */
+@keyframes reveal-in {
+  from {
+    clip-path: circle(0% at 50% 50%);
+  }
+  to {
+    clip-path: circle(150% at 50% 50%);
+  }
+}
+
+/* 定义圆形揭露动画的出场关键帧 */
+@keyframes reveal-out {
+  from {
+    clip-path: circle(150% at 50% 50%);
+  }
+  to {
+    clip-path: circle(0% at 50% 50%);
+  }
+}
+
+/* 视图转换基础样式 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* 暗色模式下的视图转换 */
+[data-theme='dark']::view-transition-old(root) {
+  z-index: 1;
+}
+
+[data-theme='dark']::view-transition-new(root) {
+  z-index: 999;
+}
+
+/* 亮色模式下的视图转换 */
+::view-transition-old(root) {
+  z-index: 999;
+}
+
+::view-transition-new(root) {
+  z-index: 1;
+}

@@ -3,8 +3,20 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+:root {
+  --site-width: 1400px;
+}
+
 @theme inline {
   --color-headings-color: var(--card-bg);
+  --color-accent: var(--accent-color);
+  --color-card-bg: var(--card-bg);
+  --width-content-width: min(100%, var(--site-width, 1140px));
+
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.8;
+
+  --color-divider: #7f818540;
 }
 
 /* 亮色模式 */
@@ -58,61 +70,4 @@
   /* 为过渡动画定义持续时间和缓动函数 (可选) */
   --transition-duration: 0.6s;
   --transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-}
-
-/* body 的基础样式 */
-body {
-  background: var(--body-bg-color);
-  color: var(--body-color);
-  /* 如果 View Transitions API 不可用或 JS 被禁用，提供一个基础的 CSS 过渡效果 */
-  transition:
-    background-color 0.3s ease-out,
-    color 0.3s ease-out;
-}
-
-/* --- 视图转换 API (View Transitions API) 动画 --- */
-
-/* 定义圆形揭露动画的入场关键帧 */
-@keyframes reveal-in {
-  from {
-    clip-path: circle(0% at 50% 50%);
-  }
-  to {
-    clip-path: circle(150% at 50% 50%);
-  }
-}
-
-/* 定义圆形揭露动画的出场关键帧 */
-@keyframes reveal-out {
-  from {
-    clip-path: circle(150% at 50% 50%);
-  }
-  to {
-    clip-path: circle(0% at 50% 50%);
-  }
-}
-
-/* 视图转换基础样式 */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-/* 暗色模式下的视图转换 */
-[data-theme='dark']::view-transition-old(root) {
-  z-index: 1;
-}
-
-[data-theme='dark']::view-transition-new(root) {
-  z-index: 999;
-}
-
-/* 亮色模式下的视图转换 */
-::view-transition-old(root) {
-  z-index: 999;
-}
-
-::view-transition-new(root) {
-  z-index: 1;
 }

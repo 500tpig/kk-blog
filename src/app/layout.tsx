@@ -4,7 +4,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 
 import type { Metadata } from 'next'
 
-import './globals.css'
+import '@/style/globals.css'
 import 'highlight.js/styles/github.css'
 
 export const metadata: Metadata = {
@@ -21,8 +21,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`antialiased`}>
         <ThemeProvider>
-          <Header />
-          {children}
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-grow">{children}</main>
+          </div>
         </ThemeProvider>
       </body>
     </html>

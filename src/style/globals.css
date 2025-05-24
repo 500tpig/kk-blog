@@ -1,0 +1,71 @@
+@import './tailwind.css';
+@import './animation.css';
+
+/* body 的基础样式 */
+body {
+  background: var(--body-bg-color);
+  color: var(--body-color);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  /* 如果 View Transitions API 不可用或 JS 被禁用，提供一个基础的 CSS 过渡效果 */
+  transition:
+    background-color 0.3s ease-out,
+    color 0.3s ease-out;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  font-family: Inter, sans-serif;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--headings-color);
+}
+
+.heading-divider {
+  display: block;
+  position: relative;
+  border-radius: 50%;
+  height: 7px;
+  width: 7px;
+  flex-shrink: 0;
+  color: var(--accent-color);
+  background-color: currentColor;
+}
+
+.heading-divider::after,
+.heading-divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  animation: divider-heading-pulse 2s ease-in-out infinite;
+}
+
+.heading-divider::after {
+  animation-delay: 1s;
+}
+
+.icon-svg {
+  height: 1em;
+  width: 1em;
+  fill: currentColor;
+}
+
+.marquee-wrap {
+  animation: marquee-right 70s linear infinite;
+}

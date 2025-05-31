@@ -1,0 +1,52 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Icon Component Guidelines
+
+## Structure
+All icon components follow a consistent structure:
+```tsx
+import React from 'react'
+
+export default function IconName({ className }: { className?: string }) {
+  return (
+    <svg
+      className={`icon-svg ${className}`}
+      viewBox="0 0 [width] [height]"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="..." />
+    </svg>
+  )
+}
+```
+
+## Key Features
+- Use `currentColor` for fill/stroke to support color inheritance
+- Support className prop for styling
+- Include `icon-svg` class for consistent styling
+- Use single path when possible for simplicity
+- Maintain consistent viewBox dimensions
+
+## Example Icons
+- [HtmlIcon.tsx](mdc:src/components/icons/HtmlIcon.tsx)
+- [CssIcon.tsx](mdc:src/components/icons/CssIcon.tsx)
+- [AngularIcon.tsx](mdc:src/components/icons/AngularIcon.tsx)
+- [ElectronIcon.tsx](mdc:src/components/icons/ElectronIcon.tsx)
+
+## Usage
+```tsx
+import IconName from '@/components/icons/IconName'
+
+<IconName className="w-6 h-6 text-gray-400" />
+```
+
+## Best Practices
+1. Keep SVG paths simple and optimized
+2. Use consistent viewBox dimensions
+3. Support color inheritance through currentColor
+4. Include proper TypeScript types
+5. Follow the established naming convention
+

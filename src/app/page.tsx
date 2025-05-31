@@ -153,6 +153,24 @@ export default function page() {
           <div className="heading-divider"></div>
           <h3 className="ml-3 text-xl">My Blogs</h3>
         </div>
+        <div>
+          <div className="flex flex-col gap-10">
+            <div className="flex flex-wrap">
+              <article
+                className="w-full flex flex-col justify-between border-l-[5px] border-l-primary-color p-5 transition rounded-xl bg-card-bg"
+                style={{ boxShadow: '0 2px 20px #0e0e130d' }}
+              >
+                <div className='flex items-center gap-6 w-full relative'>
+                  <div className=''></div>
+                  <div className='w-[9.375rem] relative flex-shrink-0'>
+                    <div className='flex rounded-xl relative overflow-hidden w-full h-full'></div>
+                  </div>
+                </div>
+                <div></div>
+              </article>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -1,0 +1,35 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Project Structure Guide
+
+This is a Next.js blog project with TypeScript and Tailwind CSS.
+
+## Key Directories
+- `src/` - Main source code directory
+  - `app/` - Next.js 13+ app directory
+  - `components/` - React components
+    - `icons/` - SVG icon components
+    - `ui/` - Reusable UI components
+  - `contexts/` - React context providers
+  - `lib/` - Utility functions and shared code
+
+## Configuration Files
+- [tailwind.config.ts](mdc:tailwind.config.ts) - Tailwind CSS configuration
+- [next.config.ts](mdc:next.config.ts) - Next.js configuration
+- [tsconfig.json](mdc:tsconfig.json) - TypeScript configuration
+- [postcss.config.mjs](mdc:postcss.config.mjs) - PostCSS configuration
+
+## Theme System
+The project uses a custom theme system with:
+- Dark/light mode support
+- Custom color variables
+- View transitions for theme switching
+
+## Component Guidelines
+- Icons are implemented as React components in `src/components/icons/`
+- UI components are in `src/components/ui/`
+- All components use TypeScript and support className props
+

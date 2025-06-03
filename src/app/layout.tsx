@@ -5,7 +5,6 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import type { Metadata } from 'next'
 
 import '@/style/globals.css'
-import 'highlight.js/styles/github.css'
 
 export const metadata: Metadata = {
   title: 'Create Next App',

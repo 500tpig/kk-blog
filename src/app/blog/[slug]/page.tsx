@@ -1,4 +1,5 @@
-import { MDXRemote } from 'next-mdx-remote/rsc' 
+import { MDXRemote } from 'next-mdx-remote/rsc'
+import rehypePrism from 'rehype-prism-plus'
 
 import MDXComponents from '@/components/MDXComponents'
 
@@ -13,7 +14,15 @@ export default async function page({ params }: { params: { slug: string } }) {
   return (
     <article id={`article`}>
       <h1>{metadata.title}</h1>
-      <MDXRemote source={content} components={MDXComponents} />
+      <MDXRemote
+        source={content}
+        components={MDXComponents}
+        options={{
+          mdxOptions: {
+            rehypePlugins: [rehypePrism]
+          }
+        }}
+      />
     </article>
   )
 }

@@ -27,7 +27,7 @@ export async function getBlogPosts(): Promise<{
 
       return {
         id: filename,
-        fullPath,
+        slug: filename.replace(/\.(mdx|md)$/, ''),  // 移除 .mdx 或 .md 扩展名
         metadata: data,
         content
       }

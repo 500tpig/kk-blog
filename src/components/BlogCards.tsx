@@ -10,76 +10,101 @@ import { tagsColors } from '@/utils/tagsColors'
 export default async function BlogCards() {
   const postsDirectory = path.join(process.cwd(), 'posts')
   const filenames = await fs.readdir(postsDirectory)
-  const posts: {
-    slug: string
-    title: string
-    date: string
-    overview: string
-    tags: string[]
-    color: string
-  }[] = await Promise.all(
+
+  const posts = await Promise.all(
     filenames.map(async filename => {
       const filePath = path.join(postsDirectory, filename)
       const fileContent = await fs.readFile(filePath, 'utf-8')
       const { data } = matter(fileContent)
+
+      // 获取第一个标签作为主标签
+      const primaryTag = data.tag.split(',')[0].trim()
+
       return {
         slug: filename.replace(/\.mdx$/, ''),
         title: data.title,
-        date: data.dat,
+        date: data.date,
         overview: data.overview,
-        tags: data.tag.split(','),
-        color: tagsColors[data.tag.split(',')[0] as keyof typeof tagsColors]
+        tags: data.tag.split(',').map((t: string) => t.trim()),
+        color: tagsColors[primaryTag as keyof typeof tagsColors]
       }
     })
   )
+
   posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
   return (
     <div className="flex flex-col gap-10">
       {posts.map(post => (
         <article
           key={post.slug}
-          className={`w-full flex flex-col justify-between border-l-[5px] border-l-${post.color} p-5 transition rounded-xl bg-card-bg`}
-          style={{ boxShadow: '0 2px 20px #0e0e130d' }}
+          // 使用内联样式设置左边框颜色
+          style={{
+            borderLeftWidth: '5px',
+            borderLeftColor: post.color,
+            boxShadow: '0 2px 20px rgba(14, 14, 19, 0.05)'
+          }}
+          className="w-full flex flex-col justify-between p-5 transition rounded-xl bg-card-bg"
         >
-          <div className="flex items-center gap-6 w-full relative">
-            <div>
-              <Link href={`/blog/${post.slug}`} className="truncate pt-1 pb-3">
-                <h3> {post.title}</h3>
+          <div className="flex flex-col md:flex-row items-center gap-6 w-full">
+            <div className="flex-1">
+              <Link href={`/blog/${post.slug}`} className="block pb-3 group">
+                <h3 className="text-2xl font-bold text-headings-color group-hover:text-accent-color transition-colors">
+                  <span className='heading-title'>{post.title}</span>
+                </h3>
               </Link>
-              <div className="flex items-center gap-2.5">
-                <Image
-                  src="/avatar.jpg"
-                  alt="kk"
-                  width={40}
-                  height={40}
-                  className="rounded-full mr-2.5 w-10 h-10"
-                />
-                <div>
-                  <span className="mr-2">By</span>
-                  <span>kk</span>
+
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="flex items-center">
+                  <Image
+                    src="/avatar.jpg"
+                    alt="Author avatar"
+                    width={40}
+                    height={40}
+                    className="rounded-full mr-2.5 w-10 h-10 object-cover border-2 border-white shadow-sm"
+                  />
+                  <div className="text-sm text-body-color">
+                    <span className="mr-1.5">By</span>
+                    <span className="font-medium">kk</span>
+                  </div>
                 </div>
-                <div>{post.date}</div>
+                <div className="text-sm text-body-color">
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </div>
               </div>
-              <p className="mt-7 line-clamp-3">{post.overview}</p>
+
+              <p className="mt-2 text-body-color line-clamp-3 leading-relaxed">{post.overview}</p>
             </div>
-            <div className="w-[9.375rem] relative flex-shrink-0">
-              <div className="flex rounded-xl relative overflow-hidden w-full h-full"></div>
+            <div className="w-full md:w-36 flex-shrink-0">
+              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-36" />
             </div>
           </div>
-          <div className="mt-7 border-top border-dashed border-[#79788b52] pt-3.5 flex">
-            {post.tags.map(item => {
-              return <div key={item}>
-                <span className={`text-${tagsColors[item as keyof typeof tagsColors]} mr-0.5 text-sm font-medium`}>#</span>
-                <span className='text-sm font-medium'>{item}</span>
-              </div>
+
+          <div className="mt-6 pt-4 border-t border-dashed border-divider flex flex-wrap gap-2">
+            {post.tags.map((tag: keyof typeof tagsColors) => {
+              const tagColor = tagsColors[tag]
+              return (
+                <div key={tag} className="flex items-center gap-1">
+                  <span
+                    key={tag}
+                    style={{
+                      backgroundColor: `${tagColor}10`,
+                      color: tagColor
+                    }}
+                    className="text-sm font-medium"
+                  >
+                    #
+                  </span>
+                  <span className="text-sm font-medium">{tag}</span>
+                </div>
+              )
             })}
           </div>
         </article>
-        // <div  className="mb-2">
-        //   <Link href={`/blog/${post.slug}`} className="text-blue-600 hover:underline">
-        //     {post.title} - {post.date}
-        //   </Link>
-        // </div>
       ))}
     </div>
   )

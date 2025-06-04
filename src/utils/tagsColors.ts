@@ -1,3 +1,3 @@
 export const tagsColors: TagsColors = {
-  JavaScript: 'term'
+  JavaScript: 'var(--term-color)',
 }

@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -13,9 +12,6 @@
   --color-term: var(--term-color);
   --color-card-bg: var(--card-bg);
   --width-content-width: min(100%, var(--site-width, 1140px));
-
-  --text-xs: 0.8125rem;
-  --text-xs--line-height: 1.8;
 
   --color-divider: #7f818540;
 }
@@ -39,13 +35,8 @@
   --card-bg: #fff;
 
   /* 为过渡动画定义持续时间和缓动函数 (可选, 方便管理) */
-  --transition-duration: 0.6s; /* 动画时长 */
-  --transition-timing-function: cubic-bezier(
-    0.55,
-    0.055,
-    0.675,
-    0.19
-  ); /* 缓动函数，例如 ease-in-quad */
+  --transition-duration: 0.6s;
+  --transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }
 
 /* 深色模式 */

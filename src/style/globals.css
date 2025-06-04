@@ -12,6 +12,7 @@ body {
   transition:
     background-color 0.3s ease-out,
     color 0.3s ease-out;
+  font-family: Inter, sans-serif;
 }
 
 h1,
@@ -28,7 +29,6 @@ h6,
 .h6 {
   font-family: Inter, sans-serif;
   line-height: 1.4;
-  margin-bottom: 1rem;
   margin-top: 0;
   letter-spacing: -0.02em;
   font-weight: 600;
@@ -124,7 +124,17 @@ h6,
 .heading-divider::after {
   animation-delay: 1s;
 }
-
+.heading-title {
+  background: linear-gradient(to right, var(--accent-color), var(--accent-color)) no-repeat right
+    bottom;
+  background-size: 0 2px;
+  transition: background-size 0.5s, color 0.5s;
+}
+.heading-title:hover {
+  background-position: left bottom;
+  background-size: 100% 2px;
+  color: var(--accent-color);
+}
 .icon-svg {
   height: 1em;
   width: 1em;

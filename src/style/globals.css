@@ -35,10 +35,6 @@ h6,
   color: var(--headings-color);
 }
 
-p {
-  margin: 0 0 1.6rem;
-}
-
 h1,
 .h1 {
   font-size: 1.8rem;

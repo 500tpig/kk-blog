@@ -23,10 +23,9 @@ export default async function page({ params }: { params: { slug: string } }) {
     notFound() // 如果文章未找到，则显示 404 页面
   }
 
-  const { content, metadata } = post
+  const { content } = post
   return (
     <article id={`article`}>
-      <h1>{metadata.title}</h1>
       <MDXRemote
         source={content}
         components={MDXComponents}

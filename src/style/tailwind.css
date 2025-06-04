@@ -10,6 +10,7 @@
 @theme inline {
   --color-headings-color: var(--card-bg);
   --color-accent: var(--accent-color);
+  --color-term: var(--term-color);
   --color-card-bg: var(--card-bg);
   --width-content-width: min(100%, var(--site-width, 1140px));
 
@@ -23,6 +24,7 @@
 [data-theme='light'] {
   --body-bg-color: #f5f5fa;
   --accent-color: #ff5671;
+  --term-color: #26bda7;
   --accent-color-alt: #fff;
   --second-color: #ff5671;
   --second-color-alt: #fff;
@@ -49,6 +51,7 @@
 /* 深色模式 */
 [data-theme='dark'] {
   --accent-color: #ff5671;
+  --term-color: #26bda7;
   --accent-color-alt: #fff;
   --second-color: #ff5671;
   --second-color-alt: #fff;

@@ -128,13 +128,34 @@ h6,
   background: linear-gradient(to right, var(--accent-color), var(--accent-color)) no-repeat right
     bottom;
   background-size: 0 2px;
-  transition: background-size 0.5s, color 0.5s;
+  transition:
+    background-size 0.5s,
+    color 0.5s;
 }
 .heading-title:hover {
   background-position: left bottom;
   background-size: 100% 2px;
   color: var(--accent-color);
 }
+
+.term-item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  transform: translateY(4px);
+  height: 1px;
+  opacity: 0;
+  transition: 0.3s;
+  background: var(--term-color, var(--accent-color));
+}
+
+.term-item:hover::after {
+  transform: translateY(0);
+  opacity: 1;
+}
+
 .icon-svg {
   height: 1em;
   width: 1em;

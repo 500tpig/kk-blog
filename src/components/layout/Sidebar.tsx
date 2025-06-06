@@ -39,17 +39,17 @@ export default function Sidebar() {
           </div>
           <div className="mt-[30px] text-sm">
             <div className="flex flex-col gap-y-[14px]">
-              <div className="flex items-center gap-x-4 pb-[14px]">
+              <div className="flex items-center gap-x-4">
                 <PhoneIcon />
-                <div>Phone: +49 241 241</div>
+                <div>Phone: +86 1377 **** ***</div>
               </div>
               <Divider />
-              <div className="flex items-center gap-x-4 pb-[14px]">
+              <div className="flex items-center gap-x-4">
                 <EmailIcon className="w-5 h-5" />
-                <div>E-mail: lala@112233.com</div>
+                <div>E-mail: 9953****@qq.com</div>
               </div>
               <Divider />
-              <div className="flex items-center gap-x-4 pb-[14px]">
+              <div className="flex items-center gap-x-4">
                 <LocationIcon className="w-5 h-5" color="#546064" />
                 <div>Location: 中国 福建 厦门</div>
               </div>

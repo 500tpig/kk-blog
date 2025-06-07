@@ -1,6 +1,9 @@
+import dayjs from 'dayjs'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
+import ChatIcon from '@/components/icons/ChatIcon'
+import FireIcon from '@/components/icons/FireIcon'
 import RenderMDX from '@/components/RenderMDX'
 import TableContent, { Heading } from '@/components/TableContent'
 import TagItem from '@/components/TagItem'
@@ -9,8 +12,6 @@ import { getBlogPosts } from '@/utils/getBlogPosts'
 import { tagsColors } from '@/utils/tagsColors'
 
 import { slugify } from '@/lib/utils'
-
-// (推荐) 生成静态参数
 export async function generateStaticParams() {
   const { posts } = await getBlogPosts()
   return posts.map(post => ({
@@ -43,38 +44,56 @@ export default async function page({ params }: { params: { slug: string } }) {
   return (
     <div className="w-full flex flex-col items-start">
       <div className="w-content-width mx-auto">
-        <div className="w-5xl mx-auto py-12">
-          <div className="flex items-center gap-2 mb-2.5">
-            {metadata.tags.split(',').map((tag: string) => {
-              const tagColor = tagsColors[tag as keyof typeof tagsColors]
-              return <TagItem key={tag} tag={tag} tagColor={tagColor} />
-            })}
+        <div className="w-full flex py-12 gap-7.5 items-center">
+          <div
+            className="w-[12.5rem] h-[12.5rem] rounded-xl bg-accent flex flex-col items-center justify-center text-white"
+            style={{ boxShadow: '0 0 50px 5px #0000001f inset' }}
+          >
+            <div className="text-6xl font-semibold mb-2">{metadata.date.split('-')[2]}</div>
+            <div className="text-4xl font-semibold">{dayjs(metadata.date).format('MMM')}</div>
           </div>
-          <h1 className="text-4xl font-bold pb-3.5 mb-3.5 border-b dark:border-b-soft-white border-b-[#dfe1ea]">
-            {metadata.title}
-          </h1>
-          <div className="flex">
-            <div className="flex gap-2.5">
-              <Image
-                src="/avatar.jpg"
-                alt="avatar"
-                width={45}
-                height={45}
-                className="rounded-full"
-              />
-              <div className="text-sm flex flex-col justify-center">
-                <div>
-                  <span>By</span>
-                  <span className="font-semibold ml-1">KK</span>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2.5">
+              {metadata.tags.split(',').map((tag: string) => {
+                const tagColor = tagsColors[tag as keyof typeof tagsColors]
+                return <TagItem key={tag} tag={tag} tagColor={tagColor} />
+              })}
+            </div>
+            <h1 className="text-4xl font-bold pb-3.5 mb-3.5 border-b dark:border-b-soft-white border-b-[#dfe1ea]">
+              {metadata.title}
+            </h1>
+            <div className="flex justify-between">
+              <div className="flex gap-2.5">
+                <Image
+                  src="/avatar.jpg"
+                  alt="avatar"
+                  width={45}
+                  height={45}
+                  className="rounded-full"
+                />
+                <div className="text-sm flex flex-col justify-center">
+                  <div>
+                    <span>By</span>
+                    <span className="font-semibold ml-1">KK</span>
+                  </div>
+                  <div>{metadata.date}</div>
                 </div>
-                <div>{metadata.date}</div>
+              </div>
+              <div className="flex items-end gap-2">
+                <div className="flex items-start gap-1">
+                  <FireIcon className="w-4" />
+                  <span className="text-sm">0</span>
+                </div>
+                <div className="flex items-start gap-1">
+                  <ChatIcon className="w-4" />
+                  <span className="text-sm">0</span>
+                </div>
               </div>
             </div>
-            <div></div>
           </div>
         </div>
         <div className="flex gap-7 w-full items-start">
-          <div className="p-2.5 pb-0">
+          <div className="p-2.5 pb-0 flex-1">
             <div
               className="p-7 rounded-xl bg-card-bg"
               style={{
@@ -82,6 +101,10 @@ export default async function page({ params }: { params: { slug: string } }) {
               }}
             >
               <div className="p-7">
+                <div className="mb-6">
+                  <span className='text-sm'>(AI总结)</span>
+                  <span> {metadata.overview}</span>
+                </div>
                 <TableContent headings={headings} />
                 <RenderMDX content={content} />
               </div>

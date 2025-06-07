@@ -2,7 +2,7 @@
 
 import { MouseEvent, useState } from 'react'
 
-import DownOutlined from './icons/DownOutlined' // 确保路径正确
+import DownOutlined from './icons/DownOutlined'
 
 // 定义标题对象的类型接口
 export interface Heading {
@@ -43,13 +43,13 @@ export default function TableContent({ headings }: TableContentProps) {
 
   return (
     <div
-      className="mt-3.5 mb-7.5 dark:bg-body-bg bg-card-bg rounded-xl w-full overflow-hidden"
+      className="mt-3.5 mb-7.5 dark:bg-body-bg bg-card-bg w-full rounded-b-xl"
       style={{
         boxShadow: '0 2px 4px #0e0e131f'
       }}
     >
       <div
-        className="flex items-center justify-between bg-accent p-4 py-3 cursor-pointer"
+        className="flex items-center justify-between bg-accent p-4 py-3 cursor-pointer rounded-t-xl"
         onClick={() => setIsOpen(!isOpen)} // 点击标题栏可以切换展开/折叠状态
       >
         <div className="text-white text-lg font-semibold">目录</div>
@@ -57,29 +57,34 @@ export default function TableContent({ headings }: TableContentProps) {
           className={`w-5 h-5 text-white transition-transform duration-300 ${isOpen ? '' : '-rotate-90'}`}
         />
       </div>
-
-      {/* 根据 isOpen 状态来决定是否渲染目录内容 */}
-      {isOpen && (
-        <div className="p-5">
-          <ul className="space-y-2">
-            {headings.map(({ id, text, level }) => (
-              <li key={id}>
-                <a
-                  href={`#${id}`}
-                  onClick={e => handleLinkClick(e, id)}
-                  className={`
-                    text-body-color hover:text-accent transition-colors block
-                    ${level === 3 ? 'pl-4' : ''}
-                    ${level === 2 ? 'font-semibold' : ''}
-                  `}
-                >
-                  {text}
-                </a>
-              </li>
-            ))}
-          </ul>
+      <div
+        className={`
+          grid transition-all duration-500 ease-in-out
+          ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}
+        `}
+      >
+        <div className="overflow-hidden">
+          <div className="p-5">
+            <ul className="space-y-2">
+              {headings.map(({ id, text, level }) => (
+                <li key={id}>
+                  <a
+                    href={`#${id}`}
+                    onClick={e => handleLinkClick(e, id)}
+                    className={`
+                      text-body-color hover:text-accent transition-colors block
+                      ${level === 3 ? 'pl-4' : ''}
+                      ${level === 2 ? 'font-semibold' : ''}
+                    `}
+                  >
+                    {text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

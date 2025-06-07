@@ -3,6 +3,7 @@
 // import { MdxCard } from '@/components/mdx/MdxCard'
 import { JSX, ReactNode } from 'react'
 
+import { slugify, getTextFromChildren } from '@/lib/utils'
 interface HeadingProps {
   level: 1 | 2 | 3 | 4 | 5 | 6
   className: string
@@ -11,7 +12,10 @@ interface HeadingProps {
 
 const Heading: React.FC<HeadingProps> = ({ level, className, children }) => {
   const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements
-  const headingId = children?.toString() ?? ''
+
+  // 使用新的工具函数来生成可靠的 ID
+  const textContent = getTextFromChildren(children)
+  const headingId = slugify(textContent)
 
   return (
     <HeadingTag id={headingId} className={className}>

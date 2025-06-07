@@ -2,11 +2,13 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 import RenderMDX from '@/components/RenderMDX'
-import TableContent from '@/components/TableContent'
+import TableContent, { Heading } from '@/components/TableContent'
 import TagItem from '@/components/TagItem'
 
 import { getBlogPosts } from '@/utils/getBlogPosts'
 import { tagsColors } from '@/utils/tagsColors'
+
+import { slugify } from '@/lib/utils'
 
 // (推荐) 生成静态参数
 export async function generateStaticParams() {
@@ -26,6 +28,17 @@ export default async function page({ params }: { params: { slug: string } }) {
   }
 
   const { content, metadata } = post
+
+  // 使用正则表达式从 MDX 内容中提取 h1, h2, h3 标题
+  const headingRegex = /^(#{1,3})\s+(.*)/gm
+  let match
+  const headings: Heading[] = []
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length
+    const text = match[2].trim()
+    const id = slugify(text)
+    headings.push({ level, text, id })
+  }
 
   return (
     <div className="w-full flex flex-col items-start">
@@ -68,8 +81,8 @@ export default async function page({ params }: { params: { slug: string } }) {
                 boxShadow: '0 2px 20px #0e0e130d'
               }}
             >
-              <div className='p-7'>
-                <TableContent />
+              <div className="p-7">
+                <TableContent headings={headings} />
                 <RenderMDX content={content} />
               </div>
             </div>

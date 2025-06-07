@@ -11,10 +11,13 @@ export type ArticlePost = {
   title?: string
   content: string
   metadata: {
-    [key: string]: any
-  },
+    title: string
+    date: string
+    overview: string
+    tags: string
+  }
 }
 
 export type PostsByMonth = {
-  [key: string]: WeeklyPost[];
+  [key: string]: WeeklyPost[]
 }

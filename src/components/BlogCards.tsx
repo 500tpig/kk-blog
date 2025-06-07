@@ -7,6 +7,8 @@ import Link from 'next/link'
 
 import { tagsColors } from '@/utils/tagsColors'
 
+import TagItem from './TagItem'
+
 export default async function BlogCards() {
   const postsDirectory = path.join(process.cwd(), 'posts')
   const filenames = await fs.readdir(postsDirectory)
@@ -18,14 +20,14 @@ export default async function BlogCards() {
       const { data } = matter(fileContent)
 
       // 获取第一个标签作为主标签
-      const primaryTag = data.tag.split(',')[0].trim()
+      const primaryTag = data.tags.split(',')[0].trim()
 
       return {
         slug: filename.replace(/\.mdx$/, ''),
         title: data.title,
         date: data.date,
         overview: data.overview,
-        tags: data.tag.split(',').map((t: string) => t.trim()),
+        tags: data.tags.split(',').map((t: string) => t.trim()),
         color: tagsColors[primaryTag as keyof typeof tagsColors]
       }
     })
@@ -50,7 +52,7 @@ export default async function BlogCards() {
             <div className="flex-1">
               <Link href={`/blog/${post.slug}`} className="block pb-3 group">
                 <h3 className="text-2xl font-bold text-headings-color group-hover:text-accent-color transition-colors">
-                  <span className='heading-title'>{post.title}</span>
+                  <span className="heading-title">{post.title}</span>
                 </h3>
               </Link>
 
@@ -87,21 +89,7 @@ export default async function BlogCards() {
           <div className="mt-6 pt-4 border-t border-dashed border-divider flex flex-wrap gap-2">
             {post.tags.map((tag: keyof typeof tagsColors) => {
               const tagColor = tagsColors[tag]
-              return (
-                <div key={tag} className="flex items-center gap-1">
-                  <span
-                    key={tag}
-                    style={{
-                      backgroundColor: `${tagColor}10`,
-                      color: tagColor
-                    }}
-                    className="text-sm font-medium"
-                  >
-                    #
-                  </span>
-                  <span className="text-sm font-medium">{tag}</span>
-                </div>
-              )
+              return <TagItem key={tag} tag={tag} tagColor={tagColor} />
             })}
           </div>
         </article>

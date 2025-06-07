@@ -1,19 +1,24 @@
 @import 'tailwindcss';
 
-@custom-variant dark (&:where(.dark, .dark *));
+/* @custom-variant dark (&:where(.dark, .dark *)); */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 :root {
   --site-width: 1400px;
+  --sidebar-width: 390px;
 }
 
 @theme inline {
   --color-headings-color: var(--card-bg);
+  --color-body-bg: var(--body-bg-color);
   --color-accent: var(--accent-color);
   --color-term: var(--term-color);
   --color-card-bg: var(--card-bg);
   --width-content-width: min(100%, var(--site-width, 1140px));
+  --width-sidebar-width: var(--sidebar-width);
 
   --color-divider: #7f818540;
+  --color-soft-white: var(--soft-white);
 }
 
 /* 亮色模式 */

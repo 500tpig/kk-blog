@@ -157,22 +157,6 @@ export default function page() {
         </div>
         <div>
           <BlogCards />
-          {/* <div className="flex flex-wrap">
-              <article
-                className="w-full flex flex-col justify-between border-l-[5px] border-l-primary-color p-5 transition rounded-xl bg-card-bg"
-                style={{ boxShadow: '0 2px 20px #0e0e130d' }}
-              >
-                <div className="flex items-center gap-6 w-full relative">
-                  <div>
-                    <div></div>
-                  </div>
-                  <div className="w-[9.375rem] relative flex-shrink-0">
-                    <div className="flex rounded-xl relative overflow-hidden w-full h-full"></div>
-                  </div>
-                </div>
-                <div></div>
-              </article>
-            </div> */}
         </div>
       </div>
     </div>

@@ -31,10 +31,10 @@ export default function Sidebar() {
                     style={{ width: '100%', height: 'auto' }}
                   />
                 </div>
-                <div className="bg-card-bg absolute p-5 m-5 bottom-0 left-0 right-0 rounded-xl z-10 business-card opacity-100">
+                {/* <div className="bg-card-bg absolute p-5 m-5 bottom-0 left-0 right-0 rounded-xl z-10 business-card opacity-100">
                   <div className="text-lg font-semibold">王衍坤</div>
                   <div className="text-sm">前端开发工程师</div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

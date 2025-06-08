@@ -50,7 +50,10 @@ const MDXComponents: MDXComponentsProps = {
   ol: props => <ol className="list-decimal pl-5 mt-0 mb-4" {...props} />,
   li: props => <li className="mb-2" {...props} />,
   code: props => (
-    <code className="bg-gray-600 rounded px-[0.3rem] py-[0.2rem] font-mono" {...props} />
+    <code
+      className="rounded bg-gray-200 px-[0.3rem] py-[0.2rem] font-mono text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+      {...props}
+    />
   ),
   pre: props => <pre className="bg-gray-600 rounded p-4 overflow-x-auto my-2" {...props} />,
   blockquote: props => (

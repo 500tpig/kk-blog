@@ -7,9 +7,9 @@ export default function page() {
   const years = new Date().getFullYear() - 2021 + 1
 
   return (
-    <div className="flex items-start gap-[50px] w-content-width mx-auto py-[50px] relative">
+    <div className="flex gap-x-12.5 items-start w-content-width py-[50px] relative mx-auto">
       <Sidebar />
-      <div className="w-[68%] p-[10px] flex flex-col gap-y-5">
+      <div className="p-[10px] flex flex-col gap-y-5 flex-1 overflow-x-hidden">
         <div className="mt-[3.75rem] w-[11rem] bg-card-bg px-[5px] py-1 rounded-full flex items-center justify-between text-xs">
           <div
             className="text-white text-sm px-4 rounded-full"

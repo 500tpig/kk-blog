@@ -42,7 +42,7 @@ export default async function page({ params }: { params: { slug: string } }) {
   }
 
   return (
-    <div className="w-full flex flex-col items-start">
+    <div className="prose dark:prose-invert w-full flex flex-col items-start">
       <div className="w-content-width mx-auto">
         <div className="w-full flex py-12 gap-7.5 items-center">
           <div

@@ -1,0 +1,131 @@
+---
+title: 'React学习笔记（二）'
+date: '2025-06-08'
+overview: '掌握 useState 和 useEffect 不仅要了解其用法，更要理解其背后的规则和潜在陷阱。始终牢记状态的不可变性，并对 useEffect 的依赖项和清理机制保持敬畏之心，这是编写出健壮、可维护的 React 组件的关键。'
+tags: 'React'
+---
+
+# 状态与生命周期（掌握 `useState` 与 `useEffect`）
+
+组件的渲染本质上是纯粹的，即相同的 `props` 总是产生相同的 UI。为了引入动态行为和交互，需要使用 Hooks 来管理组件的“记忆”（State）和与外部世界的“同步”（Side Effects）。
+
+## `useState`：组件的记忆
+
+`useState` 用于在组件中声明一个可变的状态，当该状态更新时，将触发组件的重新渲染。
+
+**核心语法：**
+
+```ts
+const [value, setValue] = useState(initialValue)
+```
+
+- `value`：当前渲染周期的状态快照（snapshot），只读。
+- `setValue`：用于更新状态的函数。调用它会向 React 请求一次重新渲染。
+- `initialValue`：初始值，仅在组件的首次渲染时生效。
+
+**关键原则与模式：**
+
+1. **状态是不可变的 (Immutability is Key)** 绝对不能直接修改状态变量。必须始终创建新的对象或数组。React 依赖于引用地址的变更 (`Object.is` 比较) 来检测更新。
+
+   ```ts
+   // 对于数组
+   // 错误 ❌
+   list.push('new')
+   setList(list)
+
+   // 正确 ✅
+   setList([...list, 'new']) // or list.concat('new')
+
+   // 对于对象
+   // 错误 ❌
+   user.age = 30
+   setUser(user)
+
+   // 正确 ✅
+   setUser({ ...user, age: 30 })
+   ```
+
+2. **状态更新可能是异步的** `setState` 函数调用不会立即改变当前组件内的 `state` 值，它仅仅是“安排”了一次未来的更新。React 可能会为了性能而批量处理多次 `setState` 调用。
+
+3. **使用函数式更新** 当新的状态依赖于前一个状态时，务必使用函数式更新的形式。这可以确保你总是基于最新的状态进行计算，避免闭包陷阱。
+
+   ```ts
+   // 安全的做法 ✅
+   setCount(prevCount => prevCount + 1)
+
+   // 应用于对象
+   setUser(prevUser => ({ ...prevUser, age: prevUser.age + 1 }))
+   ```
+
+## `useEffect`：与外部世界同步
+
+`useEffect` 用于处理所有与组件渲染无关的操作，即副作用（Side Effects），例如 API 请求、事件监听、定时器等。它将组件的内部状态与外部系统进行同步。
+
+**核心语法：**
+
+```typescript
+useEffect(
+  () => {
+    // 副作用逻辑
+
+    return () => {
+      // 清除逻辑 (cleanup)
+    }
+  },
+  [
+    /* 依赖项数组 */
+  ]
+)
+```
+
+**依赖项数组的规则 (The Rule of Dependencies):**
+
+- **`[]` (空数组):** 副作用仅在组件**挂载 (mount)** 时执行一次。
+- **`[dep1, dep2, ...]` (包含依赖项):** 副作用在挂载时执行，并且**每当**数组中的任意一个依赖项发生变化时，都会**再次**执行。
+- **不提供数组 (省略):** 副作用在**每一次渲染**后都会执行。**应极力避免，这通常是 Bug 的来源。**
+
+**清除函数 (Cleanup Function):**
+
+`useEffect` 中返回的函数是其“清除”机制。它会在组件**卸载 (unmount)** 时，或在副作用**下一次执行之前**被调用。必须用它来清理在副作用中创建的任何订阅、定时器或事件监听器，以防止内存泄漏。
+
+```ts
+useEffect(() => {
+  const timerId = setInterval(() => console.log('tick'), 1000)
+  // 清除函数
+  return () => clearInterval(timerId)
+}, [])
+```
+
+## `useEffect` 的陷阱与解决方法
+
+1. **陷阱：遗漏依赖项 (The #1 Bug Source)** `useEffect` 最常见的错误就是忘记在依赖项数组中包含所有在 effect 内部用到的、来自组件作用域的变量（props, state, 函数等）。这会导致 effect 不在期望的时机重新运行，使用的是过时的数据。 **最佳实践：** 强烈推荐安装并配置官方的 `eslint-plugin-react-hooks` 插件。它会自动检查并警告你遗漏的依赖项，帮你从根源上杜绝此类问题。
+
+2. **陷阱：在依赖项中包含函数或对象** 在组件内部定义的函数或对象，在每次渲染时都会重新创建，导致它们的引用地址发生变化。如果将它们作为 `useEffect` 的依赖项，会导致 effect 在每次渲染后都不必要地重新执行。 **最佳实践：**
+
+   - **方法一（推荐）：** 如果该函数只在 `useEffect` 内部使用，就直接把它定义在 `useEffect` 内部。
+   - **方法二：** 如果该函数需要被其他地方使用，使用 `useCallback` Hook 来包裹它。我们将在下一章详细介绍 `useCallback`。
+
+3. **陷阱：异步 Effect 与竞态条件 (Race Condition)** 当一个依赖项快速变化（例如，搜索框输入），可能同时触发多个 API 请求。如果一个较早的请求比较晚的请求后返回，UI 就会显示出错误（过时）的数据。 **最佳实践：** **务必处理异步请求的清理**。在 `fetch` 请求中，最佳方式是使用 `AbortController`。
+
+   ```ts
+   useEffect(() => {
+     const controller = new AbortController()
+     const signal = controller.signal
+
+     fetch(`api/data?query=${query}`, { signal })
+       .then(res => res.json())
+       .catch(err => {
+         // AbortError 是我们主动取消的，无需作为错误处理
+         if (err.name === 'AbortError') {
+           console.log('Fetch aborted')
+         } else {
+           // ... handle other errors
+         }
+       })
+
+     // 清除函数：在组件卸载或 effect 重新运行时，取消上一次的请求
+     return () => {
+       controller.abort()
+     }
+   }, [query]) // 依赖于 query
+   ```

@@ -9,14 +9,29 @@ import Divider from '../ui/Divider'
 
 export default function Sidebar() {
   return (
-    <div className="w-[34%] sticky top-[10px]">
+    <div className="w-[30%] sticky top-[10px] flex-shrink-0">
       <div className="p-[30px] bg-card-bg rounded-xl" style={{ boxShadow: '0 2px 20px #0e0e130d' }}>
         <div className="max-w-[100%] flex flex-col gap-y-5">
-          <div className="p-[6px] border-[#7F818540] border-dotted border-2 rounded-xl">
+          <div className="p-[6px] border-[#7F818540] border-dotted border-2 rounded-xl profile-image-container">
             <div className="max-w-[800px] box-border relative">
-              <div className="border-4 border-[#7F818540] rounded-xl overflow-hidden">
-                <Image src="/avatar.jpg" alt="avatar" width={400} height={500} />
-                <div className="bg-card-bg absolute p-5 m-5 bottom-0 left-0 right-0 rounded-xl">
+              <div className="border-4 border-[#7F818540] rounded-xl overflow-hidden image-wrapper has-animation">
+                <Image
+                  src="/avatar.jpg"
+                  alt="avatar"
+                  width={400}
+                  height={500}
+                  style={{ width: '100%', height: 'auto' }}
+                />
+                <div className="image-animation">
+                  <Image
+                    src="/avatar.jpg"
+                    alt="avatar"
+                    width={400}
+                    height={500}
+                    style={{ width: '100%', height: 'auto' }}
+                  />
+                </div>
+                <div className="bg-card-bg absolute p-5 m-5 bottom-0 left-0 right-0 rounded-xl z-10 business-card opacity-100">
                   <div className="text-lg font-semibold">王衍坤</div>
                   <div className="text-sm">前端开发工程师</div>
                 </div>

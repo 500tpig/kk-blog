@@ -13,7 +13,7 @@ export default function Header() {
         boxShadow: '0 2px 20px 0 rgba(14,14,19,0.051)'
       }}
     >
-      <div className="container mx-auto flex justify-between">
+      <div className="container mx-auto flex justify-between w-content-width">
         {/* 左侧 Logo */}
         <Link href="/">
           <Icon className="h-12" />

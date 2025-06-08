@@ -1,0 +1,154 @@
+---
+title: 'React学习笔记（一）'
+date: '2025-06-08'
+overview: '从 Vue 转向 React，首要任务是理解两者在核心设计哲学上的根本差异。这不仅仅是 API 的不同，更是一种构建用户界面思路的转变。本篇将聚焦于 React 的核心哲学、JSX 的本质以及函数式组件的构成。'
+tags: 'React'
+---
+# 从 Vue 组件到 React 函数式组件
+
+从 Vue 转向 React，首要任务是理解两者在核心设计哲学上的根本差异。这不仅仅是 API 的不同，更是一种构建用户界面思路的转变。本篇将聚焦于 React 的核心哲学、JSX 的本质以及函数式组件的构成。
+
+## 1. React 的核心设计哲学是什么？它和 Vue 的 MVVM 有何不同？**
+
+React 的核心设计哲学可以精炼地概括为 **UI = f(state)**。
+
+这个公式意味着，用户界面（UI）被视为应用程序状态（state）的一个确定性函数。当状态（数据）发生变化时，React 会自动且高效地重新计算并更新 UI，以确保视图始终是当前状态的准确映射。开发者只需专注于管理状态，而无需手动操作 DOM 来同步数据。
+
+它与 Vue 的 MVVM (Model-View-ViewModel) 模式存在几个关键区别：
+
+- **数据流向：**
+  - **React 强制单向数据流。** 数据通过 `props` 从父组件单向地流向子组件。当需要更新数据时，必须调用特定的状态更新函数（如 `useState` 返回的 `setter` 函数）来触发一个自上而下的重新渲染流程。这种模式使得数据流向清晰、可预测。
+  - **Vue 在 MVVM 架构下，核心是 ViewModel**，它通过双向绑定机制连接了 View（视图）和 Model（数据）。这意味着 View 上的用户输入能自动更新 Model，Model 的变化也能自动反映到 View 上。这在处理表单等场景时提供了极大的便利，但在复杂应用中可能导致数据流向不够清晰。
+- **核心定位与生态：**
+  - **React 更像一个纯粹的 UI 库。** 它的核心职责是高效地渲染 UI。路由、全局状态管理、网络请求等功能都交由社区生态来解决（例如 React Router, Zustand, TanStack Query 等），这提供了极高的灵活性和选择空间。
+  - **Vue 是一个“渐进式框架”。** 它提供了一套更完整的官方解决方案，包括 Vue Router（路由）和 Pinia（状态管理），为开发者提供了一个更统一、开箱即用的“全家桶”体验。
+- **实现思想：**
+  - **React 秉承“All in JS”的理念。** 它不创造新的模板语法，而是通过 JSX 这一语法扩展，让我们可以在 JavaScript 中以声明式的方式描述 UI 结构、逻辑甚至是样式（通过 CSS-in-JS 方案），最大化地利用 JavaScript 的编程能力。
+  - **Vue 则倾向于分离关注点**，将 HTML 结构、JavaScript 逻辑和 CSS 样式分别放在 `<template>`、`<script>` 和 `<style>` 标签中。这种方式对于有传统 Web 开发背景的开发者来说，通常更加直观和易于上手。
+
+##  2. 什么是 JSX？它和 Vue 的模板 (template) 有什么本质区别？
+
+JSX (JavaScript XML) 是 JavaScript 的一个语法扩展，它允许我们在 JavaScript 文件中编写类似 HTML 的代码。
+
+> **重要：** JSX 并不是浏览器或 React 的标准组成部分。它需要通过像 Babel 这样的代码转译器，将 JSX 代码转换为常规的 JavaScript 代码后才能运行。
+
+它和 Vue 模板的本质区别在于：
+
+- **本质不同：**
+
+  - **JSX 是 `React.createElement()` 函数的语法糖。** 我们写的每一个 JSX 标签，最终都会被转译成一个函数调用，其返回值是一个描述 UI 结构的 JavaScript 对象（通常被称为 "React Element"）。因此，JSX 的世界里，你使用的就是纯粹的 JavaScript。
+  - **Vue 模板是基于 HTML 的模板语法。** 它本质上是字符串，需要被 Vue 的编译器进行解析（Parse）、转换（Transform）和代码生成（Generate），最终生成一个渲染函数。它有自己的一套指令系统，如 `v-if`, `v-for`, `v-bind` (`:`) 等，开发者必须遵循这套规则。
+
+- **逻辑实现方式不同：**
+
+  - 在 JSX中实现条件或列表渲染，我们使用的是原生的 JavaScript 语法，例如 ```&&```、三元运算符 (```? :```) 或数组的 ```.map()```方法。
+    ```js
+    // 条件渲染
+    {isLoggedIn && <p>Welcome!</p>}
+
+    // 列表渲染
+    <ul>
+      {items.map(item => <li key={item.id}>{item.name}</li>)}
+    </ul>
+    ```
+
+  - 在 Vue 模板中，则必须使用其特定的指令来完成同样的工作。
+    ```html
+    <p v-if="isLoggedIn">Welcome!</p>
+    
+    <ul>
+      <li v-for="item in items" :key="item.id">{{ item.name }}</li>
+    </ul>
+    ```
+
+- **属性绑定与事件处理：**
+
+  - **JSX** 使用驼峰式命名法来给 HTML 属性命名（如 `className` 代替 `class`，`htmlFor` 代替 `for`），因为这些最终会变成 JS 对象的属性。事件处理也是直接传递一个函数引用，如 `onClick={handleClick}`。
+  - **Vue** 则使用 `kebab-case`（短横线分隔命名），并通过 `v-bind`（简写为 `:`）来绑定动态属性，`v-on`（简写为 `@`）来监听事件。
+
+## 3. 什么是函数式组件 (Functional Component)？
+
+函数式组件是当前 React 开发中**绝对的标准和唯一推荐**的组件编写方式（自 React 16.8 引入 Hooks API 后）。
+
+**定义：** 它就是一个普通的 JavaScript 函数。该函数接收一个包含组件属性的 `props` 对象作为其唯一参数，并返回一个 React 元素（通常是用 JSX 编写的）来声明性地描述 UI 的外观。
+```tsx
+// 使用 TypeScript Interface 来定义 props 的类型，这是最佳实践
+interface UserProfileProps {
+  name: string;
+  avatarUrl: string;
+  isActive: boolean;
+}
+
+// 一个典型的函数式组件
+function UserProfile({ name, avatarUrl, isActive }: UserProfileProps): JSX.Element {
+  const statusClass = isActive ? 'active' : 'inactive';
+
+  return (
+    <div className={`user-profile ${statusClass}`}>
+      <img src={avatarUrl} alt={`${name}'s avatar`} />
+      <h2>{name}</h2>
+      <p>Status: {isActive ? 'Online' : 'Offline'}</p>
+    </div>
+  );
+}
+```
+
+**它的主要特点：**
+
+1. **简洁且无 `this`：** 作为纯粹的函数，它没有类组件中复杂的 `this` 指向问题，代码更简洁、易于理解。
+2. **依赖 Hooks：** 组件所有与状态和副作用相关的逻辑都由 **Hooks** 来处理。例如，使用 `useState` 来声明和管理组件内部状态，使用 `useEffect` 来执行数据获取、订阅等副作用。这一思想与 Vue 3 的 Composition API 非常相似，如果你熟悉后者，将能很快上手 Hooks。
+3. **易于测试和复用：** 在理想情况下（没有副作用时），函数式组件是纯函数。即对于相同的 `props` 输入，总是返回相同的 UI 输出。这使得组件的行为非常可预测，易于进行单元测试。
+
+## 4. 如何理解 React 中的组件组合与 `children` 属性？
+
+React 强烈推崇**组合优于继承**的设计模式。你不应该通过继承来复用组件间的代码，而应该通过组合，将组件作为另一个组件的 `props` 来使用。
+
+`props.children` 是一个特殊的 `prop`，它允许你将 JSX 结构直接传递到你的组件中。这与 Vue 的 **插槽 (Slot)** 机制非常相似。
+
+**示例：创建一个通用的 `Card` 组件**
+
+想象一个卡片组件，它的边框和背景是固定的，但里面的内容是灵活的。
+
+```tsx
+// src/components/ui/Card.tsx
+
+import { ReactNode } from 'react';
+
+// 'ReactNode' 是一个可以接受任何 JSX 元素的类型
+interface CardProps {
+  title: string;
+  children: ReactNode;
+}
+
+export function Card({ title, children }: CardProps) {
+  return (
+    <div className="card-container">
+      <h3 className="card-title">{title}</h3>
+      <div className="card-content">
+        {children} {/* 这里渲染传递进来的内容，相当于 Vue 的默认插槽 <slot /> */}
+      </div>
+    </div>
+  );
+}
+
+// 如何使用这个 Card 组件
+function App() {
+  return (
+    <Card title="User Information">
+      {/* 👇 这里的所有内容都会作为 children prop 传递给 Card 组件 */}
+      <p>This is some information about the user.</p>
+      <button>Contact</button>
+    </Card>
+  );
+}
+```
+
+在这个例子中，`<p>` 和 `<button>` 元素被作为 `children` 属性传递给了 `Card` 组件，并被渲染在 `card-content` div 内部。这是一种极其强大和灵活的模式，是构建可复用和可维护 React 应用的基石。
+
+------
+
+**本篇总结：**
+
+- **思维转变：** 从 Vue 的双向绑定和模板指令，转向 React 的单向数据流和 “All in JS” 的 JSX 模式。
+- **JSX 本质：** 它不是 HTML，而是创建 JavaScript 对象的语法糖，给予你 JavaScript 的全部能力。
+- **组件模型：** 拥抱简洁、无 `this` 的函数式组件，并利用 `props`（尤其是 `props.children`）通过组合来构建复杂的 UI。

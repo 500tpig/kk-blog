@@ -1,7 +1,7 @@
-export default function TagItem({ tag, tagColor }: { tag: string; tagColor: string }) {
+export default function TagItem({ tag, tagColor, className }: { tag: string; tagColor: string; className?: string }) {
   return (
     <div
-      className="flex items-center gap-0.5 relative group cursor-pointer"
+      className={`flex items-center gap-0.5 relative group cursor-pointer ${className}`}
       style={{ '--tag-color': tagColor } as React.CSSProperties}
     >
       <span className="text-sm font-medium text-[var(--tag-color)]">#</span>

@@ -1,6 +1,7 @@
 @import './tailwind.css';
 @import './animation.css';
 @import 'prism-themes/themes/prism-one-dark.css';
+@import './searchModal.css';
 
 /* body 的基础样式 */
 body {

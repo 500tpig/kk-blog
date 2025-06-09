@@ -59,7 +59,8 @@ const MDXComponents: MDXComponentsProps = {
   blockquote: props => (
     <blockquote className="pl-4 border-l-4 border-gray-200 my-4 text-gray-300 italic" {...props} />
   ),
-  img: props => <img width="70%" className="rounded border-4 border-main" {...props} />,
+  // eslint-disable-next-line @next/next/no-img-element
+  img: props => <img width="70%" alt='' className="rounded border-4 border-main" {...props} />,
   strong: props => <strong className="font-bold" {...props} />,
   table: props => (
     <div className="my-6 w-full overflow-x-auto">
@@ -79,9 +80,6 @@ const MDXComponents: MDXComponentsProps = {
       {...props}
     />
   )
-  //   Aside,
-  //   Callout,
-  //   Card: MdxCard
 }
 
 export default MDXComponents

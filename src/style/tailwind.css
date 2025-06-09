@@ -9,8 +9,9 @@
 }
 
 @theme inline {
-  --color-headings-color: var(--card-bg);
+  --color-headings-color: var(--headings-color);
   --color-body-bg: var(--body-bg-color);
+  --color-body-color: var(--body-color);
   --color-accent: var(--accent-color);
   --color-term: var(--term-color);
   --color-card-bg: var(--card-bg);

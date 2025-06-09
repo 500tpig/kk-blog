@@ -1,14 +1,14 @@
 import Link from 'next/link'
 
-import Search from '@/components/icons/Search'
 import ThemeToggle from '@/components/ThemeToggle'
 
 import Icon from '../icons/Icon'
+import SearchModal from '../SearchModal'
 
 export default function Header() {
   return (
     <header
-      className="w-full h-19 transition-colors flex items-center justify-center bg-headings-color"
+      className="w-full h-19 transition-colors flex items-center justify-center bg-white dark:bg-card-bg"
       style={{
         boxShadow: '0 2px 20px 0 rgba(14,14,19,0.051)'
       }}
@@ -38,7 +38,7 @@ export default function Header() {
           </ul>
           {/* 右侧功能区 */}
           <div className="flex items-center gap-4 h-8">
-            <Search className="w-6" />
+            <SearchModal />
             <ThemeToggle />
             <button className="block lg:hidden p-2">
               <span className="block w-6 h-0.5 bg-gray-700 mb-1"></span>

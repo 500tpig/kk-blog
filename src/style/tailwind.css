@@ -6,6 +6,9 @@
 :root {
   --site-width: 1400px;
   --sidebar-width: 24.375rem;
+  --tag-color-next: #40b1ff;
+  --accent-color: #ff5671;
+  --term-color: #26bda7;
 }
 
 @theme inline {
@@ -25,8 +28,6 @@
 /* 亮色模式 */
 [data-theme='light'] {
   --body-bg-color: #f5f5fa;
-  --accent-color: #ff5671;
-  --term-color: #26bda7;
   --accent-color-alt: #fff;
   --second-color: #ff5671;
   --second-color-alt: #fff;
@@ -47,8 +48,6 @@
 
 /* 深色模式 */
 [data-theme='dark'] {
-  --accent-color: #ff5671;
-  --term-color: #26bda7;
   --accent-color-alt: #fff;
   --second-color: #ff5671;
   --second-color-alt: #fff;

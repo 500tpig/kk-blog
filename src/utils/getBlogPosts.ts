@@ -1,3 +1,4 @@
+// src/utils/getBlogPosts.ts
 import fs from 'fs'
 import path from 'path'
 
@@ -16,20 +17,26 @@ export async function getBlogPosts(): Promise<{
 
   const posts = await Promise.all(
     filenames.map(async filename => {
-      // 读取文件
       const fullPath = path.join(postsDirectory, filename)
       const fileContents = await fs.promises.readFile(fullPath, 'utf8')
 
-      // 解析内容
       const { data, content } = matter(fileContents)
-      // 记录月份
-      //   const month = dayjs(data.date).format('YYYY-MM-DD').slice(0, 7)
+      const wordCount = content.split(/\s+/g).length
+      const wordsPerMinute = 200
+      const readingTime = Math.ceil(wordCount / wordsPerMinute)
 
+      // 确保返回的数据结构符合 ArticlePost 类型
       return {
         id: filename,
-        slug: filename.replace(/\.(mdx|md)$/, ''),  // 移除 .mdx 或 .md 扩展名
-        metadata: data,
-        content
+        slug: filename.replace(/\.(mdx|md)$/, ''),
+        content,
+        metadata: {
+          title: data.title,
+          date: data.date,
+          overview: data.overview,
+          tags: data.tags,
+          readingTime
+        }
       }
     })
   )

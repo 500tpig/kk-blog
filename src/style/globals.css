@@ -237,3 +237,19 @@ h6,
   transform: scaleX(1.5);
   transition: all 0.8s;
 }
+
+[data-theme='dark'] pre[class*='language-'] {
+  background-color: #282a2c !important;
+}
+[data-theme='dark'] .code-line {
+  background-color: #282a2c !important;
+}
+/*
+  优化代码块中注释的颜色，提高可读性
+*/
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #a0a3b4;
+}

@@ -12,6 +12,9 @@ import { getBlogPosts } from '@/utils/getBlogPosts'
 import { tagsColors } from '@/utils/tagsColors'
 
 import { slugify } from '@/lib/utils'
+
+type Params = Promise<{ slug: string }>
+
 export async function generateStaticParams() {
   const { posts } = await getBlogPosts()
   return posts.map(post => ({
@@ -19,7 +22,7 @@ export async function generateStaticParams() {
   }))
 }
 
-export default async function page({ params }: { params: { slug: string } }) {
+export default async function page({ params }: { params: Params }) {
   const { slug } = await params
   const { posts } = await getBlogPosts()
   const post = posts.find(p => p.slug === slug)
@@ -76,7 +79,15 @@ export default async function page({ params }: { params: { slug: string } }) {
                     <span>By</span>
                     <span className="font-semibold ml-1">KK</span>
                   </div>
-                  <div>{metadata.date}</div>
+                  <div>
+                    {metadata.date && <span>{dayjs(metadata.date).format('YYYY-MM-DD')}</span>}
+                    <span className="mx-1.5">/</span>
+                    {metadata.readingTime && (
+                      <>
+                        <span>{metadata.readingTime} Min Read</span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex items-end gap-2">
@@ -93,7 +104,12 @@ export default async function page({ params }: { params: { slug: string } }) {
           </div>
         </div>
         <div className="flex gap-7 w-full items-start">
-          <div className="p-2.5 pb-0 flex-1">
+          {/* 
+              主内容区 .flex-1 会尽量填满剩余空间，但如果内容太多，或者屏幕宽度不够，侧边栏就会被挤压。
+              侧边栏虽然有宽度，但 flex 布局下，如果空间不够，还是会被压缩。
+              min-w-0 是 Tailwind 里防止内容溢出导致侧边栏被挤压的常用做法。
+           */}
+          <div className="p-2.5 pb-0 flex-1 min-w-0">
             <div
               className="p-7 rounded-xl bg-card-bg"
               style={{
@@ -102,7 +118,7 @@ export default async function page({ params }: { params: { slug: string } }) {
             >
               <div className="p-7">
                 <div className="mb-6">
-                  <span className='text-sm'>(AI总结)</span>
+                  <span className="text-sm">(AI总结)</span>
                   <span> {metadata.overview}</span>
                 </div>
                 <TableContent headings={headings} />

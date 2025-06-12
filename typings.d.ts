@@ -6,18 +6,18 @@ declare namespace NodeJS {
 }
 
 export type ArticlePost = {
-  id?: string
-  slug?: string
-  title?: string
+  id: string
+  slug: string
   content: string
   metadata: {
     title: string
     date: string
     overview: string
     tags: string
+    readingTime: number
   }
 }
 
 export type PostsByMonth = {
-  [key: string]: WeeklyPost[]
+  [key: string]: ArticlePost[]
 }

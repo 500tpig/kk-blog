@@ -5,7 +5,7 @@
 
 :root {
   --site-width: 1400px;
-  --sidebar-width: 390px;
+  --sidebar-width: 24.375rem;
 }
 
 @theme inline {

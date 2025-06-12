@@ -1,0 +1,228 @@
+---
+title: 'React学习笔记（三）'
+date: '2025-06-12'
+overview: 'useState 和 useEffect 是构建组件的基础，但要构建可扩展、可维护且高性能的应用，还需要掌握 React 提供的更专业的 Hooks。本章将深入探讨用于状态共享、复杂逻辑管理、性能优化和逻辑复用的核心 Hooks。'
+tags: 'React'
+---
+
+# 学习React的一些Hooks
+`useState` 和 `useEffect` 是基础。但在实际开发中，会遇到很多它们无法优雅解决的场景。这篇笔记记录剩下的几个核心 Hooks，以及它们在真实代码中的使用场景、坑点和技巧。
+
+## `useContext` - 终结 Prop Drilling
+
+- **核心目的：** 干掉“道具钻探”（Prop Drilling）。当数据需要跨越多个层级时，用它来建立一个“直通车”，避免中间组件无意义的透传。
+
+- **关键坑点与解决方案：性能问题** `useContext` 的大坑在于，只要 `Provider` 的 `value` 引用地址一变，所有消费这个 Context 的组件都会重渲染。
+
+  **问题示例：** 下面的 `Toolbar` 组件根本没用到 `counter`，但因为 `App` 组件的 `counter` 状态变化导致重渲，`value` 属性被重新创建了一个新对象 `{}`，导致 `Toolbar` 也跟着重渲。
+
+  ```TypeScript
+  // 问题代码：不必要的重渲染
+  import { createContext, useContext, useState } from 'react'
+
+  const AppContext = createContext(null)
+
+  function Toolbar() {
+    // 这个组件理论上只关心 theme，但也被迫重渲了
+    console.log('Toolbar re-rendered unnecessarily!')
+    const { theme } = useContext(AppContext)
+    return <div>Current theme: {theme}</div>
+  }
+
+  function App() {
+    const [theme, setTheme] = useState('dark')
+    const [counter, setCounter] = useState(0) // 一个无关的状态
+
+    // 每次 App 重渲 (例如点击 button), value 都会是一个全新的对象
+    const value = { theme, setTheme }
+
+    return (
+      <AppContext.Provider value={value}>
+        <button onClick={() => setCounter(c => c + 1)}>Re-render App ({counter})</button>
+        <Toolbar />
+      </AppContext.Provider>
+    )
+  }
+  ```
+
+  **解决方案：拆分 Context，或对 value 进行 `useMemo` 缓存** 这是解决上述性能问题的最佳实践。把“不变的”和“常变的”数据分开。
+
+  ```TypeScript
+  // 最佳实践：拆分 Context
+  const ThemeContext = createContext(null);       // 用于传递 theme
+  const ThemeDispatchContext = createContext(null); // 用于传递 setTheme
+  
+  function App() {
+    const [theme, setTheme] = useState('dark');
+    // ...
+  
+    return (
+      <ThemeContext.Provider value={theme}>
+        <ThemeDispatchContext.Provider value={setTheme}>
+          {/* ... */}
+        </ThemeDispatchContext.Provider>
+      </ThemeContext.Provider>
+    );
+  }
+  ```
+
+  这样，只消费 `ThemeDispatchContext` 的组件就不会因为 `theme` 的变化而重渲。
+
+## `useReducer` - 替代繁杂的 `useState`
+
+- **使用时机：** 当一个状态有多种更新逻辑，或者下一个状态依赖于复杂的前置状态时，用 `useReducer` 会让代码更清晰。
+
+## `useMemo` & `useCallback` - 性能优化工具
+
+- **使用前提：** **不要过早优化，不要滥用**。只有在通过 Profiler 发现明确的性能瓶颈时才应该使用。
+
+- **核心坑点：在依赖项数组中使用了不稳定的引用（函数/对象）** 这是导致 `useMemo` / `useCallback` 优化失效，甚至起反作用的根源。
+
+  **问题示例：** 下面的 `options` 对象在 `Parent` 组件每次渲染时都会被重新创建，导致 `useMemo` 的依赖项 `[options]` 每次都变化，缓存永远不会命中。
+
+  ```TypeScript
+  function Parent() {
+    const [text, setText] = useState('');
+  
+    // 错误：options 在每次渲染时都是一个新对象
+    const options = { delimiter: '-' }; 
+  
+    return <ChildComponent options={options} text={text} />;
+  }
+  
+  function ChildComponent({ options, text }) {
+    // 这里的 useMemo 完全无效，因为 options 引用总是在变
+    const processedText = useMemo(() => {
+      console.log('Expensive calculation running...');
+      return text.split('').join(options.delimiter);
+    }, [text, options]);
+  
+    return <div>{processedText}</div>;
+  }
+  ```
+
+  **解决方案：** 将不稳定的依赖项本身也用 `useMemo` 或 `useCallback` 缓存起来。
+
+  ```TypeScript
+  function Parent() {
+    const [text, setText] = useState('');
+  
+    // 正确：用 useMemo 缓存 options 对象，它的引用只有在 {} 内部值变化时才变
+    // 在这个例子中，它永远不会变。
+    const options = useMemo(() => ({ delimiter: '-' }), []); 
+  
+    return <ChildComponent options={options} text={text} />;
+  }
+  // ... ChildComponent 保持不变，现在它的 useMemo 可以正常工作了
+  ```
+
+  **`useCallback` 的主要场景示例：** `useCallback` 是 `useMemo` 针对函数的语法糖。它的核心用途是配合 `React.memo`。
+
+  ```TypeScript
+  import { useState, useCallback, memo } from 'react';
+  
+  // 1.用 React.memo 包裹子组件，让它只有在 props 变化时才重渲
+  const MyButton = memo(({ onClick }) => {
+    console.log('MyButton re-rendered');
+    return <button onClick={onClick}>Click me</button>;
+  });
+  
+  function App() {
+    const [count, setCount] = useState(0);
+  
+    // 2. 如果不用 useCallback，每次 App 重渲，这个函数都是新的
+    // const handleClick = () => { console.log('clicked!'); };
+  
+    // 3. 用 useCallback 包裹后，handleClick 的引用就稳定了
+    const handleClick = useCallback(() => {
+      console.log('clicked!');
+    }, []); // 空数组，这个函数永不改变
+  
+    return (
+      <div>
+        <p>Count: {count}</p>
+        <button onClick={() => setCount(c => c + 1)}>Increment Count</button>
+        {/* 当点击 Increment 时，App 重渲，但 MyButton 不会重渲 */}
+        <MyButton onClick={handleClick} /> 
+      </div>
+    );
+  }
+  ```
+
+## 自定义 Hooks - 逻辑复用的最佳实践
+
+- **核心思想：** 抽离和复用带状态的逻辑。可以看作是 Vue 的 Composable 函数。
+
+- **关键认知：复用的是逻辑，不是状态** 两个不同的组件同时调用 `useMyHook()`，它们会得到两套**完全独立、互不相干**的内部状态。
+
+- **实用技巧与示例：创建泛用的 `useFetch` Hook** 这是一个非常实用的自定义 Hook，封装了数据请求的完整逻辑，包括 loading、error 和请求取消。
+
+  ```TypeScript
+  import { useState, useEffect } from "react";
+  
+  function useFetch<T>(
+    url: string,
+    options?: RequestInit
+  ): { data: T | null; loading: boolean; error: Error | null } {
+    const [data, setData] = useState<T | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+
+    useEffect(() => {
+      // 每次请求前，重置状态
+      setLoading(true);
+      setData(null);
+      setError(null);
+
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      fetch(url, { ...options, signal })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          setData(data);
+        })
+        .catch((err) => {
+          if (err.name !== "AbortError") {
+            setError(err);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+
+      // 清除函数：在组件卸载或 url 变化导致重新请求时，取消上一次的请求
+      return () => {
+        controller.abort();
+      };
+    }, [url]); // 仅当 url 变化时重新执行
+
+    return { data, loading, error };
+  }
+
+  // 如何在组件中使用
+  function UserProfile({ userId }) {
+    const {
+      data: user,
+      loading,
+      error,
+    } = useFetch<{ name: string; email: string }>(
+      `https://jsonplaceholder.typicode.com/users/${userId}`
+    );
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error.message}</p>;
+
+    return (
+      <div>
+        <h1>{user?.name}</h1>
+        <p>{user?.email}</p>
+      </div>
+    );
+  }
+  ```

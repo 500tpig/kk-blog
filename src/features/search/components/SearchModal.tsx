@@ -5,7 +5,9 @@ import Search from '@/components/icons/Search'
 
 import { tagsColors } from '@/utils/tagsColors'
 
-import TagItem from './TagItem'
+import TagItem from '@/features/blog/TagItem'
+
+
 
 export default function SearchModal() {
   const [isOpen, setIsOpen] = useState(false)

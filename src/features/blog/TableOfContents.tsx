@@ -2,7 +2,7 @@
 
 import { MouseEvent, useState, useMemo, ReactNode } from 'react'
 
-import DownOutlined from './icons/DownOutlined'
+import DownOutlined from '@/components/icons/DownOutlined'
 
 // 标题对象的类型接口保持不变
 export interface Heading {
@@ -16,11 +16,11 @@ interface NestedHeading extends Heading {
   children: NestedHeading[]
 }
 
-interface TableContentProps {
+interface TableOfContentsProps {
   headings: Heading[]
 }
 
-export default function TableContent({ headings }: TableContentProps) {
+export default function TableOfContents({ headings }: TableOfContentsProps) {
   const [isOpen, setIsOpen] = useState(true)
 
   // 使用 useMemo 来转换数据结构，避免每次渲染都重新计算

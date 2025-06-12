@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 import { tagsColors } from '@/utils/tagsColors'
 
-import TagItem from './TagItem'
+import TagItem from '@/features/blog/TagItem'
 
 interface SearchResultsProps {
   query: string

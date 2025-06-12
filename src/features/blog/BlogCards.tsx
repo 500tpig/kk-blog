@@ -7,7 +7,8 @@ import Link from 'next/link'
 
 import { tagsColors } from '@/utils/tagsColors'
 
-import TagItem from './TagItem'
+import TagItem from '@/features/blog/TagItem'
+
 
 export default async function BlogCards() {
   const postsDirectory = path.join(process.cwd(), 'posts')

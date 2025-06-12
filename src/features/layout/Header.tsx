@@ -1,9 +1,9 @@
 import Link from 'next/link'
 
+import Icon from '@/components/icons/Icon'
 import ThemeToggle from '@/components/ThemeToggle'
 
-import Icon from '../icons/Icon'
-import SearchModal from '../SearchModal'
+import { SearchModal } from '@/features/search'
 
 export default function Header() {
   return (

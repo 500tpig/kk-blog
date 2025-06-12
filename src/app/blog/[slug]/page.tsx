@@ -4,14 +4,16 @@ import { notFound } from 'next/navigation'
 
 import ChatIcon from '@/components/icons/ChatIcon'
 import FireIcon from '@/components/icons/FireIcon'
-import RenderMDX from '@/components/RenderMDX'
-import TableContent, { Heading } from '@/components/TableContent'
-import TagItem from '@/components/TagItem'
+
 
 import { getBlogPosts } from '@/utils/getBlogPosts'
 import { tagsColors } from '@/utils/tagsColors'
 
+import RenderMDX from '@/features/blog/RenderMDX'
+import TableOfContents, { Heading } from '@/features/blog/TableOfContents'
+import TagItem from '@/features/blog/TagItem'
 import { slugify } from '@/lib/utils'
+
 
 type Params = Promise<{ slug: string }>
 
@@ -121,7 +123,7 @@ export default async function page({ params }: { params: Params }) {
                   <span className="text-sm">(AI总结)</span>
                   <span> {metadata.overview}</span>
                 </div>
-                <TableContent headings={headings} />
+                <TableOfContents headings={headings} />
                 <RenderMDX content={content} />
               </div>
             </div>

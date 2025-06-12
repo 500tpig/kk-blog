@@ -3,9 +3,9 @@ import Image from 'next/image'
 import EmailIcon from '@/components/icons/EmailIcon'
 import LocationIcon from '@/components/icons/LocationIcon'
 import PhoneIcon from '@/components/icons/PhoneIcon'
+import Divider from '@/components/ui/Divider'
 import ProgressBar from '@/components/ui/ProgressBar'
 
-import Divider from '../ui/Divider'
 
 export default function Sidebar() {
   return (

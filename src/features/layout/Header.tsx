@@ -3,6 +3,8 @@ import Link from 'next/link'
 import Icon from '@/components/icons/Icon'
 import ThemeToggle from '@/components/ThemeToggle'
 
+import styles from './Header.module.css'
+
 import { SearchModal } from '@/features/search'
 
 export default function Header() {
@@ -18,8 +20,8 @@ export default function Header() {
         <Link href="/">
           <Icon className="h-12" />
         </Link>
-        <div className="flex-1 flex items-center">
-          <ul className="gap-1 text-base text-headings-color-light flex h-8 flex-1 justify-end mr-5">
+        <div className="flex-1 flex items-center justify-end gap-5">
+          {/* <ul className="gap-1 text-base text-headings-color-light flex h-8 flex-1 justify-end mr-5">
             <li className="menu-item relative h-full flex items-center">
               <Link href="/" className="hover:text-primary-500 transition px-3 relative z-10">
                 首页
@@ -35,7 +37,7 @@ export default function Header() {
                 关于
               </Link>
             </li>
-          </ul>
+          </ul> */}
           {/* 右侧功能区 */}
           <div className="flex items-center gap-4 h-8">
             <SearchModal />
@@ -45,6 +47,18 @@ export default function Header() {
               <span className="block w-6 h-0.5 bg-gray-700 mb-1"></span>
               <span className="block w-6 h-0.5 bg-gray-700"></span>
             </button>
+          </div>
+
+          <div
+            className={`${styles['offcanvas-opener-wrapper']} flex items-center h-8 cursor-pointer`}
+          >
+            <span className={styles['offcanvas-opener']}>
+              <span className={styles.hamburger}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </span>
           </div>
         </div>
       </div>

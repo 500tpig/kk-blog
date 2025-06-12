@@ -1,12 +1,25 @@
 import Image from 'next/image'
 
 import EmailIcon from '@/components/icons/EmailIcon'
+import GithubIcon from '@/components/icons/GithubIcon'
 import LocationIcon from '@/components/icons/LocationIcon'
 import PhoneIcon from '@/components/icons/PhoneIcon'
+import QQIcon from '@/components/icons/QQIcon'
+import WeChatIcon from '@/components/icons/WeChatIcon'
 import Divider from '@/components/ui/Divider'
 import ProgressBar from '@/components/ui/ProgressBar'
 
-
+const list = [
+  {
+    icon: <GithubIcon className="w-6" />
+  },
+  {
+    icon: <QQIcon className="w-6" />
+  },
+  {
+    icon: <WeChatIcon className="w-6" />
+  }
+]
 export default function Sidebar() {
   return (
     <div className="w-[30%] sticky top-[10px] flex-shrink-0">
@@ -32,7 +45,7 @@ export default function Sidebar() {
                   />
                 </div>
                 {/* <div className="bg-card-bg absolute p-5 m-5 bottom-0 left-0 right-0 rounded-xl z-10 business-card opacity-100">
-                  <div className="text-lg font-semibold">王衍坤</div>
+                  <div className="text-lg font-semibold"></div>
                   <div className="text-sm">前端开发工程师</div>
                 </div> */}
               </div>
@@ -69,6 +82,16 @@ export default function Sidebar() {
                 <div>Location: 中国 福建 厦门</div>
               </div>
             </div>
+          </div>
+          <div className="mt-4 flex justify-center items-center gap-2.5">
+            {list.map((item, index) => (
+              <div
+                key={index}
+                className="p-2 rounded-full border border-[#e1e3ea] dark:border-soft-white cursor-pointer transition-transform duration-300 hover:-translate-y-1"
+              >
+                {item.icon}
+              </div>
+            ))}
           </div>
         </div>
       </div>

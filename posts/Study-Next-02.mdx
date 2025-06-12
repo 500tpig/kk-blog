@@ -1,0 +1,175 @@
+---
+title: 'Next 学习笔记（二）：什么是服务端组件'
+date: '2025-04-02'
+overview: 'App Router 带来的最大变革不是文件结构，而是组件的渲染地点。它将组件分为两种模式：默认在服务端运行的服务端组件（RSC），和在客户端运行的客户端组件（Client Components）。能否清晰地划分这两者，是能否发挥出 Next.js 性能优势的关键。'
+tags: 'Next'
+---
+
+## 什么是服务端组件 (React Server Components, RSC)？
+
+- **核心定义：** 一种**只在服务端运行**的 React 组件。它的代码永远不会被下载到用户的浏览器中。
+
+- **默认行为：** 在 `app` 目录下，**所有组件默认都是服务端组件**。
+
+- **关键特性：**
+
+  1. **零客户端 JS：** RSC 的代码和它引入的任何依赖（例如 `lodash`、`dayjs`）都不会被打包进客户端的 JavaScript bundle 中。这能极大地减小前端需要加载的资源体积。
+  2. **直接访问后端资源：** 因为它们在服务端（Node.js 环境）运行，所以可以像写后端代码一样，直接访问数据库、文件系统 (`fs`)、或者调用内部 API，无需再通过 `fetch` 创建一个 API 路由。
+  3. **不能使用交互性 Hooks：** 这是 RSC 的最大限制。它不能使用 `useState`, `useEffect`, `onClick` 等任何依赖于浏览器环境和用户交互的功能。RSC 的唯一职责是在服务端**渲染一次 UI**。
+
+- **代码示例：** 一个典型的 RSC，直接从文件系统读取内容。
+
+  ```TypeScript
+  // app/post-display/page.tsx
+  // 这是一个服务端组件 (因为没有 'use client')
+  import fs from 'fs/promises';
+  import path from 'path';
+
+  export default async function PostDisplayPage() {
+    // 可以直接使用 Node.js 的 fs 模块
+    const postPath = path.join(process.cwd(), 'posts', 'my-post.md');
+    const content = await fs.readFile(postPath, 'utf-8');
+
+    return (
+      <div>
+        <h1>My Post</h1>
+        <p>{content}</p>
+      </div>
+    );
+  }
+  ```
+
+## 什么是客户端组件 (Client Components)？
+
+- **核心定义：** 我们过去几年一直在写的“传统” React 组件。它们的 JS 代码会被发送到浏览器，并通过一个称为“水合 (Hydration)”的过程变得可交互。
+
+- **如何创建：** 在文件的**最顶部**添加 `'use client'` 指令。一旦一个文件被标记为客户端组件，它里面导入的所有其他组件也都会被视为客户端组件。
+
+- **关键特性：**
+
+  1. **可使用全部 Hooks：** 可以自由使用 `useState`, `useEffect`, `useContext` 等。
+  2. **可添加事件监听：** 可以使用 `onClick`, `onChange` 等来响应用户交互。
+  3. **可访问浏览器 API：** 可以使用 `window`, `localStorage` 等浏览器独有的 API。
+
+- **代码示例：** 一个需要交互性的计数器按钮，必须是客户端组件。
+
+  ```TypeScript
+  // components/CounterButton.tsx
+  'use client'; // 必须在文件顶部
+
+  import { useState } from 'react';
+
+  export default function CounterButton() {
+    const [count, setCount] = useState(0);
+
+    return (
+      <button onClick={() => setCount(c => c + 1)}>
+        Clicked {count} times
+      </button>
+    );
+  }
+  ```
+
+## RSC 与客户端组件的交互模式
+
+- **黄金法则：**
+
+  1. 服务端组件 **可以** 导入并使用客户端组件。
+  2. 客户端组件 **不能** 直接导入服务端组件。（因为服务端组件的代码可能包含无法在浏览器运行的服务器端逻辑）。
+
+- **解决“客户端组件中需要服务端内容”的问题：** **“插槽”模式** (Passing RSCs as `children` to Client Components)。
+
+  - **问题场景：** 有一个带 Tab 切换的布局（客户端组件），但希望每个 Tab 的内容是静态的、从服务端获取的（服务端组件）。
+
+  - **解决方案与示例：** 在服务端组件中，将另一个服务端组件作为 `children` prop 传递给客户端组件。
+
+    ```TypeScript
+    // 1. 服务端内容组件 (RSC)
+    // components/ServerInfo.tsx (无 'use client')
+    export default async function ServerInfo() {
+      // 假设这里有一些服务端才能获取的数据
+      const serverTime = new Date().toLocaleTimeString();
+      return <p>Server time: {serverTime}</p>;
+    }
+
+    // 2. 交互式外壳组件 (Client Component)
+    // components/InteractiveWrapper.tsx
+    'use client';
+    import { useState } from 'react';
+
+    export default function InteractiveWrapper({ children }) {
+      const [isOpen, setIsOpen] = useState(true);
+      return (
+        <div className="border p-4">
+          <button onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? 'Collapse' : 'Expand'}
+          </button>
+          {isOpen && children} {/* RSC 的渲染结果会在这里显示 */}
+        </div>
+      );
+    }
+
+    // 3. 在页面中使用 (RSC)
+    // app/page.tsx
+    import ServerInfo from '@/components/ServerInfo';
+    import InteractiveWrapper from '@/components/InteractiveWrapper';
+
+    export default function HomePage() {
+      return (
+        <div>
+          <h1>Welcome</h1>
+          <InteractiveWrapper>
+            {/* 成功将一个 RSC 作为 prop 传递给一个客户端组件 */}
+            <ServerInfo />
+          </InteractiveWrapper>
+        </div>
+      );
+    }
+    ```
+
+    这个模式非常强大，它允许我们将静态内容（服务端渲染）和动态交互（客户端渲染）优雅地结合起来。
+
+## 实践中的思考与陷阱
+
+- **陷阱一：在顶层滥用 `'use client'`** 刚上手时，很容易因为某个组件需要交互，就在 `layout.tsx` 或顶层 `page.tsx` 中加上 `'use client'`。这会导致整个应用或整个页面树都变成了客户端组件，完全丧失了 RSC 带来的性能优势。
+
+  **最佳实践：** 尽可能地将 `'use client'` **下沉**到组件树的“叶子”节点。也就是说，让页面布局、静态内容展示等保持为 RSC，只把你真正需要交互的那个最小单元（比如一个按钮、一个搜索框）做成客户端组件。
+
+- **陷阱二：习惯性地在客户端 `useEffect` 中获取数据** 虽然在客户端组件里用 `useEffect` + `fetch` 依然可以获取数据，但这在 App Router 中是**反模式**。它会导致“请求瀑布”：页面 HTML 先加载 -> 页面 JS 再加载 -> 然后才能开始 `fetch` 数据，整个过程非常缓慢。
+
+  **最佳实践：** **在父级服务端组件中获取数据，然后通过 props 传递给子级客户端组件。**
+
+  ```TypeScript
+  // app/user-page/page.tsx (RSC)
+  import UserProfile from '@/components/UserProfile';
+
+  async function getUser(id) {
+    const res = await fetch(`https://api.example.com/users/${id}`);
+    return res.json();
+  }
+
+  export default async function UserPage() {
+    // 1. 数据在服务端获取
+    const user = await getUser(1);
+
+    // 2. 通过 props 传递给客户端组件
+    return <UserProfile user={user} />;
+  }
+
+  // components/UserProfile.tsx (Client Component)
+  'use-client';
+  import { useState } from 'react';
+
+  export default function UserProfile({ user }) { // 3. 直接接收数据，无需 useEffect
+    const [name, setName] = useState(user.name);
+
+    return (
+      <div>
+        <input value={name} onChange={e => setName(e.target.value)} />
+        {/* ... */}
+      </div>
+    );
+  }
+  ```
+
+  这个模式让数据获取和服务端渲染并行，用户能更快地看到有内容的页面。

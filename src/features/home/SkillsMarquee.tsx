@@ -1,4 +1,4 @@
-import SkillItemWrap from '@/components/SkillItemWrap'
+import SkillItemWrap from '@/features/home/SkillItemWrap'
 
 export function SkillsMarquee() {
   return (

@@ -5,15 +5,15 @@ import { notFound } from 'next/navigation'
 import ChatIcon from '@/components/icons/ChatIcon'
 import FireIcon from '@/components/icons/FireIcon'
 
-
 import { getBlogPosts } from '@/utils/getBlogPosts'
 import { tagsColors } from '@/utils/tagsColors'
 
+import { Categories } from '@/features/blog/Categories'
+import { RecentPosts } from '@/features/blog/RecentPosts'
 import RenderMDX from '@/features/blog/RenderMDX'
 import TableOfContents, { Heading } from '@/features/blog/TableOfContents'
 import TagItem from '@/features/blog/TagItem'
 import { slugify } from '@/lib/utils'
-
 
 type Params = Promise<{ slug: string }>
 
@@ -146,14 +146,19 @@ export default async function page({ params }: { params: Params }) {
                   <span>苦命前端开发</span>
                 </div>
               </div>
+              {/* 最近博客 */}
               <div className="flex items-center mt-7">
                 <div className="heading-divider"></div>
                 <div className="ml-3 text-base font-semibold">最近博客</div>
               </div>
+              <RecentPosts posts={posts} />
+
+              {/* 分类 */}
               <div className="flex items-center mt-7">
                 <div className="heading-divider"></div>
                 <div className="ml-3 text-base font-semibold">分类</div>
               </div>
+              <Categories posts={posts} />
             </div>
           </aside>
         </div>

@@ -5,7 +5,7 @@ declare namespace NodeJS {
   }
 }
 
-export type ArticlePost = {
+declare type ArticlePost = {
   id: string
   slug: string
   content: string
@@ -18,6 +18,6 @@ export type ArticlePost = {
   }
 }
 
-export type PostsByMonth = {
+declare type PostsByMonth = {
   [key: string]: ArticlePost[]
 }

@@ -5,8 +5,6 @@ import path from 'path'
 import dayjs from 'dayjs'
 import matter from 'gray-matter'
 
-import { ArticlePost, PostsByMonth } from '../../typings'
-
 export async function getBlogPosts(): Promise<{
   posts: ArticlePost[]
   postsByMonth: PostsByMonth

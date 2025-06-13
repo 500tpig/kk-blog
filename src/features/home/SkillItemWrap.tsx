@@ -1,5 +1,6 @@
 import AngularIcon from '@/components/icons/AngularIcon'
 import CssIcon from '@/components/icons/CssIcon'
+import D3Icon from '@/components/icons/D3Icon'
 import EchartsIcon from '@/components/icons/EchartsIcon'
 import ElectronIcon from '@/components/icons/ElectronIcon'
 import HtmlIcon from '@/components/icons/HtmlIcon'
@@ -20,6 +21,7 @@ export default function SkillItemWrap() {
       <SkillItem icon={<EchartsIcon />} name="Echarts" />
       <SkillItem icon={<VueIcon />} name="Vue" />
       <SkillItem icon={<AngularIcon />} name="Angular" />
+      <SkillItem icon={<D3Icon />} name="D3" />
     </div>
   )
 }

@@ -1,5 +1,7 @@
 import { Inter } from 'next/font/google'
 
+import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
+
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import Header from '@/features/layout/Header'
 
@@ -32,10 +34,12 @@ export default function RootLayout({
     <html lang="zh-cn" className={`${inter.variable}`}>
       <body className={`antialiased`}>
         <ThemeProvider>
-          <div className="flex min-h-screen flex-col items-start h-full">
-            <Header />
-            <main className="flex-grow w-full h-full">{children}</main>
-          </div>
+          <SmoothScrollProvider>
+            <div className="flex min-h-screen flex-col items-start h-full">
+              <Header />
+              <main className="flex-grow w-full h-full">{children}</main>
+            </div>
+          </SmoothScrollProvider>
         </ThemeProvider>
       </body>
     </html>

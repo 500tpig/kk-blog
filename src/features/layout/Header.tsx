@@ -3,10 +3,9 @@ import Link from 'next/link'
 import Icon from '@/components/icons/Icon'
 import ThemeToggle from '@/components/ThemeToggle'
 
-import styles from './Header.module.css'
+import OffcanvasTrigger from './OffcanvasTrigger'
 
 import { SearchModal } from '@/features/search'
-
 export default function Header() {
   return (
     <header
@@ -49,17 +48,7 @@ export default function Header() {
             </button>
           </div>
 
-          <div
-            className={`${styles['offcanvas-opener-wrapper']} flex items-center h-8 cursor-pointer`}
-          >
-            <span className={styles['offcanvas-opener']}>
-              <span className={styles.hamburger}>
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
-            </span>
-          </div>
+          <OffcanvasTrigger />
         </div>
       </div>
     </header>

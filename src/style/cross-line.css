@@ -1,15 +1,9 @@
-.popup-search-close {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+.cross-line-wrapper {
   cursor: pointer;
   color: var(--headings-color);
 }
 
-.popup-search-close:after {
+.cross-line-wrapper:after {
   content: '';
   display: block;
   position: absolute;
@@ -25,7 +19,7 @@
   transition: all 0.25s cubic-bezier(0.3, 0, 0.2, 1);
 }
 
-.popup-search-close .cross-line {
+.cross-line-wrapper .cross-line {
   position: absolute;
   width: 100%;
   height: 2px;
@@ -38,23 +32,23 @@
   overflow: hidden;
 }
 
-.popup-search-close .cross-line.top-left {
+.cross-line-wrapper .cross-line.top-left {
   transform: rotate(45deg);
 }
 
-.popup-search-close .cross-line.top-right {
+.cross-line-wrapper .cross-line.top-right {
   transform: rotate(135deg);
 }
 
-.popup-search-close .cross-line.bottom-left {
+.cross-line-wrapper .cross-line.bottom-left {
   transform: rotate(-45deg);
 }
 
-.popup-search-close .cross-line.bottom-right {
+.cross-line-wrapper .cross-line.bottom-right {
   transform: rotate(-135deg);
 }
 
-.popup-search-close .cross-line:before {
+.cross-line-wrapper .cross-line:before {
   content: '';
   display: block;
   position: absolute;
@@ -67,16 +61,16 @@
   transition: all 0.4s cubic-bezier(0.3, 0, 0.2, 1);
 }
 
-.popup-search-close:hover:after {
+.cross-line-wrapper:hover:after {
   transition: all 0.4s cubic-bezier(0.3, 0, 0.2, 1);
   transform: scale(1, 1);
 }
 
-.popup-search-close:hover .cross-line:before {
+.cross-line-wrapper:hover .cross-line:before {
   transform: translate(-101%, 0);
 }
 
-.popup-search-close .close-text {
+.cross-line-wrapper .close-text {
   position: absolute;
   top: 50px;
   left: 50%;
@@ -88,6 +82,6 @@
   transition: 0.4s;
 }
 
-.popup-search-close:hover .close-text {
+.cross-line-wrapper:hover .close-text {
   opacity: 1;
 }

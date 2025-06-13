@@ -2,12 +2,11 @@
 import { useState } from 'react'
 
 import Search from '@/components/icons/Search'
+import CrossLine from '@/components/ui/CrossLine'
 
 import { tagsColors } from '@/utils/tagsColors'
 
 import TagItem from '@/features/blog/TagItem'
-
-
 
 export default function SearchModal() {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,7 +21,7 @@ export default function SearchModal() {
       <div
         className={`
           fixed top-0 left-0 w-screen h-screen bg-[#18181eb3] z-[9998]
-          backdrop-blur-[6px] transition-opacity duration-600
+          backdrop-blur-sm transition-opacity duration-600
           ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}
         `}
         onClick={() => {
@@ -36,18 +35,13 @@ export default function SearchModal() {
           ${isOpen ? 'translate-y-0' : '-translate-y-full'}
         `}
       >
-        <div
-          className="popup-search-close"
+        <CrossLine
           onClick={() => {
             setIsOpen(false)
           }}
-        >
-          <span className="cross-line top-left"></span>
-          <span className="cross-line top-right"></span>
-          <span className="cross-line bottom-left"></span>
-          <span className="cross-line bottom-right"></span>
-          <span className="close-text">Close</span>
-        </div>
+          text="Close"
+          className='absolute top-7.5 left-1/2 -translate-x-1/2 w-12.5 h-12.5'
+        />
 
         <div className="h-full max-w-[700px] flex flex-col items-center justify-center mx-auto my-0">
           <div className="text-xl font-semibold text-headings-color mb-4">

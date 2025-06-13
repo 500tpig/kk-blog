@@ -31,9 +31,9 @@ export function RecentPosts({ posts }: RecentPostsProps) {
               <div className="flex flex-col gap-2">
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="text-body-color hover:text-accent transition-colors duration-300 text-sm hover:underline line-clamp-2 font-semibold"
+                  className="text-sm font-semibold"
                 >
-                  {post.metadata.title}
+                  <span className="heading-title">{post.metadata.title}</span>
                 </Link>
                 <div className="flex items-center gap-2">
                   {post.metadata.tags.split(',').map((tag: string) => {

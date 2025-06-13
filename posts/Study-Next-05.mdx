@@ -1,0 +1,139 @@
+---
+title: 'Next 学习笔记（五）：Next.js 样式方案'
+date: '2025-04-07'
+overview: '在像 Next.js 这样的组件化框架中，样式方案的选择核心是平衡全局一致性与组件级封装。本项目中主要使用了两种主流方案：Tailwind CSS 作为主要的工具类框架，CSS Modules 作为特定场景下的补充。'
+tags: 'Next,Tailwind'
+---
+## Tailwind CSS - Utility-First 的效率
+
+- **核心思想：** 告别传统的手写 CSS 文件，直接在 JSX 中通过原子化的工具类（utility classes）来构建 UI。例如，不用写 `color: red;`，而是直接用 `className="text-red-500"`。这种方式非常适合快速开发，且能通过配置文件轻松保持设计系统的一致性。
+
+- **坑点：冗长的 `className`** 当一个元素的样式很复杂，或者需要根据状态动态切换样式时，`className` 字符串会变得非常长，难以阅读和维护。
+
+  ```tsx
+  // 问题示例：难以阅读的条件样式
+  function Alert({ type, children }) {
+    const baseClasses = 'p-4 rounded-md border';
+    const typeClasses = type === 'success' 
+      ? 'bg-green-100 border-green-400 text-green-700' 
+      : 'bg-red-100 border-red-400 text-red-700';
+  
+    return <div className={`${baseClasses} ${typeClasses}`}>{children}</div>
+  }
+  ```
+
+- **便捷技巧：使用 `clsx` (或类似库) 合并类名** 虽然本项目没有安装，但在实际开发中，强烈推荐使用像 `clsx` 或 `classnames` 这样的库来优雅地处理条件类名。
+
+  ```tsx
+  // 需要先安装：npm install clsx
+  import clsx from 'clsx';
+  
+  function Alert({ type, children }) {
+    const alertClasses = clsx(
+      'p-4', 
+      'rounded-md', 
+      'border',
+      {
+        'bg-green-100 border-green-400 text-green-700': type === 'success',
+        'bg-red-100 border-red-400 text-red-700': type === 'error',
+      }
+    );
+  
+    return <div className={alertClasses}>{children}</div>;
+  }
+  ```
+
+  这样代码的意图和结构都清晰多了。
+
+- **高级用法：使用 `@apply` 提取组件类** 如果某个组件的样式组合非常复杂且被高频复用，可以考虑在 CSS 文件中使用 `@apply` 指令，将一系列工具类组合成一个自定义的语义化类。
+
+  ```CSS
+  /* 在 globals.css 或其他 CSS 文件中 */
+  .btn-primary {
+    @apply px-4 py-2 bg-accent text-white font-semibold rounded-lg shadow-md;
+    @apply hover:bg-opacity-80 transition-colors duration-300;
+  }
+  
+  /* 在 JSX 中使用 */
+  <button className="btn-primary">Click Me</button>
+  ```
+
+  **注意：** 不要滥用 `@apply`。过度使用它会让你回到传统 CSS 的老路，失去工具类带来的灵活性。只在确实需要封装可复用组件时才考虑使用。
+
+## 全局样式与 CSS 变量
+
+- **核心思想：** 一些基础样式必须是全局的，例如 `body` 的字体和背景色、CSS Reset、以及**主题颜色**。这些都应该放在 `src/style/globals.css` 中。
+
+- **最佳实践：通过 CSS 变量实现主题化** 本项目的做法是正确的典范。通过在 `tailwind.css` 中为不同的 `[data-theme]` 属性定义 CSS 变量，可以实现高效、灵活的主题切换。
+
+  ```CSS
+  /* src/style/tailwind.css */
+  :root {
+    --accent-color: #ff5671;
+  }
+  
+  [data-theme='light'] {
+    --body-bg-color: #f5f5fa;
+    --body-color: #474c5d;
+  }
+  [data-theme='dark'] {
+    --body-bg-color: #1f2328;
+    --body-color: #e3e7ed;
+  }
+  ```
+
+  然后在 `globals.css` 中应用这些变量：
+
+  ```CSS
+  /* src/style/globals.css */
+  body {
+    background: var(--body-bg-color);
+    color: var(--body-color);
+  }
+  ```
+
+  在组件中，甚至可以结合 Tailwind 的任意值特性来使用这些变量：
+
+  ```tsx
+  <h1 className="text-[color:var(--accent-color)]">
+    This title uses the accent color.
+  </h1>
+  ```
+
+## CSS Modules - 组件级样式隔离
+
+- **核心思想：** 当一段 CSS 只服务于**某一个组件**，并且不希望它的类名污染到全局时，使用 CSS Modules 是最佳选择。Next.js 对其提供开箱即用的支持。
+
+- **使用方法：** 将样式文件命名为 `[组件名].module.css`。在组件中导入这个文件，Next.js 会在构建时自动为文件中的所有类名生成一个全局唯一的哈希值。
+
+- **示例（参考本项目的 Header 组件）：**
+
+  ```tsx
+  /* Header.module.css */
+  .wrapper {
+    /* ...一些复杂的样式... */
+  }
+  .hamburger span:hover {
+    /* ...一些复杂的伪类或嵌套样式... */
+  }
+  
+  /* Header.tsx */
+  import styles from './Header.module.css';
+  
+  function Header() {
+    // 最终渲染的 class 会是 "Header_wrapper__aB3xY" 之类的唯一值
+    return (
+      <header className={styles.wrapper}> 
+        ...
+      </header>
+    )
+  }
+  ```
+
+- **使用时机：** 当一个组件有非常复杂、独特的样式逻辑，尤其是包含**动画、伪类、或多层嵌套**，用 Tailwind 工具类写起来非常繁琐时，就是使用 CSS Modules 的最佳时机。
+
+## 总结与推荐策略
+
+- **默认使用 Tailwind CSS**：对于 90% 的场景，包括布局、颜色、间距、字体等，直接在 JSX 中使用工具类。
+- **全局样式 `globals.css`**：用于定义应用的基础（`body`, `h1-h6` 等）、CSS 变量（主题化），以及引入外部 CSS（如字体、代码高亮主题）。
+- **CSS Modules `.module.css`**：作为“逃生舱”，用于处理那些用工具类难以表达的、与特定组件强绑定的复杂样式。

@@ -19,7 +19,7 @@ tags: 'Next'
 
 - **代码示例：** 一个典型的 RSC，直接从文件系统读取内容。
 
-  ```TypeScript
+  ```tsx
   // app/post-display/page.tsx
   // 这是一个服务端组件 (因为没有 'use client')
   import fs from 'fs/promises';
@@ -53,7 +53,7 @@ tags: 'Next'
 
 - **代码示例：** 一个需要交互性的计数器按钮，必须是客户端组件。
 
-  ```TypeScript
+  ```tsx
   // components/CounterButton.tsx
   'use client'; // 必须在文件顶部
 
@@ -83,7 +83,7 @@ tags: 'Next'
 
   - **解决方案与示例：** 在服务端组件中，将另一个服务端组件作为 `children` prop 传递给客户端组件。
 
-    ```TypeScript
+    ```tsx
     // 1. 服务端内容组件 (RSC)
     // components/ServerInfo.tsx (无 'use client')
     export default async function ServerInfo() {
@@ -139,7 +139,7 @@ tags: 'Next'
 
   **最佳实践：** **在父级服务端组件中获取数据，然后通过 props 传递给子级客户端组件。**
 
-  ```TypeScript
+  ```tsx
   // app/user-page/page.tsx (RSC)
   import UserProfile from '@/components/UserProfile';
 

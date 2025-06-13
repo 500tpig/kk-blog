@@ -14,7 +14,7 @@ tags: 'React'
 
   **问题示例：** 下面的 `Toolbar` 组件根本没用到 `counter`，但因为 `App` 组件的 `counter` 状态变化导致重渲，`value` 属性被重新创建了一个新对象 `{}`，导致 `Toolbar` 也跟着重渲。
 
-  ```TypeScript
+  ```tsx
   // 问题代码：不必要的重渲染
   import { createContext, useContext, useState } from 'react'
 
@@ -45,7 +45,7 @@ tags: 'React'
 
   **解决方案：拆分 Context，或对 value 进行 `useMemo` 缓存** 这是解决上述性能问题的最佳实践。把“不变的”和“常变的”数据分开。
 
-  ```TypeScript
+  ```tsx
   // 最佳实践：拆分 Context
   const ThemeContext = createContext(null);       // 用于传递 theme
   const ThemeDispatchContext = createContext(null); // 用于传递 setTheme
@@ -78,7 +78,7 @@ tags: 'React'
 
   **问题示例：** 下面的 `options` 对象在 `Parent` 组件每次渲染时都会被重新创建，导致 `useMemo` 的依赖项 `[options]` 每次都变化，缓存永远不会命中。
 
-  ```TypeScript
+  ```tsx
   function Parent() {
     const [text, setText] = useState('');
   
@@ -101,7 +101,7 @@ tags: 'React'
 
   **解决方案：** 将不稳定的依赖项本身也用 `useMemo` 或 `useCallback` 缓存起来。
 
-  ```TypeScript
+  ```tsx
   function Parent() {
     const [text, setText] = useState('');
   
@@ -116,7 +116,7 @@ tags: 'React'
 
   **`useCallback` 的主要场景示例：** `useCallback` 是 `useMemo` 针对函数的语法糖。它的核心用途是配合 `React.memo`。
 
-  ```TypeScript
+  ```tsx
   import { useState, useCallback, memo } from 'react';
   
   // 1.用 React.memo 包裹子组件，让它只有在 props 变化时才重渲
@@ -155,7 +155,7 @@ tags: 'React'
 
 - **实用技巧与示例：创建泛用的 `useFetch` Hook** 这是一个非常实用的自定义 Hook，封装了数据请求的完整逻辑，包括 loading、error 和请求取消。
 
-  ```TypeScript
+  ```tsx
   import { useState, useEffect } from "react";
   
   function useFetch<T>(

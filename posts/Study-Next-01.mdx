@@ -18,7 +18,7 @@ tags: 'Next'
 
   - 示例（来自本项目）：
 
-    ```TypeScript
+    ```tsx
     // src/app/layout.tsx
     export default function RootLayout({ children }: { children: React.ReactNode }) {
       return (
@@ -54,7 +54,7 @@ tags: 'Next'
 
   **示例：** `app/blog/[slug]/page.tsx` 这个文件可以匹配 `/blog/react-hooks`、`/blog/nextjs-intro` 等任意路径。路径中的动态部分（`react-hooks`）会作为 `params` 属性传递给页面组件。
 
-  ```TypeScript
+  ```tsx
   // 在 app/blog/[slug]/page.tsx
   // Next.js 会自动将 URL 中的动态段作为 params 传入
   export default function BlogPostPage({ params }: { params: { slug: string } }) {
@@ -83,7 +83,7 @@ tags: 'Next'
 
   2. 在该目录中创建 `layout.tsx`。
 
-     ```TypeScript
+     ```tsx
      // app/dashboard/layout.tsx
      export default function DashboardLayout({ children }: { children: React.ReactNode }) {
        return (
@@ -117,7 +117,7 @@ App Router 提供了一些特殊文件和目录约定，来简化开发。
 
   **示例：**
 
-  ```TypeScript
+  ```tsx
   // app/blog/loading.tsx
   export default function BlogLoading() {
     // 这是一个简单的骨架屏

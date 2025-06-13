@@ -1,0 +1,194 @@
+---
+title: 'Next 学习笔记（三）：数据获取'
+date: '2025-04-03'
+overview: '在理解了服务端组件（RSC）之后，数据获取和提交的模式也随之发生了根本性的变化。旧的 useEffect + fetch 模式不再是首选，新的模式将数据获取和变更更多地放在服务端处理，以获得更好的性能和更简洁的代码。'
+tags: 'Next'
+---
+
+## 服务端组件中的数据获取
+
+- **核心思想：** 在服务端组件（RSC）中，可以直接使用 `async/await` 语法来获取数据。组件本身可以是一个异步函数。Next.js 扩展了原生的 `fetch` API，使其能自动处理请求的缓存和重新验证。
+
+- **与旧模式的对比：**
+
+  - **旧模式（客户端 `useEffect`）:** 页面 HTML 先加载 -> 页面 JS 再加载 -> `useEffect` 触发 -> `fetch` 开始 -> 渲染数据。这个过程会产生加载瀑布（request waterfall），用户会先看到一个 loading 状态。
+  - **新模式（RSC `async/await`）:** 在服务端，数据获取和页面渲染可以并行发生。最终直接生成包含数据的完整 HTML 发送给浏览器。用户能更快地看到最终内容，对 SEO 也更友好。
+
+- **代码示例：** 一个典型的 RSC 数据获取页面。
+
+  ```tsx
+  // app/posts/page.tsx (这是一个服务端组件)
+  
+  interface Post {
+    id: number;
+    title: string;
+  }
+  
+  // 组件函数本身就是 async
+  export default async function PostsPage() {
+    // 直接 await fetch 调用。就像在写后端代码一样。
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts');
+    const posts: Post[] = await res.json();
+  
+    return (
+      <div>
+        <h1>Posts</h1>
+        <ul>
+          {posts.map(post => (
+            <li key={post.id}>{post.title}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+  ```
+
+## 缓存与重新验证 (Caching & Revalidation)
+
+- **核心概念：** Next.js 扩展后的 `fetch` 会**自动缓存**所有请求。默认情况下，请求结果会被永久缓存，直到你手动让它失效。
+
+- **控制缓存行为：** 可以通过 `fetch` 的第二个参数 `options` 对象来精细控制。
+
+  1. **不缓存（动态渲染）：** 每次请求都重新获取数据，等同于旧的 `getServerSideProps`。
+
+     ```tsx
+     fetch('...', { cache: 'no-store' });
+     ```
+
+  2. **定时重新验证（ISR）：** 获取数据并缓存 `n` 秒。在 `n` 秒后，如果再有新请求，会先返回旧的缓存数据，同时在后台重新请求新数据，更新缓存。
+
+     ```tsx
+     // 缓存 1 小时 (3600 秒)
+     fetch('...', { next: { revalidate: 3600 } });
+     ```
+
+- **按需重新验证（On-Demand Revalidation）：**
+
+  - **问题场景：** 在 CMS（内容管理系统）里发布了一篇新文章，希望博客立即显示出来，而不是等待 `revalidate` 的时间。
+
+  - **解决方案：** `revalidateTag` 和 `revalidatePath`。可以在一个服务端操作（如 API 路由或 Server Action）中调用这些函数，来精确地清除指定标签或路径的缓存。
+
+  - **示例 (`revalidateTag`)**
+
+    1. 在 `fetch` 时给数据打上标签：
+
+       ```tsx
+       fetch('https://my-cms/posts', { next: { tags: ['posts'] } });
+       ```
+
+    2. 创建一个 API 路由，用于接收 CMS 的 webhook 通知：
+
+       ```tsx
+       // app/api/revalidate/route.ts
+       import { NextRequest, NextResponse } from 'next/server';
+       import { revalidateTag } from 'next/cache';
+       
+       export async function POST(request: NextRequest) {
+         const tag = request.nextUrl.searchParams.get('tag');
+       
+         if (!tag) {
+           return NextResponse.json({ error: 'Tag is required' }, { status: 400 });
+         }
+       
+         revalidateTag(tag); // 清除所有带 'posts' 标签的缓存
+         return NextResponse.json({ revalidated: true, now: Date.now() });
+       }
+       ```
+
+    现在，只要请求 `POST /api/revalidate?tag=posts`，所有相关页面的缓存就会立即失效，下次访问时会获取最新数据。
+
+## Server Actions: 服务端的数据变更
+
+- **核心概念：** Server Action 是一些**只能在服务端运行**的函数，但它可以被客户端组件直接调用（例如，通过表单提交或按钮点击），而**无需手动创建 API 路由**。这是对数据变更（mutations）流程的巨大简化。
+
+- **如何定义：** 在一个异步函数内部或一个独立文件的顶部加上 `'use server';` 指令。
+
+- **示例：表单提交**
+
+  ```tsx
+  // 1. 在 Server Component 中定义 Action
+  // app/page.tsx
+  import { revalidatePath } from 'next/cache';
+  
+  export default function Page() {
+    async function createItem(formData: FormData) {
+      'use server'; // 声明这是一个 Server Action
+  
+      const itemName = formData.get('itemName') as string;
+      // ... 假设这里是保存到数据库的逻辑
+      await db.items.create({ name: itemName });
+  
+      // 清除当前页面的缓存，以便显示新添加的项
+      revalidatePath('/');
+    }
+  
+    return (
+      <form action={createItem}>
+        <input type="text" name="itemName" />
+        <button type="submit">Add Item</button>
+      </form>
+    );
+  }
+  ```
+
+  在这个例子中，当表单提交时，`createItem` 函数会在服务端执行，完成数据库操作，然后刷新页面数据，整个过程没有写一行 `fetch` 或 API 路由代码。
+
+## 表单交互增强：`useActionState`
+
+- **问题场景：** 当 Server Action 运行时，如何处理加载状态（pending），以及如何从服务端返回成功或错误消息并显示在界面上？
+
+- **解决方案：** 使用 React 19 新增的 `useActionState` Hook（它取代了旧的 `useFormState`）。
+
+- **代码示例：带状态反馈的表单**
+
+  1. 修改 Action 函数
+
+     Action 函数现在可以接收前一个状态，并返回新的状态。
+
+     ```tsx
+     // lib/actions.ts
+     'use server';
+     
+     export async function updateUser(previousState: any, formData: FormData) {
+       const username = formData.get('username') as string;
+     
+       try {
+         await db.user.update({ name: username });
+         revalidatePath('/profile');
+         return { status: 'success', message: 'Profile updated successfully!' };
+       } catch (e) {
+         return { status: 'error', message: 'Failed to update profile.' };
+       }
+     }
+     ```
+
+  2. 在客户端组件中使用 `useActionState`
+
+     ```tsx
+     // components/ProfileForm.tsx
+     'use client';
+     
+     import { useActionState } from 'react';
+     import { updateUser } from '@/lib/actions';
+     
+     const initialState = { status: '', message: '' };
+     
+     export function ProfileForm() {
+       // useActionState 返回 [state, formAction, isPending]
+       const [state, formAction, isPending] = useActionState(updateUser, initialState);
+     
+       return (
+         <form action={formAction}>
+           <input type="text" name="username" defaultValue="KK" />
+           <button type="submit" disabled={isPending}>
+             {isPending ? 'Saving...' : 'Save'}
+           </button>
+     
+           {state.status === 'success' && <p className="text-green-500">{state.message}</p>}
+           {state.status === 'error' && <p className="text-red-500">{state.message}</p>}
+         </form>
+       );
+     }
+     ```
+
+  现在，这个表单拥有了自动的 pending 状态管理和来自服务端的状态消息反馈，而无需手写任何 `useState` 或 `fetch` 逻辑。

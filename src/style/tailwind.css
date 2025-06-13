@@ -6,7 +6,8 @@
 :root {
   --site-width: 1400px;
   --sidebar-width: 24.375rem;
-  --tag-color-next: #40b1ff;
+  --tag-color-next: #ff885d;
+  --tag-color-tailwind: #40b1ff;
   --accent-color: #ff5671;
   --term-color: #26bda7;
 }

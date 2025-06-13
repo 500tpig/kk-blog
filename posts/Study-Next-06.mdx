@@ -1,0 +1,157 @@
+---
+title: 'Next 学习笔记（六）：前端性能优化'
+date: '2025-04-10'
+overview: '前端性能优化：代码分割、图片优化与渲染策略。一个加载缓慢、体验卡顿的网站是无法留住用户的。Next.js 提供了一系列开箱即用的工具来解决性能问题，这篇笔记将重点记录其中最关键的几个。'
+tags: 'Next'
+---
+
+## 代码分割 (Code Splitting)
+
+- **核心思想：** 不再将所有 JavaScript 代码打包成一个巨大的文件一次性发送给用户，而是将其拆分成多个小块（chunks）。浏览器只在需要时才加载对应的代码块。这极大地缩减了首页的加载体积，提升了首次访问速度（First Load JS）。
+
+- **Next.js 的自动代码分割：** 这是 Next.js 最大的性能优势之一，而且是**自动完成**的。
+
+  - **按路由分割：** 当访问网站首页时，只会加载首页所需的 JS。当导航到 `/blog` 页面时，才会去加载 `/blog` 页面对应的 JS chunk。路由系统天然地成为了代码分割的边界。
+
+- **手动代码分割与 `next/dynamic`：**
+
+  - **问题场景：** 页面中有一个功能（比如一个富文本编辑器、一个复杂的图表库、或者一个只在管理员点击时才出现的弹窗），它依赖了一个非常大的第三方库。我们不希望这个库的代码在一开始就打包进页面的主 JS 文件中，即使用户可能永远都不会触发这个功能。
+
+  - **解决方案：** 使用 `next/dynamic` 来动态导入组件。
+
+  - **代码示例：动态加载一个重量级图表组件**
+
+    1. 创建一个重量级组件：
+
+       ```tsx
+       // components/HeavyChartComponent.tsx
+       // 假设这个库非常大
+       import { MassiveChartingLibrary } from 'massive-charting-library'
+
+       export default function HeavyChartComponent({ data }) {
+         // ... 渲染图表的逻辑
+         return <MassiveChartingLibrary data={data} />
+       }
+       ```
+
+    2. 在需要使用它的页面中，动态导入：
+
+       ```tsx
+       // app/dashboard/page.tsx
+       'use client'; // 需要交互，所以是客户端组件
+
+       import { useState } from 'react';
+       import dynamic from 'next/dynamic';
+
+       // 使用 dynamic() 导入组件
+       const HeavyChart = dynamic(
+         () => import('@/components/HeavyChartComponent'),
+         {
+           // 可选：在组件加载时显示一个 loading 状态
+           loading: () => <p>正在加载图表...</p>,
+           // 可选：禁用服务端渲染。对于只在浏览器环境运行的库（如使用了 window 对象）非常有用
+           ssr: false,
+         }
+       );
+
+       export default function DashboardPage() {
+         const [showChart, setShowChart] = useState(false);
+
+         return (
+           <div>
+             <button onClick={() => setShowChart(true)}>显示图表</button>
+
+             {/* 只有当 showChart 为 true 时，浏览器才会去下载 HeavyChartComponent 的 JS 代码 */}
+             {showChart && <HeavyChart data={...} />}
+           </div>
+         );
+       }
+       ```
+
+    这样，`massive-charting-library` 的代码只有在用户确实需要看图表时才会被加载，极大地优化了初始页面性能。
+
+## 图片优化与 `next/image`
+
+- **问题场景：** 未经优化的图片是拖慢网站速度的头号元凶。手动压缩、裁剪、转换格式（如 WebP）的工作流非常繁琐。
+
+- **解决方案：** **永远使用** Next.js 内置的 `<Image>` 组件，而不是原生的 `<img>` 标签。
+
+- **`<Image>` 组件的核心优势：**
+
+  1. **自动调整尺寸：** 根据设备屏幕大小，自动提供最优尺寸的图片，避免在手机上加载桌面端的大图。
+  2. **自动转换格式：** 如果浏览器支持，会自动将图片转换为更小、更高效的 WebP 格式。
+  3. **自动懒加载：** 图片默认懒加载，只有当它滚动到视口附近时，才会开始加载。
+  4. **防止布局抖动：** 强制要求提供 `width` 和 `height` 属性，预留出图片空间，避免图片加载时页面元素“跳动”（Layout Shift），这对核心 Web 指标（Core Web Vitals）至关重要。
+
+- **代码示例：**
+
+  ```tsx
+  import Image from 'next/image'
+  // 1. 导入本地图片，Next.js 会自动识别宽高
+  import authorAvatar from '/public/avatar.jpg'
+
+  function MyComponent() {
+    return (
+      <div>
+        {/* 使用本地导入的图片 */}
+        <Image
+          src={authorAvatar}
+          alt="作者头像"
+          className="rounded-full"
+          placeholder="blur" // 提供一个优雅的模糊占位效果
+        />
+
+        {/* 使用外部 URL 的图片 */}
+        <Image
+          src="https://images.unsplash.com/photo-123"
+          alt="来自 Unsplash 的图片"
+          width={800} // 外部图片必须手动指定宽高
+          height={600}
+          className="rounded-lg"
+          priority // 如果是首屏关键图片，用 priority 属性让它优先加载
+        />
+      </div>
+    )
+  }
+  ```
+
+#### 渲染策略：静态 vs. 动态
+
+- **核心思想：** App Router 的默认目标是尽可能地**静态化**，因为静态页面可以被部署到 CDN，从离用户最近的边缘节点提供服务，速度最快。
+
+- **静态渲染 (Static Rendering) - 默认行为**
+
+  - **如何工作：** 在构建时 (`npm run build`)，Next.js 会预渲染页面为 HTML 文件。
+  - **触发条件：** 一个路由**默认就是静态渲染的**，前提是它不包含任何动态函数，并且其内部的所有 `fetch` 请求都被缓存。我们之前用的 `generateStaticParams` 就是为了让动态路由也能实现静态渲染。
+
+- **动态渲染 (Dynamic Rendering)**
+
+  - **如何工作：** 在用户**请求时**，在服务器上实时渲染页面。这对于个性化内容是必须的，但速度比静态渲染慢。
+
+  - 触发条件：
+
+    当一个页面或其子组件中使用了以下任意一项时，整个路由就会切换到动态渲染模式：
+
+    1. **动态函数：** 使用了 `cookies()` 或 `headers()` 从 `next/headers` 中导入的函数。
+    2. **URL 搜索参数：** 使用了 `searchParams` prop。
+    3. **无缓存的数据请求：** `fetch` 请求中设置了 `{ cache: 'no-store' }`。
+
+- **示例：一个需要读取 Cookie 的动态页面**
+
+  ```tsx
+  // app/dashboard/page.tsx
+  import { cookies } from 'next/headers' // 使用这个函数会让页面变成动态渲染
+
+  export default function DashboardPage() {
+    const sessionCookie = cookies().get('session-id')
+
+    if (!sessionCookie) {
+      return <p>请先登录。</p>
+    }
+
+    // 根据 cookie 显示个性化内容
+    return <p>欢迎回来, 用户 {sessionCookie.value}!</p>
+  }
+  ```
+
+  因为这个页面需要实时读取用户的 Cookie，所以它必须在每次请求时在服务器上动态渲染。

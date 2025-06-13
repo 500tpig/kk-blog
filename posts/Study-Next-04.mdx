@@ -1,0 +1,169 @@
+---
+title: 'Next 学习笔记（四）：路由高级技巧'
+date: '2025-04-05'
+overview: '在掌握了 App Router 的基础路由和 RSC 的概念后，这篇笔记将深入一些更高级的路由技巧。这些技巧能解决在构建复杂应用时遇到的具体问题，如动态页面的静态化、精细的加载与错误状态，以及实现像“弹窗路由”这样的高级 UI 模式。'
+tags: 'Next'
+---
+## 动态路由与 `generateStaticParams`
+
+- **背景回顾：** 在第四篇笔记中，我们了解了动态路由，例如 `app/blog/[slug]/page.tsx` 可以匹配任何 `/blog/...` 形式的 URL。
+
+- **问题场景：** 在生产构建时 (`npm run build`)，Next.js 如何提前知道存在哪些 `slug`，以便将这些页面预渲染成静态 HTML 呢？如果它不知道，那么每次用户访问这些页面时，都需要在服务器上进行实时渲染（SSR），这会慢一些。
+
+- **解决方案：`generateStaticParams`** 这是一个需要从动态路由的 `page.tsx` 或 `layout.tsx` 中导出的特殊函数。它在**构建时**运行，其作用就是告诉 Next.js：“嘿，对于 `[slug]` 这个动态段，这里是所有可能的值”。Next.js 随后会遍历这个列表，为每一个路径生成静态页面。
+
+- **代码示例（应用于本项目）：** 在我们的博客项目中，可以利用 `getBlogPosts` 函数来生成所有文章的 `slug` 列表。
+
+  ```tsx
+  // src/app/blog/[slug]/page.tsx
+  
+  import { getBlogPosts } from '@/utils/getBlogPosts';
+  // ... 其他 imports
+  
+  // 1. 实现 generateStaticParams
+  export async function generateStaticParams() {
+    const { posts } = await getBlogPosts();
+  
+    // 必须返回一个对象数组，每个对象都包含动态路由段的键 (slug)
+    return posts.map(post => ({
+      slug: post.slug,
+    }));
+  }
+  
+  // 2. 页面组件照常使用 params
+  export default async function Page({ params }: { params: { slug: string } }) {
+    const { slug } = params;
+    const post = /* ...根据 slug 查找文章的逻辑... */;
+    // ...
+  }
+  ```
+
+  这样配置后，`npm run build` 时，Next.js 会为 `posts` 目录下的每一篇文章都生成一个静态的 HTML 文件，极大地提升了生产环境的加载速度。
+
+## `loading.tsx` 和 `error.tsx` 的精细化控制
+
+- **核心概念：位置决定作用域** 这两个文件的作用范围由它们在目录树中的位置决定。它们只会包裹**同一层级以及子层级**的 `page.tsx`，而不会影响到父级的 `layout.tsx`。这使得创建精细化的局部加载和错误状态成为可能。
+
+- **示例：为文章页添加独立的加载状态** 假设我们的根布局 `app/layout.tsx` 中有固定的页头和侧边栏。我们不希望在加载文章时，整个页面都显示加载中，而是只在主内容区显示。
+
+  1. 在 `app/blog/[slug]/` 目录下创建一个 `loading.tsx` 文件。
+
+     ```tsx
+     // app/blog/[slug]/loading.tsx
+     export default function PostLoadingSkeleton() {
+       return (
+         <div className="prose dark:prose-invert">
+           {/* 一个简单的文章骨架屏 */}
+           <div className="animate-pulse">
+             <div className="h-10 bg-gray-300 rounded w-3/4 mb-6 dark:bg-gray-700"></div>
+             <div className="space-y-3">
+               <div className="h-4 bg-gray-300 rounded w-full dark:bg-gray-700"></div>
+               <div className="h-4 bg-gray-300 rounded w-5/6 dark:bg-gray-700"></div>
+               <div className="h-4 bg-gray-300 rounded w-full dark:bg-gray-700"></div>
+             </div>
+           </div>
+         </div>
+       );
+     }
+     ```
+
+  现在，当用户导航到一篇新文章时，`Header` 和 `Sidebar` 会保持不变，只有文章内容区域会立刻显示这个骨架屏，直到服务端组件渲染完成，用户体验非常流畅。
+
+- **`error.tsx` 的进阶用法** `error.tsx` 组件会接收两个 props：`error` 对象和 `reset` 函数，后者可以尝试重新渲染该路由段。
+
+  ```tsx
+  // app/blog/[slug]/error.tsx
+  'use client'; // 错误组件必须是客户端组件
+  
+  import { useEffect } from 'react';
+  
+  export default function PostError({
+    error,
+    reset,
+  }: {
+    error: Error & { digest?: string };
+    reset: () => void;
+  }) {
+    useEffect(() => {
+      // 可以将错误上报给监控服务，如 Sentry
+      console.error(error);
+    }, [error]);
+  
+    return (
+      <div className="p-8 bg-red-100 border border-red-400 rounded text-red-700">
+        <h2 className="font-bold">加载文章失败！</h2>
+        <p>{error.message}</p>
+        <button
+          onClick={() => reset()} // 点击按钮尝试重新渲染
+          className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+          重试
+        </button>
+      </div>
+    );
+  }
+  ```
+
+## 并行路由与拦截路由 (高级模式)
+
+- **并行路由 (`@folder`)**
+
+  - **问题场景**：希望在同一个视图中，独立渲染和展示两个或多个页面。例如，一个页面同时展示 `@team` 团队列表和 `@analytics` 分析图表。
+
+  - **解决方案**：使用 `@` 符号来定义“插槽 (Slot)”。
+
+  - 示例： 在 `app/layout.tsx`中定义插槽：
+
+    ```tsx
+    // app/layout.tsx
+    export default function Layout({ children, team, analytics }) {
+      return (
+        <html>
+          <body>
+            {children} {/* 对应 app/page.tsx */}
+            <div className="flex">
+              {team}      {/* 对应 app/@team/page.tsx */}
+              {analytics} {/* 对应 app/@analytics/page.tsx */}
+            </div>
+          </body>
+        </html>
+      );
+    }
+    ```
+
+    然后创建对应的文件夹 `app/@team/page.tsx`
+
+     和 `app/@analytics/page.tsx`。Next.js 会将这两个页面的内容分别渲染到 `team`
+
+     和 `analytics`这两个 prop 中。
+
+- **拦截路由 (`(.)`, `(..)`): 实现“弹窗路由”**
+
+  - **问题场景**：在一个图片墙页面 (`/gallery`) 点击一张图片，希望以弹窗 (Modal) 的形式展示图片详情，同时 URL 变为该图片的独立页面地址 (`/photo/123`)。这样，如果用户直接刷新，看到的是独立的图片页面，而不是带弹窗的图片墙。
+
+  - **解决方案**：拦截路由可以在不离开当前页面的情况下，渲染另一个路由的 UI。
+
+  - 示例：
+
+    1. 文件结构:
+
+       ```ABAP
+       app/
+       ├── gallery/
+       │   ├── @modal/              <-- 并行路由插槽
+       │   │   └── (..)photo/       <-- 拦截路由
+       │   │       └── [id]/
+       │   │           └── page.tsx <-- 弹窗里显示的内容
+       │   └── page.tsx             <-- 图片墙页面
+       └── photo/
+           └── [id]/
+               └── page.tsx         <-- 独立的图片详情页
+       ```
+
+    2. 在 `gallery/layout.tsx` 中同时渲染 `children` (图片墙) 和 `modal` (插槽)。
+
+    3. 当用户在 `/gallery` 页面点击一个指向 `/photo/123` 的 `<Link>` 时，Next.js 不会直接跳转，而是会**拦截**这个导航，并将 `app/gallery/@modal/(..)photo/[id]/page.tsx` 的内容渲染到 `@modal` 插槽中。
+
+    4. 如果用户直接访问或刷新 `/photo/123`，则会正常渲染 `app/photo/[id]/page.tsx`。
+
+  这个模式虽然复杂，但能以非常优雅的方式实现现代 Web 应用中常见的“模态框路由”功能。

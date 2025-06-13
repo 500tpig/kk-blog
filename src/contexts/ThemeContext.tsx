@@ -1,52 +1,85 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+
+import Cookies from 'js-cookie'
 
 type ThemeType = 'light' | 'dark'
 
-const ThemeContext = createContext<{
+interface ThemeContextType {
   theme: ThemeType
   setTheme: (theme: ThemeType) => void
-  toggleTheme: () => void
-}>({
-  theme: 'light',
-  setTheme: () => {},
-  toggleTheme: () => {}
-})
-
-const getInitialTheme = (): ThemeType => {
-  // 在服务器端始终返回亮色主题
-  if (typeof window === 'undefined') return 'light'
-
-  // 获取本地存储的主题设置
-  const savedTheme = localStorage.getItem('theme') as ThemeType
-  if (savedTheme) return savedTheme
-
-  // 如果没有保存的主题，使用系统偏好
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  toggleTheme: (event?: React.MouseEvent<HTMLDivElement>) => void
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<ThemeType>('light')
+export const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
-  // 在客户端挂载后设置实际的主题
+// 这个辅助函数用于从 cookie 中安全地获取初始主题
+export const getThemeFromCookie = (): ThemeType => {
+  if (typeof window === 'undefined') {
+    return 'light' // 服务器端默认值
+  }
+  const cookieTheme = Cookies.get('theme') as ThemeType
+  return cookieTheme && ['light', 'dark'].includes(cookieTheme) ? cookieTheme : 'light'
+}
+
+export function ThemeProvider({
+  children,
+  initialTheme
+}: {
+  children: React.ReactNode
+  initialTheme: ThemeType
+}) {
+  const [theme, setThemeState] = useState<ThemeType>(initialTheme)
+
+  // 监听 initialTheme 的变化，确保来自服务器的值能够同步到 state
   useEffect(() => {
-    setTheme(getInitialTheme())
+    setThemeState(initialTheme)
+  }, [initialTheme])
+
+  // 设置主题，并将其保存到 cookie
+  const setTheme = useCallback((newTheme: ThemeType) => {
+    setThemeState(newTheme)
+    document.documentElement.dataset.theme = newTheme
+    Cookies.set('theme', newTheme, { expires: 365, path: '/' })
   }, [])
 
-  const toggleTheme = () => {
-    setTheme(prev => (prev === 'light' ? 'dark' : 'light'))
-  }
+  // 切换主题，并应用平滑过渡动画
+  const toggleTheme = useCallback(
+    async (event?: React.MouseEvent<HTMLDivElement>) => {
+      const newTheme = theme === 'light' ? 'dark' : 'light'
 
-  // 保存主题偏好到 localStorage
-  useEffect(() => {
-    localStorage.setItem('theme', theme)
-  }, [theme])
+      // 如果浏览器不支持 View Transitions API，则直接切换
+      if (!document.startViewTransition || !event) {
+        setTheme(newTheme)
+        return
+      }
 
-  // 处理主题变化
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme
-  }, [theme])
+      const { clientX: x, clientY: y } = event
+      const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))
+
+      const transition = document.startViewTransition(() => {
+        setTheme(newTheme)
+      })
+
+      await transition.ready
+
+      const clipPath = [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`]
+
+      document.documentElement.animate(
+        {
+          clipPath: newTheme === 'dark' ? clipPath : [...clipPath].reverse()
+        },
+        {
+          duration: 500,
+          easing: 'ease-in',
+          pseudoElement:
+            newTheme === 'dark' ? '::view-transition-new(root)' : '::view-transition-old(root)'
+        }
+      )
+    },
+    [theme, setTheme]
+  )
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
@@ -55,7 +88,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-// 自定义 hook 用于轻松访问主题
+// 自定义 hook 保持不变
 export function useTheme() {
   const context = useContext(ThemeContext)
   if (context === undefined) {

@@ -1,4 +1,5 @@
 import { Inter } from 'next/font/google'
+import { cookies } from 'next/headers'
 
 import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
 
@@ -24,16 +25,21 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png'
   }
 }
-
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // 在服务器端读取 cookie
+  const cookieStore = await cookies()
+  const themeCookie = cookieStore.get('theme')
+  const initialTheme = themeCookie?.value === 'dark' ? 'dark' : 'light'
   return (
-    <html lang="zh-cn" className={`${inter.variable}`}>
-      <body className={`antialiased`}>
-        <ThemeProvider>
+    // 将主题直接应用到 <html> 标签
+    <html lang="zh-cn" className={`${inter.variable}`} data-theme={initialTheme}>
+      <body className="antialiased">
+        {/* 将 initialTheme 传递给 ThemeProvider */}
+        <ThemeProvider initialTheme={initialTheme}>
           <SmoothScrollProvider>
             <div className="flex min-h-screen flex-col items-start h-full">
               <Header />

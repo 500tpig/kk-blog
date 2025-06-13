@@ -17,7 +17,7 @@ export default function Switch({
 }: SwitchProps) {
   return (
     <div 
-      className={`w-12 h-[22px] rounded-full bg-[#9fa8b52e] relative ${className}`}
+      className={`w-12 h-[22px] rounded-full bg-[#9fa8b52e] relative cursor-pointer ${className}`}
       onClick={onChange}
     >
       <div

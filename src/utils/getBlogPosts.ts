@@ -5,6 +5,8 @@ import path from 'path'
 import dayjs from 'dayjs'
 import matter from 'gray-matter'
 
+import { tagsColors } from './tagsColors'
+
 export async function getBlogPosts(): Promise<{
   posts: ArticlePost[]
   postsByMonth: PostsByMonth
@@ -27,7 +29,9 @@ export async function getBlogPosts(): Promise<{
       return {
         id: filename,
         slug: filename.replace(/\.(mdx|md)$/, ''),
+        title: data.title,
         content,
+        color: tagsColors[data.tags.split(',')[0].trim() as keyof typeof tagsColors],
         metadata: {
           title: data.title,
           date: data.date,

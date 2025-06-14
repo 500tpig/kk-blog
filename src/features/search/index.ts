@@ -1,4 +1,2 @@
-import SearchModal from './components/SearchModal'
-import SearchResults from './components/SearchResults'
-
-export { SearchModal, SearchResults }
+export { default as SearchModal } from './components/SearchModal'
+export { default as SearchInput } from './components/SearchInput'

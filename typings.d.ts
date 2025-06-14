@@ -9,6 +9,8 @@ declare type ArticlePost = {
   id: string
   slug: string
   content: string
+  color: string
+  title: string
   metadata: {
     title: string
     date: string

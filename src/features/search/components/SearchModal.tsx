@@ -1,15 +1,24 @@
 'use client'
 import { useState } from 'react'
 
+import { useRouter } from 'next/navigation'
+
 import Search from '@/components/icons/Search'
 import CrossLine from '@/components/ui/CrossLine'
 
 import { tagsColors } from '@/utils/tagsColors'
 
+import SearchInput from './SearchInput'
+
 import TagItem from '@/features/blog/TagItem'
 
 export default function SearchModal() {
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
+  const handleSearch = (query: string) => {
+    router.push(`/search?q=${query}`)
+    setIsOpen(false)
+  }
   return (
     <>
       <Search
@@ -47,15 +56,7 @@ export default function SearchModal() {
           <div className="text-xl font-semibold text-headings-color mb-4">
             输入你想要查询的内容，Enter 或点击查询按钮
           </div>
-          <div className="w-full relative">
-            <input
-              className="w-full py-3.5 pl-5 pr-12 m-0 border border-[#d9dfe7] bg-white text-body-color text-sm dark:bg-[#2a3036] dark:border-[#3f454b] rounded-full box-border focus:border-[#84858a] outline-none transition duration-300"
-              placeholder=""
-            />
-            <button className="w-10 h-10 absolute right-1 top-[50%] -translate-y-1/2 py-0 bg-accent flex items-center justify-center rounded-full">
-              <Search className="w-6 cursor-pointer text-white" />
-            </button>
-          </div>
+          <SearchInput onSearch={handleSearch} />
           <div className="w-full mt-5 flex justify-center items-center gap-5">
             <div className="text-base font-semibold">常用搜索:</div>
             <div className="flex gap-4">

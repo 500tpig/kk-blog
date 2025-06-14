@@ -1,40 +1,39 @@
-import fs from 'fs/promises'
-import path from 'path'
 
-import matter from 'gray-matter'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { getBlogPosts } from '@/utils/getBlogPosts'
 import { tagsColors } from '@/utils/tagsColors'
 
 import TagItem from '@/features/blog/TagItem'
 
-
 export default async function BlogCards() {
-  const postsDirectory = path.join(process.cwd(), 'posts')
-  const filenames = await fs.readdir(postsDirectory)
+  // const postsDirectory = path.join(process.cwd(), 'posts')
+  // const filenames = await fs.readdir(postsDirectory)
 
-  const posts = await Promise.all(
-    filenames.map(async filename => {
-      const filePath = path.join(postsDirectory, filename)
-      const fileContent = await fs.readFile(filePath, 'utf-8')
-      const { data } = matter(fileContent)
+  // const posts = await Promise.all(
+  //   filenames.map(async filename => {
+  //     const filePath = path.join(postsDirectory, filename)
+  //     const fileContent = await fs.readFile(filePath, 'utf-8')
+  //     const { data } = matter(fileContent)
 
-      // 获取第一个标签作为主标签
-      const primaryTag = data.tags.split(',')[0].trim()
+  //     // 获取第一个标签作为主标签
+  //     const primaryTag = data.tags.split(',')[0].trim()
 
-      return {
-        slug: filename.replace(/\.mdx$/, ''),
-        title: data.title,
-        date: data.date,
-        overview: data.overview,
-        tags: data.tags.split(',').map((t: string) => t.trim()),
-        color: tagsColors[primaryTag as keyof typeof tagsColors]
-      }
-    })
-  )
+  //     return {
+  //       slug: filename.replace(/\.mdx$/, ''),
+  //       title: data.title,
+  //       date: data.date,
+  //       overview: data.overview,
+  //       tags: data.tags.split(',').map((t: string) => t.trim()),
+  //       color: tagsColors[primaryTag as keyof typeof tagsColors],
+  //       readingTime: data.readingTime
+  //     }
+  //   })
+  // )
 
-  posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  // posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  const { posts } = await getBlogPosts()
 
   return (
     <div className="flex flex-col gap-10">
@@ -72,7 +71,7 @@ export default async function BlogCards() {
                   </div>
                 </div>
                 <div className="text-sm text-body-color">
-                  {new Date(post.date).toLocaleDateString('en-US', {
+                  {new Date(post.metadata.date).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
@@ -80,18 +79,21 @@ export default async function BlogCards() {
                 </div>
               </div>
 
-              <p className="mt-2 text-body-color line-clamp-3 leading-relaxed">{post.overview}</p>
+              <p className="mt-2 text-body-color line-clamp-3 leading-relaxed">{post.metadata.overview}</p>
             </div>
             <div className="w-full md:w-36 flex-shrink-0">
               <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-36" />
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-dashed border-divider flex flex-wrap gap-2">
-            {post.tags.map((tag: keyof typeof tagsColors) => {
-              const tagColor = tagsColors[tag]
-              return <TagItem key={tag} tag={tag} tagColor={tagColor} />
-            })}
+          <div className="mt-6 pt-4 border-t border-dashed border-divider flex justify-between">
+            <div className="flex flex-wrap gap-2">
+              {post.metadata.tags.split(',').map((tag: string) => {
+                const tagColor = tagsColors[tag as keyof typeof tagsColors]
+                return <TagItem key={tag} tag={tag} tagColor={tagColor} />
+              })}
+            </div>
+            <div>{post.metadata.readingTime && <span>{post.metadata.readingTime} Min Read</span>}</div>
           </div>
         </article>
       ))}

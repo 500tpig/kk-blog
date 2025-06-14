@@ -20,7 +20,7 @@ export default function Header() {
           <Icon className="h-12" />
         </Link>
         <div className="flex-1 flex items-center justify-end gap-5">
-          {/* <ul className="gap-1 text-base text-headings-color-light flex h-8 flex-1 justify-end mr-5">
+          <ul className="gap-1 text-base text-headings-color-light flex h-8 flex-1 justify-end mr-5">
             <li className="menu-item relative h-full flex items-center">
               <Link href="/" className="hover:text-primary-500 transition px-3 relative z-10">
                 首页
@@ -36,7 +36,7 @@ export default function Header() {
                 关于
               </Link>
             </li>
-          </ul> */}
+          </ul>
           {/* 右侧功能区 */}
           <div className="flex items-center gap-4 h-8">
             <SearchModal />

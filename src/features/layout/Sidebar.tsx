@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 
 import EmailIcon from '@/components/icons/EmailIcon'
@@ -8,6 +10,8 @@ import QQIcon from '@/components/icons/QQIcon'
 import WeChatIcon from '@/components/icons/WeChatIcon'
 import Divider from '@/components/ui/Divider'
 import ProgressBar from '@/components/ui/ProgressBar'
+
+import { useScroll } from '@/contexts/ScrollContext'
 
 const list = [
   {
@@ -20,9 +24,15 @@ const list = [
     icon: <WeChatIcon className="w-6" />
   }
 ]
+
 export default function Sidebar() {
+  const { isScrolled } = useScroll()
   return (
-    <div className="w-[30%] sticky top-[10px] flex-shrink-0">
+    <div
+      className={`w-sidebar-width sticky flex-shrink-0 transition-all duration-600 ${
+        isScrolled ? 'top-[86px]' : 'top-[10px]'
+      }`}
+    >
       <div className="p-[30px] bg-card-bg rounded-xl" style={{ boxShadow: '0 2px 20px #0e0e130d' }}>
         <div className="max-w-[100%] flex flex-col gap-y-5">
           <div className="p-[6px] border-[#7F818540] border-dotted border-2 rounded-xl profile-image-container">

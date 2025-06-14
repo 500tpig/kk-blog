@@ -3,8 +3,10 @@ import { cookies } from 'next/headers'
 
 import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
 
+import { ScrollProvider } from '@/contexts/ScrollContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
-import Header from '@/features/layout/Header'
+import StaticHeader from '@/features/layout/StaticHeader'
+import StickyHeader from '@/features/layout/StickyHeader'
 
 import type { Metadata } from 'next'
 
@@ -40,12 +42,15 @@ export default async function RootLayout({
       <body className="antialiased">
         {/* 将 initialTheme 传递给 ThemeProvider */}
         <ThemeProvider initialTheme={initialTheme}>
-          <SmoothScrollProvider>
-            <div className="flex min-h-screen flex-col items-start h-full">
-              <Header />
-              <main className="flex-grow w-full h-full">{children}</main>
-            </div>
-          </SmoothScrollProvider>
+          <ScrollProvider>
+            <SmoothScrollProvider>
+              <div className="flex min-h-screen flex-col items-start h-full">
+                <StaticHeader />
+                <StickyHeader />
+                <main className="flex-grow w-full h-full">{children}</main>
+              </div>
+            </SmoothScrollProvider>
+          </ScrollProvider>
         </ThemeProvider>
       </body>
     </html>

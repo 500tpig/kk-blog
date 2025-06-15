@@ -15,13 +15,13 @@ import { useScroll } from '@/contexts/ScrollContext'
 
 const list = [
   {
-    icon: <GithubIcon className="w-6" />
+    icon: <GithubIcon className="w-6 [filter:drop-shadow(3px_2px_1px_#00000020)]" />
   },
   {
-    icon: <QQIcon className="w-6" />
+    icon: <QQIcon className="w-6 [filter:drop-shadow(3px_2px_1px_#00000020)]" />
   },
   {
-    icon: <WeChatIcon className="w-6" />
+    icon: <WeChatIcon className="w-6 [filter:drop-shadow(3px_2px_1px_#00000020)]" />
   }
 ]
 

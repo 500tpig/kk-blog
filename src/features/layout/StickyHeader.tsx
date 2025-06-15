@@ -15,9 +15,9 @@ export default function StickyHeader() {
   const { isScrolled } = useScroll()
 
   const socialLinks = [
-    { href: 'https://github.com/your-profile', icon: <GithubIcon className="w-5" /> },
-    { href: '#', icon: <QQIcon className="w-5" /> },
-    { href: '#', icon: <WeChatIcon className="w-5" /> }
+    { href: 'https://github.com/your-profile', icon: <GithubIcon className="w-5 [filter:drop-shadow(3px_2px_1px_#00000020)]" /> },
+    { href: '#', icon: <QQIcon className="w-5 [filter:drop-shadow(3px_2px_1px_#00000020)]" /> },
+    { href: '#', icon: <WeChatIcon className="w-5 [filter:drop-shadow(3px_2px_1px_#00000020)]" /> }
   ]
 
   return (

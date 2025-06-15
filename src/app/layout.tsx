@@ -5,6 +5,7 @@ import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
 
 import { ScrollProvider } from '@/contexts/ScrollContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
+import Footer from '@/features/layout/Footer'
 import StaticHeader from '@/features/layout/StaticHeader'
 import StickyHeader from '@/features/layout/StickyHeader'
 
@@ -48,6 +49,7 @@ export default async function RootLayout({
                 <StaticHeader />
                 <StickyHeader />
                 <main className="flex-grow w-full h-full">{children}</main>
+                <Footer />
               </div>
             </SmoothScrollProvider>
           </ScrollProvider>

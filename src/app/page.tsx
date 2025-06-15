@@ -29,9 +29,7 @@ export default function page() {
             <div className="heading-divider"></div>
             <h3 className="ml-3 text-xl">My Blogs</h3>
           </div>
-          <div>
-            <BlogCards />
-          </div>
+          <BlogCards />
         </div>
       </div>
       <ScrollToTopButton triggerElementId="my-skills-section" />

@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation'
 
+import { ScrollToTopButton } from '@/components/ui/ScrollToTopButton'
+
 import { getBlogPosts } from '@/utils/getBlogPosts'
 
 import { CategoriesData } from '@/features/blog/CategoriesData'
@@ -40,15 +42,21 @@ export default async function Page({ params }: { params: Params }) {
   }
 
   return (
-    <div className="prose dark:prose-invert w-full flex flex-col items-start">
-      <div className="w-content-width mx-auto">
-        <PostHeader metadata={metadata} />
-        <div className="flex gap-7 w-full items-start">
-          <PostContent content={content} headings={headings} overview={metadata.overview} />
-
-          <PostSidebar recentPostsSlot={<RecentPostsData />} categoriesSlot={<CategoriesData />} />
+    <>
+      <div className="prose dark:prose-invert w-full flex flex-col items-start">
+        <div className="w-content-width mx-auto">
+          <PostHeader metadata={metadata} />
+          <div id="blog-content-area" className="flex gap-7 w-full items-start">
+            <PostContent content={content} headings={headings} overview={metadata.overview} />
+            <PostSidebar
+              recentPostsSlot={<RecentPostsData />}
+              categoriesSlot={<CategoriesData />}
+            />
+          </div>
         </div>
       </div>
-    </div>
+
+      <ScrollToTopButton triggerElementId="blog-content-area" />
+    </>
   )
 }

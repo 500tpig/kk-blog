@@ -1,12 +1,16 @@
-import SearchResultHeader from '@/features/search/SearchResultHeader'
-interface SearchPageProps {
-  searchParams?: {
-    q?: string
-  }
-}
+// import { getBlogPosts } from '@/utils/getBlogPosts'
 
-export default async function page({ searchParams }: SearchPageProps) {
+import SearchResultHeader from '@/features/search/SearchResultHeader'
+type Params = Promise<{
+  q?: string
+}>
+
+export default async function page({ searchParams }: { searchParams: Params }) {
   const query = (await searchParams)?.q || ''
+  // const { posts } = await getBlogPosts()
+  // const filteredPosts = posts.filter(post =>
+  //   post.metadata.title.toLowerCase().includes(query.toLowerCase())
+  // )
   return (
     <div className="prose dark:prose-invert w-full flex flex-col items-start">
       <div className="w-content-width mx-auto">

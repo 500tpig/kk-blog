@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 import Search from '@/components/icons/Search'
@@ -49,7 +50,7 @@ export default function SearchModal() {
             setIsOpen(false)
           }}
           text="Close"
-          className='absolute top-7.5 left-1/2 -translate-x-1/2 w-12.5 h-12.5'
+          className="absolute top-7.5 left-1/2 -translate-x-1/2 w-12.5 h-12.5"
         />
 
         <div className="h-full max-w-[700px] flex flex-col items-center justify-center mx-auto my-0">
@@ -60,8 +61,22 @@ export default function SearchModal() {
           <div className="w-full mt-5 flex justify-center items-center gap-5">
             <div className="text-base font-semibold">常用搜索:</div>
             <div className="flex gap-4">
-              <TagItem tag="React" tagColor={tagsColors.React} />
-              <TagItem tag="JavaScript" tagColor={tagsColors.JavaScript} />
+              <Link
+                href="/search?q=React"
+                onClick={() => {
+                  setIsOpen(false)
+                }}
+              >
+                <TagItem tag="React" tagColor={tagsColors.React} />
+              </Link>
+              <Link
+                href="/search?q=JavaScript"
+                onClick={() => {
+                  setIsOpen(false)
+                }}
+              >
+                <TagItem tag="JavaScript" tagColor={tagsColors.JavaScript} />
+              </Link>
             </div>
           </div>
         </div>

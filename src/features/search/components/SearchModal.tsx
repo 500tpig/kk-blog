@@ -70,12 +70,12 @@ export default function SearchModal() {
                 <TagItem tag="React" tagColor={tagsColors.React} />
               </Link>
               <Link
-                href="/search?q=JavaScript"
+                href="/search?q=Next"
                 onClick={() => {
                   setIsOpen(false)
                 }}
               >
-                <TagItem tag="JavaScript" tagColor={tagsColors.JavaScript} />
+                <TagItem tag="Next" tagColor={tagsColors.Next} />
               </Link>
             </div>
           </div>

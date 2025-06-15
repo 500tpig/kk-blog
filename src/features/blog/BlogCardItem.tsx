@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+import ClockIcon from '@/components/icons/ClockIcon'
+
 import { tagsColors } from '@/utils/tagsColors'
 
 import TagItem from '@/features/blog/TagItem'
@@ -9,7 +11,6 @@ export default function BlogCardItem({ post }: { post: ArticlePost }) {
   return (
     <article
       key={post.slug}
-      // 使用内联样式设置左边框颜色
       style={{
         borderLeftWidth: '5px',
         borderLeftColor: post.color,
@@ -64,7 +65,12 @@ export default function BlogCardItem({ post }: { post: ArticlePost }) {
             return <TagItem key={tag} tag={tag} tagColor={tagColor} />
           })}
         </div>
-        <div>{post.metadata.readingTime && <span>{post.metadata.readingTime} Min Read</span>}</div>
+        {post.metadata.readingTime && (
+          <div className="flex items-center gap-1.5 text-xs font-medium">
+            <ClockIcon />
+            <div>{post.metadata.readingTime} Min Read</div>
+          </div>
+        )}
       </div>
     </article>
   )

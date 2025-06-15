@@ -28,7 +28,6 @@ export function ScrollToTopButton({ triggerElementId, offsetTop = 0 }: ScrollToT
     }
 
     const handleScroll = () => {
-      // --- 可见性逻辑 (保持不变) ---
       const triggerPoint = triggerElement.offsetTop + offsetTop
       if (window.scrollY > triggerPoint) {
         setIsVisible(true)
@@ -36,7 +35,6 @@ export function ScrollToTopButton({ triggerElementId, offsetTop = 0 }: ScrollToT
         setIsVisible(false)
       }
 
-      // ✨ 新增：计算滚动进度的逻辑 ---
       const totalScrollableHeight =
         document.documentElement.scrollHeight - document.documentElement.clientHeight
 
@@ -49,7 +47,6 @@ export function ScrollToTopButton({ triggerElementId, offsetTop = 0 }: ScrollToT
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
-    // 初始化调用一次，确保刷新时状态正确
     handleScroll()
 
     return () => {
@@ -64,7 +61,6 @@ export function ScrollToTopButton({ triggerElementId, offsetTop = 0 }: ScrollToT
     })
   }
 
-  // JSX 保持不变
   return (
     <div
       className={`fixed right-5 bottom-1/2 translate-y-1/2 z-50 

@@ -1,3 +1,6 @@
+import { CategoriesData } from '@/features/blog/CategoriesData'
+import { PostSidebar } from '@/features/blog/PostSidebar'
+import { RecentPostsData } from '@/features/blog/RecentPostsData'
 import SearchResultHeader from '@/features/search/SearchResultHeader'
 import { SearchResultsList } from '@/features/search/SearchResultsList'
 
@@ -5,21 +8,13 @@ type Params = Promise<{
   q?: string
 }>
 
-// 定义从 API 返回的 Post 类型
-interface SearchResultPost {
-  slug: string
-  title: string
-  overview: string
-  tags: string[]
-}
-
 // 定义 API 响应的类型
 interface ApiResponse {
-  posts: SearchResultPost[]
+  posts: ArticlePost[]
 }
 
 // 帮助函数：用于安全地 fetch 数据
-async function fetchSearchResults(query: string): Promise<SearchResultPost[]> {
+async function fetchSearchResults(query: string): Promise<ArticlePost[]> {
   if (!query) {
     return []
   }
@@ -47,7 +42,6 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
   const query = (await searchParams)?.q || ''
   const results = await fetchSearchResults(query)
   const resultCount = results.length
-
   return (
     <div className="w-full flex flex-col items-center px-4">
       <div className="w-content-width max-w-full mx-auto">
@@ -62,8 +56,9 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
 
         {/* 搜索结果列表 */}
         <div className="mt-10">
-          <div className="w-content-width max-w-full mx-auto">
+          <div className="w-content-width max-w-full mx-auto flex gap-7.5">
             <SearchResultsList results={results} query={query} />
+            <PostSidebar recentPostsSlot={<RecentPostsData />} categoriesSlot={<CategoriesData />} />
           </div>
         </div>
       </div>

@@ -18,7 +18,7 @@ export function SearchResultsList({ results, query }: SearchResultsListProps) {
   }
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 flex-1 p-2.5">
       {results.map(post => (
         <BlogCardItem key={post.slug} post={post} />
       ))}

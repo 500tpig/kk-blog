@@ -22,8 +22,7 @@ export default function TopicSidebar({ onClose }: { onClose: () => void }) {
   const toggleSection = (title: string) => {
     // 实现手风琴效果：只展开一个
     setOpenSections(prev => ({
-      // 如果你想同时展开多个，可以去掉下面的这部分，只保留 `[title]: !prev[title]`
-      // ...Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
+      ...Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
       [title]: !prev[title]
     }))
   }
@@ -35,7 +34,6 @@ export default function TopicSidebar({ onClose }: { onClose: () => void }) {
         const isSectionActive = section.items.some(item => item.href === pathname)
 
         return (
-
           <div key={section.title} className="py-1">
             {/* 可点击的栏目标题 */}
             <div

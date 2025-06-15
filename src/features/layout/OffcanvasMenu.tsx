@@ -29,10 +29,9 @@ export default function OffcanvasMenu({ isOpen, onClose }: OffcanvasMenuProps) {
       {/* 抽屉面板 */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-85 bg-card-bg shadow-xl z-50 px-4 py-12
-          transform transition-transform duration-300 ease-in-out
-          flex flex-col
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          fixed top-0 left-0 h-full w-90 bg-card-bg shadow-xl z-50 px-4 py-12
+          transform transition-transform duration-600  cubic-bezier(.86,0,.07,1)
+          flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
         {/* 抽屉头部 */}

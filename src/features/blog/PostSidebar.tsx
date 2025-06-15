@@ -1,16 +1,17 @@
 'use client'
 
+import { ReactNode } from 'react'
+
 import Image from 'next/image'
 
 import { useScroll } from '@/contexts/ScrollContext'
-import { Categories } from '@/features/blog/Categories'
-import { RecentPosts } from '@/features/blog/RecentPosts'
 
 interface PostSidebarProps {
-  posts: ArticlePost[]
+  recentPostsSlot: ReactNode
+  categoriesSlot: ReactNode
 }
 
-export function PostSidebar({ posts }: PostSidebarProps) {
+export function PostSidebar({ recentPostsSlot, categoriesSlot }: PostSidebarProps) {
   const { isScrolled } = useScroll()
 
   return (
@@ -31,19 +32,18 @@ export function PostSidebar({ posts }: PostSidebarProps) {
             <span>苦命前端开发</span>
           </div>
         </div>
-        {/* 最近博客 */}
+
         <div className="flex items-center mt-7">
           <div className="heading-divider"></div>
           <div className="ml-3 text-base font-semibold">最近博客</div>
         </div>
-        <RecentPosts posts={posts} />
+        {recentPostsSlot}
 
-        {/* 分类 */}
         <div className="flex items-center mt-7">
           <div className="heading-divider"></div>
           <div className="ml-3 text-base font-semibold">分类</div>
         </div>
-        <Categories posts={posts} />
+        {categoriesSlot}
       </div>
     </aside>
   )

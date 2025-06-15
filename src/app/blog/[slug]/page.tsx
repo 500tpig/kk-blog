@@ -2,9 +2,11 @@ import { notFound } from 'next/navigation'
 
 import { getBlogPosts } from '@/utils/getBlogPosts'
 
+import { CategoriesData } from '@/features/blog/CategoriesData'
 import { PostContent } from '@/features/blog/PostContent'
 import { PostHeader } from '@/features/blog/PostHeader'
 import { PostSidebar } from '@/features/blog/PostSidebar'
+import { RecentPostsData } from '@/features/blog/RecentPostsData'
 import { Heading } from '@/features/blog/TableOfContents'
 import { slugify } from '@/lib/utils'
 
@@ -27,8 +29,6 @@ export default async function Page({ params }: { params: Params }) {
   }
 
   const { content, metadata } = post
-
-  // 解析标题的逻辑保持在页面级组件中，因为它需要访问原始 content
   const headingRegex = /^(#{1,3})\s+(.*)/gm
   let match
   const headings: Heading[] = []
@@ -45,7 +45,8 @@ export default async function Page({ params }: { params: Params }) {
         <PostHeader metadata={metadata} />
         <div className="flex gap-7 w-full items-start">
           <PostContent content={content} headings={headings} overview={metadata.overview} />
-          <PostSidebar posts={posts} />
+
+          <PostSidebar recentPostsSlot={<RecentPostsData />} categoriesSlot={<CategoriesData />} />
         </div>
       </div>
     </div>

@@ -23,7 +23,7 @@ export function PostSidebar({ recentPostsSlot, categoriesSlot }: PostSidebarProp
       <div className="p-7 rounded-xl bg-card-bg" style={{ boxShadow: '0 2px 20px #0e0e130d' }}>
         <div className="flex justify-center w-full">
           <div className="rounded-full w-[7.5rem] h-[7.5rem] overflow-hidden relative border-4 border-[#C6D8FF99]">
-            <Image src="/avatar.jpg" alt="avatar" fill className="object-cover" />
+            <Image src="/avatar.jpg" alt="avatar" sizes="100%" fill className="object-cover" />
           </div>
         </div>
         <div className="text-center mt-2.5">

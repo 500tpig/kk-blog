@@ -14,7 +14,7 @@ export function Categories({ tags }: CategoriesProps) {
       {tags.map(tag => {
         const tagColor = tagsColors[tag as keyof typeof tagsColors] || 'var(--accent-color)';
         return (
-          <Link key={tag} href={`/tags/${tag}`}>
+          <Link key={tag} href={`/search?q=${tag}`}>
             <TagItem tag={tag} tagColor={tagColor} />
           </Link>
         );

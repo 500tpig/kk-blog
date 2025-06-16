@@ -6,33 +6,38 @@ import { HeroSection } from '@/features/home/HeroSection'
 import { PersonalServices } from '@/features/home/PersonalServices'
 import { SkillsMarquee } from '@/features/home/SkillsMarquee'
 import Sidebar from '@/features/layout/Sidebar'
+
 export default function page() {
   const years = new Date().getFullYear() - 2021 + 1
 
   return (
     <>
-      <div className="flex gap-x-12.5 items-start w-content-width py-[50px] relative mx-auto">
+      <div className="flex flex-col lg:flex-row gap-x-12.5 items-start w-content-width py-[20px] lg:py-[50px] relative mx-auto px-2.5 lg:px-0">
         <Sidebar />
 
-        <div className="p-[10px] flex flex-col gap-y-5 flex-1 overflow-x-hidden">
+        <div className="p-2.5 lg:p-[10px] flex flex-col gap-y-5 flex-1 w-full overflow-hidden">
           <HeroSection experienceYears={years} />
-          <Divider className="my-11" />
+          <Divider className="my-8 lg:my-11" />
           <div id="my-skills-section" className="flex items-center">
             <div className="heading-divider"></div>
-            <h3 className="ml-3 text-xl">My Skills</h3>
+            <h3 className="ml-3 text-lg lg:text-xl">My Skills</h3>
           </div>
           <PersonalServices />
           <SkillsMarquee />
-          <Divider className="my-11" />
+          <Divider className="my-8 lg:my-11" />
 
           <div className="flex items-center">
             <div className="heading-divider"></div>
-            <h3 className="ml-3 text-xl">My Blogs</h3>
+            <h3 className="ml-3 text-lg lg:text-xl">My Blogs</h3>
           </div>
           <BlogCards />
         </div>
       </div>
-      <ScrollToTopButton triggerElementId="my-skills-section" />
+
+      {/* 桌面端 "回到顶部" 按钮，移动端隐藏 */}
+      <div className="hidden lg:flex">
+        <ScrollToTopButton triggerElementId="my-skills-section" />
+      </div>
     </>
   )
 }

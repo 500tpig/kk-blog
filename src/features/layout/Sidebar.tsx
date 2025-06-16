@@ -28,8 +28,8 @@ const list = [
 export default function Sidebar() {
   const { isScrolled } = useScroll()
   return (
-    <div
-      className={`w-sidebar-width sticky flex-shrink-0 transition-all duration-600 ${
+    <aside
+      className={`w-full p-2.5 lg:w-[34%] flex-shrink-0 lg:sticky transition-all duration-600 mb-10 lg:mb-0 ${
         isScrolled ? 'top-[86px]' : 'top-[10px]'
       }`}
     >
@@ -44,6 +44,7 @@ export default function Sidebar() {
                   width={400}
                   height={500}
                   style={{ width: '100%', height: 'auto' }}
+                  priority
                 />
                 <div className="image-animation">
                   <Image
@@ -54,10 +55,6 @@ export default function Sidebar() {
                     style={{ width: '100%', height: 'auto' }}
                   />
                 </div>
-                {/* <div className="bg-card-bg absolute p-5 m-5 bottom-0 left-0 right-0 rounded-xl z-10 business-card opacity-100">
-                  <div className="text-lg font-semibold"></div>
-                  <div className="text-sm">前端开发工程师</div>
-                </div> */}
               </div>
             </div>
           </div>
@@ -105,6 +102,6 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-    </div>
+    </aside>
   )
 }

@@ -11,7 +11,9 @@ export function ActionButtons() {
     <div className="flex items-center gap-4 h-8">
       <SearchModal />
       <ThemeToggle />
-      <OffcanvasTrigger />
+      <div className="lg:hidden">
+        <OffcanvasTrigger />
+      </div>
     </div>
   )
 }

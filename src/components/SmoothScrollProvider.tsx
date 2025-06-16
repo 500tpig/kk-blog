@@ -27,7 +27,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
 
     // 初始化 Lenis
     const lenis = new Lenis({
-      lerp: 0.3, // 缓动因子，值越小滚动感觉越“粘”
+      lerp: 0.4, // 缓动因子，值越小滚动感觉越“粘”
       smoothWheel: true
     })
     lenisRef.current = lenis

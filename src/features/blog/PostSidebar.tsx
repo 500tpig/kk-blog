@@ -16,7 +16,7 @@ export function PostSidebar({ recentPostsSlot, categoriesSlot }: PostSidebarProp
 
   return (
     <aside
-      className={`p-2.5 pb-0 w-sidebar-width sticky transition-all duration-500 ease-in-out ${
+      className={`p-2.5 pb-0 w-full lg:w-sidebar-width lg:sticky transition-all duration-500 ease-in-out ${
         isScrolled ? 'top-[86px]' : 'top-[20px]'
       }`}
     >

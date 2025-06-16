@@ -43,10 +43,13 @@ export default async function Page({ params }: { params: Params }) {
 
   return (
     <>
-      <div className="prose dark:prose-invert w-full flex flex-col items-start">
-        <div className="w-content-width mx-auto">
+      <div className="prose dark:prose-invert w-full flex flex-col items-start px-4 lg:px-0">
+        <div className="w-content-width mx-auto max-w-full">
           <PostHeader metadata={metadata} />
-          <div id="blog-content-area" className="flex gap-7 w-full items-start">
+          <div
+            id="blog-content-area"
+            className="flex flex-col lg:flex-row gap-7 w-full items-start"
+          >
             <PostContent content={content} headings={headings} overview={metadata.overview} />
             <PostSidebar
               recentPostsSlot={<RecentPostsData />}

@@ -4,10 +4,7 @@ import { RecentPosts } from './RecentPosts'
 
 export async function RecentPostsData() {
   const { posts } = await getBlogPosts()
-
-  const recentPosts = posts
-    .sort((a, b) => new Date(b.metadata.date).getTime() - new Date(a.metadata.date).getTime())
-    .slice(0, 4)
-
+  // 直接截取前4篇最新的文章即可
+  const recentPosts = posts.slice(0, 4)
   return <RecentPosts posts={recentPosts} />
 }

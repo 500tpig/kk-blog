@@ -1,4 +1,4 @@
-import { cache } from 'react' 
+import { cache } from 'react'
 
 import fs from 'fs'
 import path from 'path'
@@ -13,12 +13,11 @@ export const getBlogPosts = cache(
     posts: ArticlePost[]
     postsByMonth: PostsByMonth
   }> => {
-    // console.log('Fetching and processing all blog posts...') // 可以加这行来验证函数是否被重复执行
     const postsDirectory = path.join(process.cwd(), 'posts')
-    let filenames = await fs.promises.readdir(postsDirectory)
-    filenames = filenames.reverse()
+    const filenames = await fs.promises.readdir(postsDirectory)
 
-    const posts = await Promise.all(
+    // 1. 先解析所有文章，获取其元数据
+    let posts = await Promise.all(
       filenames.map(async filename => {
         const fullPath = path.join(postsDirectory, filename)
         const fileContents = await fs.promises.readFile(fullPath, 'utf8')
@@ -28,7 +27,6 @@ export const getBlogPosts = cache(
         const wordsPerMinute = 200
         const readingTime = Math.ceil(wordCount / wordsPerMinute)
 
-        // 确保返回的数据结构符合 ArticlePost 类型
         return {
           id: filename,
           slug: filename.replace(/\.(mdx|md)$/, ''),
@@ -46,7 +44,11 @@ export const getBlogPosts = cache(
       })
     )
 
-    // 按月分组，得到时间线的数据
+    posts.sort((a, b) => {
+      // 将日期字符串转换为 Date 对象进行比较
+      return new Date(b.metadata.date).getTime() - new Date(a.metadata.date).getTime()
+    })
+
     const postsByMonth: PostsByMonth = posts.reduce((acc: PostsByMonth, post: ArticlePost) => {
       const month = dayjs(post.metadata.date).format('YYYY-MM-DD').slice(0, 7)
       if (!acc[month]) {

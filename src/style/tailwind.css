@@ -6,10 +6,17 @@
 :root {
   --site-width: 1400px;
   --sidebar-width: 24.375rem;
-  --tag-color-next: #ff885d;
-  --tag-color-tailwind: #40b1ff;
+
   --accent-color: #ff5671;
   --term-color: #26bda7;
+
+  --tag-color-blue: #40b1ff; /* 适用于: React, Tailwind CSS */
+  --tag-color-green: #42b883; /* 适用于: Vue, Node.js */
+  --tag-color-orange: #ff885d; /* 适用于: Next.js, HTML */
+  --tag-color-yellow: #f7df1e; /* 适用于: JavaScript */
+  --tag-color-red: #dd0031; /* 适用于: Angular */
+  --tag-color-purple: #9b59b6; /* 适用于: Electron, D3.js */
+  --tag-color-gray: #7f8c8d; /* 适用于: 通用, 其他 */
 }
 
 @theme inline {

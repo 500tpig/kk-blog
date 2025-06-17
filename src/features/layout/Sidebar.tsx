@@ -60,17 +60,17 @@ export default function Sidebar() {
           </div>
           <div>
             <div className="text-xs font-bold">
-              <span>Web Designer</span>
+              <span>前端开发</span>
             </div>
-            <ProgressBar value={80} color="#FF9F28" bgColor="#F5E7DA" />
+            <ProgressBar value={50} color="#FF9F28" bgColor="#F5E7DA" />
           </div>
           <div>
-            <div className="text-xs font-bold">Seo Marketing</div>
-            <ProgressBar value={60} color="#43D9BE" bgColor="#CDF4EF" />
+            <div className="text-xs font-bold">SEO优化（以后就会了）</div>
+            <ProgressBar value={10} color="#43D9BE" bgColor="#CDF4EF" />
           </div>
           <div>
-            <div className="text-xs font-bold">Graphic Design</div>
-            <ProgressBar value={50} color="#8282FF" bgColor="#DEE2FF" />
+            <div className="text-xs font-bold">图像开发（一点点）</div>
+            <ProgressBar value={30} color="#8282FF" bgColor="#DEE2FF" />
           </div>
           <div className="mt-[30px] text-sm">
             <div className="flex flex-col gap-y-[14px]">

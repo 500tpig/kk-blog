@@ -8,7 +8,7 @@ import { SkillsMarquee } from '@/features/home/SkillsMarquee'
 import Sidebar from '@/features/layout/Sidebar'
 
 export default function page() {
-  const years = new Date().getFullYear() - 2021 + 1
+  const years = new Date().getFullYear() - 2021
 
   return (
     <>

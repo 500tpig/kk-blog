@@ -1,3 +1,4 @@
+
 import AngularIcon from '@/components/icons/AngularIcon'
 import CssIcon from '@/components/icons/CssIcon'
 import D3Icon from '@/components/icons/D3Icon'
@@ -13,15 +14,16 @@ import SkillItem from '@/features/home/SkillItem'
 export default function SkillItemWrap() {
   return (
     <div className="flex marquee-wrap gap-[2.1875rem]">
-      <SkillItem icon={<HtmlIcon />} name="Html" />
-      <SkillItem icon={<CssIcon />} name="CSS" />
-      <SkillItem icon={<TSIcon />} name="Typescript" />
+      {/* 你的核心技术栈 */}
+      <SkillItem icon={<VueIcon />} name="Vue" />
       <SkillItem icon={<ReactIcon />} name="React" />
+      <SkillItem icon={<TSIcon />} name="Typescript" />
       <SkillItem icon={<ElectronIcon />} name="Electron" />
       <SkillItem icon={<EchartsIcon />} name="Echarts" />
-      <SkillItem icon={<VueIcon />} name="Vue" />
+      <SkillItem icon={<D3Icon />} name="D3.js" />
       <SkillItem icon={<AngularIcon />} name="Angular" />
-      <SkillItem icon={<D3Icon />} name="D3" />
+      <SkillItem icon={<HtmlIcon />} name="HTML" />
+      <SkillItem icon={<CssIcon />} name="CSS" />
     </div>
   )
 }

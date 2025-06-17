@@ -1,3 +1,4 @@
+'use client'
 import ThemeToggle from '@/components/ThemeToggle'
 
 import OffcanvasTrigger from './OffcanvasTrigger'

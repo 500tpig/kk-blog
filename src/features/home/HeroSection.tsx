@@ -15,14 +15,16 @@ export function HeroSection({ experienceYears }: HeroSectionProps) {
         <div>{experienceYears}年经验</div>
       </div>
       <h2 className="text-4xl font-semibold">
-        <span className="bg-gradient-to-r from-[#4382D6] via-[#9C69CA] to-[#E64480] bg-clip-text text-transparent mr-2">
-          Creative & Curious Person
+        <span>这里是</span>
+        <span className="bg-gradient-to-r from-[#4382D6] via-[#9C69CA] to-[#E64480] bg-clip-text text-transparent mx-2">
+          想要退休的前端开发
         </span>
-        <span>who has a lot of Experience</span>
+        <span>的小破站</span>
       </h2>
       <div className="text-[#6A6D85] text-base">
-        With many years in web development, I acquired extensive experience working on projects
-        across multiple industries and technologies. Let me show you my best creations.
+        (AI总结)拥有 {experienceYears}
+        年从业经验，我对技术充满热情，具备从前端、后端到客户端和部署的完整项目经验（不，我不会后端）。尤其擅长
+        Vue 和 Electron，并能快速上手 React/Next.js 等新技术栈，致力于创造卓越的用户体验。
       </div>
     </>
   )

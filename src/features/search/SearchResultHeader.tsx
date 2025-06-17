@@ -17,8 +17,8 @@ export default function SearchResultHeader({ query }: { query: string }) {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="">搜索结果</div>
-      <div className="text-3xl flex gap-2.5 mt-1">
+      <div className="text-base sm:text-lg text-body-color">搜索结果</div>
+      <div className="text-2xl sm:text-3xl flex gap-2.5 mt-1">
         {isTag(query) ? (
           <>
             <div className="text-accent">#</div>
@@ -28,7 +28,7 @@ export default function SearchResultHeader({ query }: { query: string }) {
           <div>&quot;{query}&quot;</div>
         )}
       </div>
-      <div className="w-[40.625rem] mt-6">
+      <div className="w-full max-w-[40.625rem] mt-6 px-4 sm:px-0">
         <SearchInput onSearch={handleSearch} />
       </div>
     </div>

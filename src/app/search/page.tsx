@@ -43,25 +43,37 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
   const results = await fetchSearchResults(query)
   const resultCount = results.length
   return (
-    <div className="w-full flex flex-col items-center px-4">
-      <div className="w-content-width max-w-full mx-auto">
-        <div className="my-15 py-7.5 rounded-xl bg-card-bg">
-          <SearchResultHeader query={query} />
-          <div className="flex justify-center">
-            <div className="mt-6 bg-[#3234400a] dark:bg-soft-white py-1 px-4 font-medium text-sm rounded-full">
-              {resultCount} 条结果
+    <main className="min-h-screen bg-body-bg">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto">
+          {/* 搜索头部 */}
+          <div className="bg-card-bg rounded-xl shadow-lg overflow-hidden">
+            <div className="p-6 sm:p-8">
+              <SearchResultHeader query={query} />
+              <div className="flex justify-center">
+                <div className="mt-6 bg-[#3234400a] dark:bg-soft-white py-1.5 px-4 font-medium text-sm rounded-full">
+                  {resultCount} 条结果
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 搜索结果列表 */}
+          <div className="mt-8 sm:mt-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-8">
+                <SearchResultsList results={results} query={query} />
+              </div>
+              <div className="lg:col-span-4">
+                <PostSidebar 
+                  recentPostsSlot={<RecentPostsData />} 
+                  categoriesSlot={<CategoriesData />} 
+                />
+              </div>
             </div>
           </div>
         </div>
-
-        {/* 搜索结果列表 */}
-        <div className="mt-10">
-          <div className="w-content-width max-w-full mx-auto flex gap-7.5">
-            <SearchResultsList results={results} query={query} />
-            <PostSidebar recentPostsSlot={<RecentPostsData />} categoriesSlot={<CategoriesData />} />
-          </div>
-        </div>
       </div>
-    </div>
+    </main>
   )
 }

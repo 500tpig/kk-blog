@@ -81,11 +81,11 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
           return (
             <li key={heading.id + heading.text} className="flex flex-col">
               <div className="flex">
-                <span className="mr-2 font-semibold">{currentNumbering}.</span>
+                <span className="mr-2 font-semibold text-sm sm:text-base">{currentNumbering}.</span>
                 <a
                   href={`#${heading.id}`}
                   onClick={e => handleLinkClick(e, heading.id)}
-                  className="text-body-color hover:text-accent transition-colors block hover:underline"
+                  className="text-sm sm:text-base text-body-color hover:text-accent transition-colors block hover:underline"
                 >
                   {cleanedText}
                 </a>
@@ -108,17 +108,16 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
   }
 
   return (
-    <div
-      className="mt-3.5 mb-7.5 dark:bg-body-bg bg-card-bg w-full rounded-b-xl"
-      style={{ boxShadow: '0 2px 4px #0e0e131f' }}
-    >
+    <div className="w-full rounded-xl overflow-hidden shadow-md">
       <div
-        className="flex items-center justify-between bg-accent p-4 py-3 cursor-pointer rounded-t-xl"
+        className="flex items-center justify-between bg-accent p-4 cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="text-white text-lg font-semibold">目录</div>
+        <div className="text-white text-base sm:text-lg font-semibold">目录</div>
         <DownOutlined
-          className={`w-5 h-5 text-white transition-transform duration-300 ${isOpen ? '' : '-rotate-90'}`}
+          className={`w-5 h-5 text-white transition-transform duration-300 ${
+            isOpen ? '' : '-rotate-90'
+          }`}
         />
       </div>
       <div
@@ -127,7 +126,9 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
         }`}
       >
         <div className="overflow-hidden">
-          <div className="p-5">{renderHeadings(nestedHeadings)}</div>
+          <div className="p-4 sm:p-6 bg-card-bg">
+            {renderHeadings(nestedHeadings)}
+          </div>
         </div>
       </div>
     </div>

@@ -42,24 +42,24 @@ export default async function Page({ params }: { params: Params }) {
   }
 
   return (
-    <>
-      <div className="prose dark:prose-invert w-full flex flex-col items-start px-4 lg:px-0">
-        <div className="w-content-width mx-auto max-w-full">
+    <main className="min-h-screen bg-body-bg">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto">
           <PostHeader metadata={metadata} />
-          <div
-            id="blog-content-area"
-            className="flex flex-col lg:flex-row gap-7 w-full items-start"
-          >
-            <PostContent content={content} headings={headings} overview={metadata.overview} />
-            <PostSidebar
-              recentPostsSlot={<RecentPostsData />}
-              categoriesSlot={<CategoriesData />}
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
+            <div className="lg:col-span-8">
+              <PostContent content={content} headings={headings} overview={metadata.overview} />
+            </div>
+            <div className="lg:col-span-4">
+              <PostSidebar
+                recentPostsSlot={<RecentPostsData />}
+                categoriesSlot={<CategoriesData />}
+              />
+            </div>
           </div>
         </div>
       </div>
-
       <ScrollToTopButton triggerElementId="blog-content-area" />
-    </>
+    </main>
   )
 }

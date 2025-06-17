@@ -1,5 +1,3 @@
-'use client'
-
 import ThemeToggle from '@/components/ThemeToggle'
 
 import OffcanvasTrigger from './OffcanvasTrigger'
@@ -10,10 +8,10 @@ export function ActionButtons() {
   return (
     <div className="flex items-center gap-4 h-8">
       <SearchModal />
-      <ThemeToggle />
-      <div className="lg:hidden">
-        <OffcanvasTrigger />
+      <div className="hidden lg:block">
+        <ThemeToggle />
       </div>
+      <OffcanvasTrigger />
     </div>
   )
 }

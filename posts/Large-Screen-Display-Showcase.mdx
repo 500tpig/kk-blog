@@ -40,3 +40,124 @@ tags: 'Vue,Echarts'
   />
   您的浏览器不支持视频播放。
 </video>
+
+---
+
+### 技术实现与原理
+
+这三个大屏项目均基于一个统一的 <a href="https://github.com/500tpig/base-screen" target="_blank">`base-screen`</a> 项目框架进行开发。
+
+#### **核心技术栈**
+
+- **框架:** Vue.js
+- **图表库:** Echarts
+- **UI 库:** Element UI
+- **构建工具:** Vue CLI
+
+#### **适配性方案**
+
+大屏开发的核心痛点之一就是屏幕分辨率的适配。`base-screen` 项目采用了一套主流且高效的 `rem + transform: scale` 组合方案，确保了在不同尺寸屏幕上的视觉一致性。
+
+**实现原理:**
+
+1.  **REM 动态适配:**
+
+    - **原理:** `rem` 单位是相对于根元素 `<html>` 的 `font-size` 进行计算的。我们通过 JS 动态修改根元素的 `font-size`，就能实现所有使用 `rem` 作为单位的元素尺寸的等比缩放。
+    - **代码实例:** 项目的入口文件 `src/main.js` 中引入了 `src/util/index.js`，并执行了 `flexible()` 函数。这个函数是适配方案的核心：
+
+      ```javascript
+      // src/util/index.js
+      export function flexible(window, document) {
+        var docEl = document.documentElement
+        var dpr = window.devicePixelRatio || 1
+
+        // ... (省略部分代码)
+
+        function setRemUnit() {
+          // 设计稿宽度为 1920px
+          var rem = docEl.clientWidth / 192.0
+          docEl.style.fontSize = rem + 'px'
+        }
+
+        setRemUnit()
+
+        window.addEventListener('resize', setRemUnit)
+        // ... (省略部分代码)
+      }
+      ```
+
+      此代码将屏幕宽度分为 `192` 份（基于 `1920` 的设计稿，`1920 / 10 = 192`），以此计算出 `rem` 值并设置给 `<html>`。当窗口大小变化时，会重新计算该值。
+
+2.  **Scale 整体缩放:**
+
+    - **原理:** `transform: scale()` 属性可以对元素进行整体的、统一的缩放，包括其子元素和文本节点。这种方式简单直接，计算开销小。
+    - **代码实例:** 在主视图组件 `src/views/main-screen/index.vue` 中，我们看到了 `scale` 的实际应用。
+
+      ```ts
+      // src/views/main-screen/index.vue
+      <template>
+        <div class="main-screen" :style="style"></div>
+      </template>
+
+      <script>
+      import drawMixin from '@/util/drawMixin'
+      export default {
+        mixins: [drawMixin]
+        // ...
+      }
+      </script>
+      ```
+
+      该组件混入了 `src/util/drawMixin.js`，这个 `mixin` 负责了核心的缩放计算：
+
+      ```javascript
+      // src/util/drawMixin.js
+      export default {
+        data() {
+          return {
+            // ...
+            style: {}
+          }
+        },
+        mounted() {
+          this.calcRate()
+          window.addEventListener('resize', this.calcRate)
+        },
+        methods: {
+          calcRate() {
+            // ...
+            if (this.$refs.appRef) {
+              this.style = {
+                // ...
+                transform: `scale(${this.getScale()})` // 应用缩放
+                // ...
+              }
+            }
+          },
+          getScale() {
+            // ...
+            // 计算当前窗口与设计稿的宽高比，选择较小的一个作为缩放比例
+            const scale = Math.min(window.innerWidth / this.width, window.innerHeight / this.height)
+            return scale
+          }
+        }
+      }
+      ```
+
+      `drawMixin` 在组件挂载和窗口大小改变时，会调用 `calcRate` 方法。该方法通过 `getScale` 计算出当前窗口相对于设计稿 (`1920x1080`) 的最佳缩放比例，并将其应用到 `.main-screen` 元素的 `transform` 样式上，实现了整个页面的等比缩放。
+
+#### **方案优缺点分析**
+
+这套 `rem + scale` 的组合方案是目前大屏开发领域的成熟选择，但也有其适用场景和局限性。
+
+**优点:**
+
+1.  **开发效率高:** 开发者在编写样式时，可以直接使用根据设计稿计算出的 `px` 值（通过 `postcss-pxtorem` 等插件自动转换为 `rem`）。`scale` 的整体缩放则保证了布局的绝对稳定，避免了因分辨率变化导致的元素错位问题。
+2.  **适配效果好:** 对于以展示为主、无需用户大量交互的大屏来说，等比缩放能完美还原设计稿的视觉效果，保证了在任何分辨率下的美观和一致性。图表、SVG 等元素的缩放效果非常平滑，不会失真。
+3.  **维护成本低:** 一套代码适配所有主流宽屏，无需为不同分辨率编写多套样式，大大降低了后期的维护成本。
+
+**缺点:**
+
+1.  **文本模糊问题:** `transform: scale` 缩放可能会导致文本渲染出现亚像素模糊，尤其是在非整数倍缩放时。虽然在高清大屏上影响较小，但在某些显示器上可能会影响文本的可读性。
+2.  **交互限制:** 鼠标事件的坐标可能需要经过换算。因为 `scale` 改变的是视觉呈现，而 DOM 的实际占用空间并未改变。虽然本项目中交互较少，但在需要复杂交互（如拖拽、精确定位点击）的场景下，需要额外处理事件坐标。
+3.  **非等比适配不灵活:** 此方案是为等比缩放设计的。如果需求是在不同分辨率下显示不同数量的内容或采用不同的布局（即响应式布局），那么这套方案就不太适用，需要采用更传统的媒体查询或 Flex/Grid 布局方案。

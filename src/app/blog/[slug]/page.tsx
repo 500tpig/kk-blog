@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import Script from 'next/script'
 
 import { ScrollToTopButton } from '@/components/ui/ScrollToTopButton'
 
@@ -14,6 +15,26 @@ import { slugify } from '@/lib/utils'
 
 type Params = Promise<{ slug: string }>
 
+export async function generateMetadata({ params }: { params: Params }) {
+  const { slug } = await params
+  const { posts } = await getBlogPosts()
+  const post = posts.find(p => p.slug === slug)
+
+  if (!post) return { title: '文章未找到' }
+
+  return {
+    title: `${post.metadata.title} - KK博客`,
+    description: post.metadata.overview,
+    openGraph: {
+      title: post.metadata.title,
+      description: post.metadata.overview,
+      type: 'article',
+      publishedTime: post.metadata.date,
+      authors: ['KK'],
+      tags: post.metadata.tags.split(',')
+    }
+  }
+}
 export async function generateStaticParams() {
   const { posts } = await getBlogPosts()
   return posts.map(post => ({
@@ -41,25 +62,46 @@ export default async function Page({ params }: { params: Params }) {
     headings.push({ level, text, id })
   }
 
+  // 在Page组件中添加以下代码
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    'headline': metadata.title,
+    'datePublished': metadata.date,
+    'author': {
+      '@type': 'Person',
+      'name': 'KK'
+    },
+    'description': metadata.overview,
+    'keywords': metadata.tags
+  }
+
   return (
-    <main className="min-h-screen bg-body-bg">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-7xl mx-auto">
-          <PostHeader metadata={metadata} />
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
-            <div className="lg:col-span-8">
-              <PostContent content={content} headings={headings} overview={metadata.overview} />
-            </div>
-            <div className="lg:col-span-4">
-              <PostSidebar
-                recentPostsSlot={<RecentPostsData />}
-                categoriesSlot={<CategoriesData />}
-              />
+    <>
+      <main className="min-h-screen bg-body-bg">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-7xl mx-auto">
+            <PostHeader metadata={metadata} />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
+              <div id="blog-content-area" className="lg:col-span-8">
+                <PostContent content={content} headings={headings} overview={metadata.overview} />
+              </div>
+              <div className="lg:col-span-4">
+                <PostSidebar
+                  recentPostsSlot={<RecentPostsData />}
+                  categoriesSlot={<CategoriesData />}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <ScrollToTopButton triggerElementId="blog-content-area" />
-    </main>
+        <ScrollToTopButton triggerElementId="blog-content-area" />
+      </main>
+      <Script
+        id={`structured-data-${slug}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+    </>
   )
 }

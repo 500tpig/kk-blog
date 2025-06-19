@@ -13,9 +13,11 @@ import { CategoriesData, PostContent, PostHeader, PostSidebar } from '@/features
 import { RecentPostsData } from '@/features/blog/server'
 import { slugify } from '@/lib/utils'
 
-type Params = Promise<{ slug: string }>
+// 使用 Segment Config 设置缓存
+export const dynamic = 'force-static'
+export const revalidate = 3600 // 1小时重新验证一次
 
-export const revalidate = 3600 // 每小时重新验证一次
+type Params = Promise<{ slug: string }>
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params
@@ -37,6 +39,7 @@ export async function generateMetadata({ params }: { params: Params }) {
   }
 }
 
+// 生成静态路径
 export async function generateStaticParams() {
   const { posts } = await getBlogPosts()
   return posts.map(post => ({
@@ -126,15 +129,7 @@ export default async function Page({ params }: { params: Params }) {
                   <PostContent content={content} headings={headings} overview={metadata.overview} />
                 </Suspense>
               </div>
-              <Suspense
-                fallback={
-                  <div className="flex justify-center w-full">
-                    <Loading />
-                  </div>
-                }
-              >
-                <Sidebar />
-              </Suspense>
+              <Sidebar />
             </div>
           </div>
         </div>

@@ -49,6 +49,26 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // 博客文章页面的缓存配置
+        source: '/blog/:slug*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        // 侧边栏组件的缓存配置
+        source: '/api/sidebar-data',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
         source: '/:path*',
         headers: [
           {

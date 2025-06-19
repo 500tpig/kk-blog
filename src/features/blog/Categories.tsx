@@ -1,28 +1,18 @@
-import Link from 'next/link';
+import { tagsColors } from '@/utils/tagsColors'
 
-import { tagsColors } from '@/utils/tagsColors';
-
-import TagItem from './TagItem';
+import TagItem from './TagItem'
 
 interface CategoriesProps {
-  tags: string[];
+  tags: string[]
 }
 
 export default function Categories({ tags }: CategoriesProps) {
   return (
-    <div className="mt-4 flex flex-wrap gap-3">
+    <div className="mt-4 flex flex-wrap gap-x-4 gap-y-3">
       {tags.map(tag => {
-        const tagColor = tagsColors[tag as keyof typeof tagsColors] || 'var(--accent-color)';
-        return (
-          <Link 
-            key={tag} 
-            href={`/search?q=${tag}`}
-            className="transform transition-transform hover:scale-105"
-          >
-            <TagItem tag={tag} tagColor={tagColor} />
-          </Link>
-        );
+        const tagColor = tagsColors[tag as keyof typeof tagsColors] || 'var(--accent-color)'
+        return <TagItem key={tag} tag={tag} tagColor={tagColor} />
       })}
     </div>
-  );
+  )
 }

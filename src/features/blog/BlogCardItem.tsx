@@ -6,13 +6,25 @@ import { tagsColors } from '@/utils/tagsColors'
 import { ClockIcon } from '@/components'
 import { TagItem } from '@/features/blog'
 
+// 获取 tagsColors 的所有键作为有效标签类型
+type ValidTag = keyof typeof tagsColors
+
+// 检查标签是否有效
+function isValidTag(tag: string): tag is ValidTag {
+  return tag in tagsColors
+}
+
 export default function BlogCardItem({ post }: { post: ArticlePost }) {
+  // 获取第一个标签的颜色作为边框颜色
+  const firstTag = post.metadata.tags.split(',')[0].trim()
+  const borderColor = isValidTag(firstTag) ? tagsColors[firstTag] : '#ff5671'
+
   return (
     <article
       key={post.slug}
       style={{
         borderLeftWidth: '5px',
-        borderLeftColor: post.color,
+        borderLeftColor: borderColor,
         boxShadow: '0 2px 20px rgba(14, 14, 19, 0.05)'
       }}
       className="w-full flex flex-col justify-between p-5 transition rounded-xl bg-card-bg"
@@ -60,8 +72,9 @@ export default function BlogCardItem({ post }: { post: ArticlePost }) {
       <div className="mt-6 pt-4 border-t border-dashed border-divider flex justify-between">
         <div className="flex flex-wrap gap-2">
           {post.metadata.tags.split(',').map((tag: string) => {
-            const tagColor = tagsColors[tag as keyof typeof tagsColors]
-            return <TagItem key={tag} tag={tag} tagColor={tagColor} />
+            const trimmedTag = tag.trim()
+            const tagColor = isValidTag(trimmedTag) ? tagsColors[trimmedTag] : '#ff5671'
+            return <TagItem key={tag} tag={trimmedTag} tagColor={tagColor} />
           })}
         </div>
         {post.metadata.readingTime && (

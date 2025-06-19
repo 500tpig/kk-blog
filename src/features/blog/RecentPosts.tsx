@@ -29,12 +29,12 @@ export default function RecentPosts({ posts }: RecentPostsProps) {
                   {dayjs(post.metadata.date).format('MMM')}
                 </div>
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 flex flex-col justify-between h-16.5">
                 <Link 
                   href={`/blog/${post.slug}`} 
-                  className="block text-sm sm:text-base font-semibold mb-2 hover:text-accent transition-colors"
+                  className="block text-sm sm:text-base font-semibold"
                 >
-                  <span className="line-clamp-2">{post.metadata.title}</span>
+                  <span className="heading-title">{post.metadata.title}</span>
                 </Link>
                 <div className="flex flex-wrap gap-2">
                   {tags.map((tag: string) => {

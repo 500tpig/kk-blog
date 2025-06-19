@@ -1,7 +1,6 @@
 'use client'
 import { useState } from 'react'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 import Search from '@/components/icons/Search'
@@ -63,22 +62,20 @@ export default function SearchModal() {
           <div className="w-full mt-5 flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-5">
             <div className="text-sm sm:text-base font-semibold">常用搜索:</div>
             <div className="flex gap-3 sm:gap-4">
-              <Link
-                href="/search?q=React"
+              <div
                 onClick={() => {
                   setIsOpen(false)
                 }}
               >
                 <TagItem tag="React" tagColor={tagsColors.React} />
-              </Link>
-              <Link
-                href="/search?q=Next"
+              </div>
+              <div
                 onClick={() => {
                   setIsOpen(false)
                 }}
               >
                 <TagItem tag="Next" tagColor={tagsColors.Next} />
-              </Link>
+              </div>
             </div>
           </div>
         </div>

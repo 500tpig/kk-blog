@@ -9,12 +9,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { getBlogPost } from '@/utils/getBlogPost'
 import { getBlogPosts } from '@/utils/getBlogPosts'
 
-import {
-  CategoriesData,
-  PostContent,
-  PostHeader,
-  PostSidebar
-} from '@/features/blog'
+import { CategoriesData, PostContent, PostHeader, PostSidebar } from '@/features/blog'
 import { RecentPostsData } from '@/features/blog/server'
 import { slugify } from '@/lib/utils'
 
@@ -117,7 +112,9 @@ export default async function Page({ params }: { params: Params }) {
             </div>
           </div>
         </div>
-        <ScrollToTopButton triggerElementId="blog-content-area" />
+        <div className="hidden lg:block">
+          <ScrollToTopButton triggerElementId="blog-content-area" />
+        </div>
       </main>
       <Script
         id={`structured-data-${slug}`}

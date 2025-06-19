@@ -4,20 +4,20 @@ import path from 'path'
 import matter from 'gray-matter'
 
 const tagsColors = {
-  JavaScript: 'var(--color-tag-javascript)',
-  React: 'var(--color-tag-react)',
-  Next: 'var(--color-tag-next)',
-  Vue: 'var(--color-tag-vue)',
+  JavaScript: '#f7df1e',
+  React: '#61dafb',
+  Next: '#8b5cf6',
+  Vue: '#41b883',
 
   // --- 工具与生态 ---
-  Tailwind: 'var(--color-tag-tailwind)',
-  Electron: 'var(--color-tag-electron)',
-  Echarts: 'var(--color-tag-echarts)',
-  D3: 'var(--color-tag-d3)', // 将 D3.js 简化为 D3，如果需要可以改回
+  Tailwind: '#38b2ac',
+  Electron: '#47848f',
+  Echarts: '#c23531',
+  D3: '#f9a03c',
 
   // --- 基础 ---
-  HTML: 'var(--color-tag-html)',
-  CSS: 'var(--color-tag-css)'
+  HTML: '#fc490b',
+  CSS: '#1572b6'
 }
 
 const postsDirectory = path.join(process.cwd(), 'posts')

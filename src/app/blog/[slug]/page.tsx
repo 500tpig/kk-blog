@@ -3,8 +3,8 @@ import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Script from 'next/script'
 
+import Loading from '@/components/ui/Loading'
 import { ScrollToTopButton } from '@/components/ui/ScrollToTopButton'
-import { Skeleton } from '@/components/ui/Skeleton'
 
 import { getBlogPost } from '@/utils/getBlogPost'
 import { getBlogPosts } from '@/utils/getBlogPosts'
@@ -14,6 +14,8 @@ import { RecentPostsData } from '@/features/blog/server'
 import { slugify } from '@/lib/utils'
 
 type Params = Promise<{ slug: string }>
+
+export const revalidate = 3600 // 每小时重新验证一次
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params
@@ -48,12 +50,24 @@ function Sidebar() {
     <div className="lg:col-span-4">
       <PostSidebar
         recentPostsSlot={
-          <Suspense fallback={<Skeleton className="h-48" />}>
+          <Suspense
+            fallback={
+              <div className="flex justify-center w-full">
+                <Loading />
+              </div>
+            }
+          >
             <RecentPostsData />
           </Suspense>
         }
         categoriesSlot={
-          <Suspense fallback={<Skeleton className="h-32" />}>
+          <Suspense
+            fallback={
+              <div className="flex justify-center w-full">
+                <Loading />
+              </div>
+            }
+          >
             <CategoriesData />
           </Suspense>
         }
@@ -102,11 +116,23 @@ export default async function Page({ params }: { params: Params }) {
             <PostHeader metadata={metadata} />
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
               <div id="blog-content-area" className="lg:col-span-8">
-                <Suspense fallback={<Skeleton className="h-96" />}>
+                <Suspense
+                  fallback={
+                    <div className="flex justify-center w-full">
+                      <Loading />
+                    </div>
+                  }
+                >
                   <PostContent content={content} headings={headings} overview={metadata.overview} />
                 </Suspense>
               </div>
-              <Suspense fallback={<Skeleton className="lg:col-span-4 h-full" />}>
+              <Suspense
+                fallback={
+                  <div className="flex justify-center w-full">
+                    <Loading />
+                  </div>
+                }
+              >
                 <Sidebar />
               </Suspense>
             </div>

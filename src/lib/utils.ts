@@ -1,8 +1,5 @@
 import { Children, ReactNode } from 'react'
 
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
 /**
  * 将字符串转换为 URL 友好的 "slug"
  * @param text 输入文本
@@ -33,8 +30,4 @@ export const getTextFromChildren = (children: ReactNode): string => {
     }
   })
   return text
-}
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
 }

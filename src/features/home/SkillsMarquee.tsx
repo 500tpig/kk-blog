@@ -1,6 +1,6 @@
-import SkillItemWrap from '@/features/home/SkillItemWrap'
+import SkillItemWrap from './SkillItemWrap'
 
-export function SkillsMarquee() {
+export default function SkillsMarquee() {
   return (
     <div className="mt-10 overflow-hidden">
       <div

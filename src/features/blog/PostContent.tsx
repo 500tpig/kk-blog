@@ -1,13 +1,13 @@
-import RenderMDX from '@/features/blog/RenderMDX'
-import TableOfContents, { Heading } from '@/features/blog/TableOfContents'
+import { RenderMDX } from '@/features/blog'
+import { TableOfContents } from '@/features/blog'
 
 interface PostContentProps {
   content: string
-  headings: Heading[]
+  headings: TableOfContentsType[]
   overview: string
 }
 
-export function PostContent({ content, headings, overview }: PostContentProps) {
+export default function PostContent({ content, headings, overview }: PostContentProps) {
   return (
     <div className="w-full">
       <div className="bg-card-bg rounded-xl shadow-lg overflow-hidden">

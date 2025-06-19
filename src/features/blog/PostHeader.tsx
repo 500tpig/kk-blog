@@ -6,13 +6,13 @@ import FireIcon from '@/components/icons/FireIcon'
 
 import { tagsColors } from '@/utils/tagsColors'
 
-import TagItem from '@/features/blog/TagItem'
+import { TagItem } from '@/features/blog'
 
 interface PostHeaderProps {
   metadata: ArticlePost['metadata']
 }
 
-export function PostHeader({ metadata }: PostHeaderProps) {
+export default function PostHeader({ metadata }: PostHeaderProps) {
   return (
     <div className="w-full">
       {/* 日期卡片 */}

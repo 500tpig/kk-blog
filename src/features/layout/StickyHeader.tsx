@@ -1,5 +1,3 @@
-// src/features/layout/StickyHeader.tsx
-
 'use client'
 
 import Link from 'next/link'
@@ -9,7 +7,7 @@ import Icon from '@/components/icons/Icon'
 import QQIcon from '@/components/icons/QQIcon'
 import WeChatIcon from '@/components/icons/WeChatIcon'
 
-import { ActionButtons } from './ActionButtons'
+import ActionButtons from './ActionButtons'
 
 import { useScroll } from '@/contexts/ScrollContext'
 

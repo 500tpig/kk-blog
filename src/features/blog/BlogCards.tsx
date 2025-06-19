@@ -1,6 +1,6 @@
 import { getBlogPosts } from '@/utils/getBlogPosts'
 
-import BlogCardItem from '@/features/blog/BlogCardItem'
+import { BlogCardItem } from '@/features/blog'
 
 export default async function BlogCards() {
   const { posts } = await getBlogPosts()

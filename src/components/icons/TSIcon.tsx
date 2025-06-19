@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function TSIcon({ className }: { className?: string }) {
   return (
     <svg

@@ -5,12 +5,13 @@ import { ScrollToTopButton } from '@/components/ui/ScrollToTopButton'
 
 import { getBlogPosts } from '@/utils/getBlogPosts'
 
-import { CategoriesData } from '@/features/blog/CategoriesData'
-import { PostContent } from '@/features/blog/PostContent'
-import { PostHeader } from '@/features/blog/PostHeader'
-import { PostSidebar } from '@/features/blog/PostSidebar'
-import { RecentPostsData } from '@/features/blog/RecentPostsData'
-import { Heading } from '@/features/blog/TableOfContents'
+import {
+  CategoriesData,
+  PostContent,
+  PostHeader,
+  PostSidebar
+} from '@/features/blog'
+import { RecentPostsData } from '@/features/blog/server'
 import { slugify } from '@/lib/utils'
 
 type Params = Promise<{ slug: string }>
@@ -54,7 +55,7 @@ export default async function Page({ params }: { params: Params }) {
   const { content, metadata } = post
   const headingRegex = /^(#{1,3})\s+(.*)/gm
   let match
-  const headings: Heading[] = []
+  const headings: TableOfContentsType[] = []
   while ((match = headingRegex.exec(content)) !== null) {
     const level = match[1].length
     const text = match[2].trim()

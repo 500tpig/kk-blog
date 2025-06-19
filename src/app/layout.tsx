@@ -5,9 +5,7 @@ import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
 
 import { ScrollProvider } from '@/contexts/ScrollContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
-import Footer from '@/features/layout/Footer'
-import StaticHeader from '@/features/layout/StaticHeader'
-import StickyHeader from '@/features/layout/StickyHeader'
+import { Footer, StaticHeader, StickyHeader } from '@/features/layout'
 
 import type { Metadata } from 'next'
 

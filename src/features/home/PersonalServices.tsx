@@ -64,7 +64,7 @@ const myServicesData: ServiceCardProps[] = [
   }
 ]
 
-export function PersonalServices() {
+export default function PersonalServices() {
   return (
     <div className="flex flex-col gap-5">
       {myServicesData.map((service, index) => (

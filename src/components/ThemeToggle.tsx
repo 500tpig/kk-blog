@@ -2,10 +2,7 @@
 
 import { MouseEvent as ReactMouseEvent } from 'react'
 
-import Moon from './icons/Moon'
-import Sun from './icons/Sun'
-import Switch from './ui/Switch'
-
+import { MoonIcon, SunIcon, Switch } from '@/components'
 import { useTheme } from '@/contexts/ThemeContext'
 
 export default function ThemeToggle() {
@@ -15,8 +12,8 @@ export default function ThemeToggle() {
     <Switch
       checked={theme === 'dark'}
       onChange={(event: ReactMouseEvent<HTMLDivElement>) => toggleTheme(event)}
-      leftIcon={<Sun className="text-[#ffb300]" />}
-      rightIcon={<Moon className="text-[#1f2328]" />}
+      leftIcon={<SunIcon className="text-[#ffb300]" />}
+      rightIcon={<MoonIcon className="text-[#1f2328]" />}
     />
   )
 }

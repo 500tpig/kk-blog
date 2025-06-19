@@ -11,7 +11,7 @@ import { tagsColors } from '@/utils/tagsColors'
 
 import SearchInput from './SearchInput'
 
-import TagItem from '@/features/blog/TagItem'
+import { TagItem } from '@/features/blog'
 
 export default function SearchModal() {
   const router = useRouter()

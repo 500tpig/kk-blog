@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function ElectronIcon({ className }: { className?: string }) {
   return (
     <svg

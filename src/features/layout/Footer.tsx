@@ -5,7 +5,7 @@ import GithubIcon from '@/components/icons/GithubIcon'
 import QQIcon from '@/components/icons/QQIcon'
 import WeChatIcon from '@/components/icons/WeChatIcon'
 
-import { CategoriesData } from '@/features/blog/CategoriesData'
+import { CategoriesData  } from '@/features/blog'
 
 const socialLinks = [
   {

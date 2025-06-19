@@ -9,7 +9,7 @@ interface RecentPostsProps {
   posts: ArticlePost[]
 }
 
-export function RecentPosts({ posts }: RecentPostsProps) {
+export default function RecentPosts({ posts }: RecentPostsProps) {
   return (
     <div className="mt-4">
       <ul className="space-y-4">

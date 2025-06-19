@@ -1,11 +1,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import ClockIcon from '@/components/icons/ClockIcon'
-
 import { tagsColors } from '@/utils/tagsColors'
 
-import TagItem from '@/features/blog/TagItem'
+import { ClockIcon } from '@/components'
+import { TagItem } from '@/features/blog'
 
 export default function BlogCardItem({ post }: { post: ArticlePost }) {
   return (

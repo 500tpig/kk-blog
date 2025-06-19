@@ -9,7 +9,7 @@ import ReactIcon from '@/components/icons/ReactIcon'
 import TSIcon from '@/components/icons/TSIcon'
 import VueIcon from '@/components/icons/VueIcon'
 
-import SkillItem from '@/features/home/SkillItem'
+import SkillItem from './SkillItem'
 
 export default function SkillItemWrap() {
   return (

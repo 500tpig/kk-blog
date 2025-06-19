@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation'
 
 import { tagsColors } from '@/utils/tagsColors'
 
-import { SearchInput } from '@/features/search'
+import SearchInput from './components/SearchInput'
 
 const isTag = (tag: string) => {
   return Object.keys(tagsColors).findIndex(t => t === tag) !== -1

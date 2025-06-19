@@ -21,3 +21,10 @@ declare interface TagsColors {
   // Python: string
   // 'Node.js': string
 }
+
+
+declare interface TableOfContentsType {
+  level: number
+  text: string
+  id: string
+}

@@ -5,19 +5,14 @@ import { MouseEvent, useState, useMemo, ReactNode } from 'react'
 import DownOutlined from '@/components/icons/DownOutlined'
 
 // 标题对象的类型接口保持不变
-export interface Heading {
-  level: number
-  text: string
-  id: string
-}
 
 // 为嵌套后的标题增加 children 属性
-interface NestedHeading extends Heading {
+interface NestedHeading extends TableOfContentsType {
   children: NestedHeading[]
 }
 
 interface TableOfContentsProps {
-  headings: Heading[]
+  headings: TableOfContentsType[]
 }
 
 export default function TableOfContents({ headings }: TableOfContentsProps) {

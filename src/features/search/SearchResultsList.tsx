@@ -1,11 +1,11 @@
-import BlogCardItem from '@/features/blog/BlogCardItem'
+import { BlogCardItem } from '@/features/blog'
 
 interface SearchResultsListProps {
   results: ArticlePost[]
   query: string
 }
 
-export function SearchResultsList({ results, query }: SearchResultsListProps) {
+export default function SearchResultsList({ results, query }: SearchResultsListProps) {
   if (results.length === 0) {
     return (
       <div className="text-center py-20">

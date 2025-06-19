@@ -8,7 +8,7 @@ interface CategoriesProps {
   tags: string[];
 }
 
-export function Categories({ tags }: CategoriesProps) {
+export default function Categories({ tags }: CategoriesProps) {
   return (
     <div className="mt-4 flex flex-wrap gap-3">
       {tags.map(tag => {

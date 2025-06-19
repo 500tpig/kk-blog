@@ -1,15 +1,15 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
 
-import styles from './Header.module.css'; // 复用现有的汉堡包图标样式
-import OffcanvasMenu from './OffcanvasMenu';
+import styles from './Header.module.css' // 复用现有的汉堡包图标样式
+import OffcanvasMenu from './OffcanvasMenu'
 
 export default function OffcanvasTrigger() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
-  const handleOpen = () => setIsOpen(true);
-  const handleClose = () => setIsOpen(false);
+  const handleOpen = () => setIsOpen(true)
+  const handleClose = () => setIsOpen(false)
 
   return (
     <>
@@ -32,5 +32,5 @@ export default function OffcanvasTrigger() {
       {/* 抽屉菜单实例 */}
       <OffcanvasMenu isOpen={isOpen} onClose={handleClose} />
     </>
-  );
+  )
 }

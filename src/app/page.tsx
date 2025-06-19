@@ -1,11 +1,11 @@
 import Divider from '@/components/ui/Divider'
 import { ScrollToTopButton } from '@/components/ui/ScrollToTopButton'
 
-import BlogCards from '@/features/blog/BlogCards'
-import { HeroSection } from '@/features/home/HeroSection'
-import { PersonalServices } from '@/features/home/PersonalServices'
-import { SkillsMarquee } from '@/features/home/SkillsMarquee'
-import Sidebar from '@/features/layout/Sidebar'
+import { BlogCards } from '@/features/blog/server'
+import { HeroSection } from '@/features/home'
+import { PersonalServices } from '@/features/home'
+import { SkillsMarquee } from '@/features/home'
+import { Sidebar } from '@/features/layout'
 
 export default function page() {
   const years = new Date().getFullYear() - 2021

@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function CrossLine({ onClick, text, className }: { onClick: () => void, text?: string, className?: string }) {
   return (
     <div

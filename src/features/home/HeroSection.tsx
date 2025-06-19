@@ -2,7 +2,7 @@ interface HeroSectionProps {
   experienceYears: number
 }
 
-export function HeroSection({ experienceYears }: HeroSectionProps) {
+export default function HeroSection({ experienceYears }: HeroSectionProps) {
   return (
     <>
       <div className="mt-[3.75rem] w-[11rem] bg-card-bg px-[5px] py-1 rounded-full flex items-center justify-between text-xs">

@@ -1,8 +1,6 @@
-import { CategoriesData } from '@/features/blog/CategoriesData'
-import { PostSidebar } from '@/features/blog/PostSidebar'
-import { RecentPostsData } from '@/features/blog/RecentPostsData'
-import SearchResultHeader from '@/features/search/SearchResultHeader'
-import { SearchResultsList } from '@/features/search/SearchResultsList'
+import { CategoriesData, PostSidebar } from '@/features/blog'
+import { RecentPostsData } from '@/features/blog/server'
+import { SearchResultHeader, SearchResultsList } from '@/features/search'
 
 type Params = Promise<{
   q?: string
@@ -65,9 +63,9 @@ export default async function Page({ searchParams }: { searchParams: Params }) {
                 <SearchResultsList results={results} query={query} />
               </div>
               <div className="lg:col-span-4">
-                <PostSidebar 
-                  recentPostsSlot={<RecentPostsData />} 
-                  categoriesSlot={<CategoriesData />} 
+                <PostSidebar
+                  recentPostsSlot={<RecentPostsData />}
+                  categoriesSlot={<CategoriesData />}
                 />
               </div>
             </div>

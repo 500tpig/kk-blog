@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function VueIcon({ className }: { className?: string }) {
   return (
     <svg

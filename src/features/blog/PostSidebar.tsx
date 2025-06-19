@@ -11,7 +11,7 @@ interface PostSidebarProps {
   categoriesSlot: ReactNode
 }
 
-export function PostSidebar({ recentPostsSlot, categoriesSlot }: PostSidebarProps) {
+export default function PostSidebar({ recentPostsSlot, categoriesSlot }: PostSidebarProps) {
   const { isScrolled } = useScroll()
 
   return (

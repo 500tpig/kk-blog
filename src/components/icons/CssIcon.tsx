@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function CssIcon({ className }: { className?: string }) {
   return (
     <svg className={`icon-svg ${className}`} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">

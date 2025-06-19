@@ -1,8 +1,10 @@
+'use client'
+
 import Link from 'next/link'
 
 import Icon from '@/components/icons/Icon'
 
-import { ActionButtons } from './ActionButtons'
+import ActionButtons from './ActionButtons'
 
 const navLinks = [
   { href: '/', label: '首页' },

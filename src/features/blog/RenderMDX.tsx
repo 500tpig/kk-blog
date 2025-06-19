@@ -7,8 +7,6 @@ import MDXComponents from '@/components/MDXComponents'
 const options = {
   // 使用一个现代化的主题
   theme: 'one-dark-pro',
-  // 保留语法高亮但使用我们的CSS变量控制背景
-  keepBackground: false,
   // 添加行号
   lineNumbers: true,
   // 格式化选项

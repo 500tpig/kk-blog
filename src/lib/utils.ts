@@ -1,5 +1,8 @@
 import { Children, ReactNode } from 'react'
 
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
 /**
  * 将字符串转换为 URL 友好的 "slug"
  * @param text 输入文本
@@ -7,12 +10,11 @@ import { Children, ReactNode } from 'react'
  */
 export const slugify = (text: string): string => {
   return text
-    .toString()
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, '-') // 将空格替换为 -
-    .replace(/[^\w\-]+/g, '') // 移除所有非单词字符
-    .replace(/\-\-+/g, '-') // 将多个 - 替换为单个 -
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 /**
@@ -31,4 +33,8 @@ export const getTextFromChildren = (children: ReactNode): string => {
     }
   })
   return text
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }

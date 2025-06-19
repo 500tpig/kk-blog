@@ -10,7 +10,6 @@ pre {
 
 code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.9em;
 }
 
 pre code {
@@ -32,7 +31,7 @@ pre code .highlighted {
 
 :not(pre) > code {
   background: var(--code-inline-bg);
-  color: var(--code-inline-color);
+  /* color: var(--code-inline-color); */
   padding: 0.2rem 0.4rem;
   border-radius: 0.25rem;
   white-space: normal;

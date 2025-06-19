@@ -1,8 +1,12 @@
+import { Suspense } from 'react'
+
 import { notFound } from 'next/navigation'
 import Script from 'next/script'
 
 import { ScrollToTopButton } from '@/components/ui/ScrollToTopButton'
+import { Skeleton } from '@/components/ui/Skeleton'
 
+import { getBlogPost } from '@/utils/getBlogPost'
 import { getBlogPosts } from '@/utils/getBlogPosts'
 
 import {
@@ -18,8 +22,7 @@ type Params = Promise<{ slug: string }>
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params
-  const { posts } = await getBlogPosts()
-  const post = posts.find(p => p.slug === slug)
+  const post = await getBlogPost(slug)
 
   if (!post) return { title: '文章未找到' }
 
@@ -36,6 +39,7 @@ export async function generateMetadata({ params }: { params: Params }) {
     }
   }
 }
+
 export async function generateStaticParams() {
   const { posts } = await getBlogPosts()
   return posts.map(post => ({
@@ -43,10 +47,29 @@ export async function generateStaticParams() {
   }))
 }
 
+// 提取侧边栏组件
+function Sidebar() {
+  return (
+    <div className="lg:col-span-4">
+      <PostSidebar
+        recentPostsSlot={
+          <Suspense fallback={<Skeleton className="h-48" />}>
+            <RecentPostsData />
+          </Suspense>
+        }
+        categoriesSlot={
+          <Suspense fallback={<Skeleton className="h-32" />}>
+            <CategoriesData />
+          </Suspense>
+        }
+      />
+    </div>
+  )
+}
+
 export default async function Page({ params }: { params: Params }) {
   const { slug } = await params
-  const { posts } = await getBlogPosts()
-  const post = posts.find(p => p.slug === slug)
+  const post = await getBlogPost(slug)
 
   if (!post) {
     notFound()
@@ -63,7 +86,6 @@ export default async function Page({ params }: { params: Params }) {
     headings.push({ level, text, id })
   }
 
-  // 在Page组件中添加以下代码
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -85,14 +107,13 @@ export default async function Page({ params }: { params: Params }) {
             <PostHeader metadata={metadata} />
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
               <div id="blog-content-area" className="lg:col-span-8">
-                <PostContent content={content} headings={headings} overview={metadata.overview} />
+                <Suspense fallback={<Skeleton className="h-96" />}>
+                  <PostContent content={content} headings={headings} overview={metadata.overview} />
+                </Suspense>
               </div>
-              <div className="lg:col-span-4">
-                <PostSidebar
-                  recentPostsSlot={<RecentPostsData />}
-                  categoriesSlot={<CategoriesData />}
-                />
-              </div>
+              <Suspense fallback={<Skeleton className="lg:col-span-4 h-full" />}>
+                <Sidebar />
+              </Suspense>
             </div>
           </div>
         </div>

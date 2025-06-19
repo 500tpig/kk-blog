@@ -1,24 +1,17 @@
 export const tagsColors: TagsColors = {
-  // --- 核心技术栈 ---
-  'JavaScript': 'var(--tag-color-yellow)',
-  'TypeScript': 'var(--tag-color-blue)', // TS 通常用蓝色
-  'React': 'var(--tag-color-blue)',
-  'Next': 'var(--tag-color-orange)',
-  'Vue': 'var(--tag-color-green)',
-  'Angular': 'var(--tag-color-red)',
+  'JavaScript': 'var(--color-tag-javascript)',
+  'React': 'var(--color-tag-react)',
+  'Next': 'var(--color-tag-next)',
+  'Vue': 'var(--color-tag-vue)',
 
   // --- 工具与生态 ---
-  'Tailwind': 'var(--tag-color-blue)',
-  'Electron': 'var(--tag-color-purple)',
-  'Echarts': 'var(--accent-color)', // 使用主题强调色
-  'D3.js': 'var(--tag-color-purple)',
+  'Tailwind': 'var(--color-tag-tailwind)',
+  'Electron': 'var(--color-tag-electron)',
+  'Echarts': 'var(--color-tag-echarts)',
+  'D3': 'var(--color-tag-d3)', // 将 D3.js 简化为 D3，如果需要可以改回
 
   // --- 基础 ---
-  'HTML': 'var(--tag-color-orange)',
-  'CSS': 'var(--tag-color-blue)',
+  'HTML': 'var(--color-tag-html)',
+  'CSS': 'var(--color-tag-css)',
 
-  // --- 后端及其他 ---
-  'Java': 'var(--tag-color-red)',
-  'Python': 'var(--tag-color-green)',
-  'Node.js': 'var(--tag-color-green)'
 }

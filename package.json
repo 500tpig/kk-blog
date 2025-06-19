@@ -22,15 +22,16 @@
     "js-cookie": "^3.0.5",
     "next": "15.3.0",
     "next-mdx-remote": "^5.0.0",
-    "prism-themes": "^1.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
-    "rehype-prism-plus": "^2.0.1"
+    "rehype-pretty-code": "^0.14.1",
+    "shiki": "^3.6.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -53,6 +53,7 @@ export default function Sidebar() {
                     width={400}
                     height={500}
                     style={{ width: '100%', height: 'auto' }}
+                    priority
                   />
                 </div>
               </div>

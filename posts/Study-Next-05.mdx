@@ -47,7 +47,7 @@ tags: 'Next,Tailwind'
 
 - **高级用法：使用 `@apply` 提取组件类** 如果某个组件的样式组合非常复杂且被高频复用，可以考虑在 CSS 文件中使用 `@apply` 指令，将一系列工具类组合成一个自定义的语义化类。
 
-  ```CSS
+  ```css
   /* 在 globals.css 或其他 CSS 文件中 */
   .btn-primary {
     @apply px-4 py-2 bg-accent text-white font-semibold rounded-lg shadow-md;
@@ -66,7 +66,7 @@ tags: 'Next,Tailwind'
 
 - **最佳实践：通过 CSS 变量实现主题化** 本项目的做法是正确的典范。通过在 `tailwind.css` 中为不同的 `[data-theme]` 属性定义 CSS 变量，可以实现高效、灵活的主题切换。
 
-  ```CSS
+  ```css
   /* src/style/tailwind.css */
   :root {
     --accent-color: #ff5671;
@@ -84,7 +84,7 @@ tags: 'Next,Tailwind'
 
   然后在 `globals.css` 中应用这些变量：
 
-  ```CSS
+  ```css
   /* src/style/globals.css */
   body {
     background: var(--body-bg-color);

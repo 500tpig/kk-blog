@@ -1,17 +1,30 @@
 import { MDXRemote } from 'next-mdx-remote/rsc'
-import rehypePrism from 'rehype-prism-plus'
+import rehypePrettyCode from 'rehype-pretty-code'
 
 import MDXComponents from '@/components/MDXComponents'
 
+// rehype-pretty-code 配置
+const options = {
+  // 使用一个现代化的主题
+  theme: 'one-dark-pro',
+  // 保留语法高亮但使用我们的CSS变量控制背景
+  keepBackground: false,
+  // 添加行号
+  lineNumbers: true,
+  // 格式化选项
+  grid: true,
+  filterMetaString: (string: string) => string
+}
+
 export default function RenderMDX({ content }: { content: string }) {
   return (
-    <article>
+    <article className="mdx-content">
       <MDXRemote
         source={content}
         components={MDXComponents}
         options={{
           mdxOptions: {
-            rehypePlugins: [rehypePrism]
+            rehypePlugins: [[rehypePrettyCode, options]]
           }
         }}
       />

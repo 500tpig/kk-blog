@@ -55,7 +55,7 @@ const MDXComponents: MDXComponentsProps = {
     <blockquote className="pl-4 border-l-4 border-gray-200 my-4 text-gray-300 italic" {...props} />
   ),
   // eslint-disable-next-line @next/next/no-img-element
-  img: props => <img width="70%" alt='' className="rounded border-4 border-main" {...props} />,
+  img: props => <img width="100%" alt='' className="rounded" {...props} />,
   strong: props => <strong className="font-bold" {...props} />,
   table: props => (
     <div className="my-6 w-full overflow-x-auto">

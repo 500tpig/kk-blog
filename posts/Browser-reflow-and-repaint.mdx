@@ -1,0 +1,169 @@
+---
+title: '浏览器的重排重绘'
+date: '2025-06-20'
+tags: '浏览器,JavaScript,CSS'
+overview: '本文将带你深入了解浏览器的重排（Reflow）与重绘（Repaint），分析它们的触发原因，探讨如何进行性能优化，以及它们对网页性能的深远影响。'
+---
+## 1. 浏览器的渲染流程回顾
+
+在深入了解重排和重绘之前，我们先简单回顾一下浏览器的主要渲染流程：
+
+1.  **解析 HTML**：浏览器解析 HTML 代码，构建 DOM（文档对象模型）树。
+2.  **解析 CSS**：浏览器解析 CSS 代码，构建 CSSOM（CSS 对象模型）树。
+3.  **构建渲染树（Render Tree）**：结合 DOM 树和 CSSOM 树，浏览器创建一个只包含可见元素及其样式的渲染树。
+4.  **布局（Layout 或 Reflow）**：浏览器计算渲染树中每个节点在屏幕上的确切位置和尺寸。这个阶段被称为布局或重排。
+5.  **绘制（Paint 或 Repaint）**：浏览器根据渲染树和布局信息，将每个节点的内容绘制到屏幕上。这个阶段被称为绘制或重绘。
+
+![浏览器渲染流程图](/images/browser/browser-render-flow.png)
+
+## 2. 什么是重排（Reflow）？
+
+**重排（Reflow）**，也称为布局（Layout），是指浏览器重新计算渲染树中元素的位置和尺寸的过程。当 DOM 结构发生改变、元素的尺寸或位置发生变化、浏览器窗口尺寸变化等情况时，都可能触发重排。
+
+**可以想象一下这样的场景**：你改变了一个 `div` 元素的宽度，这会导致其兄弟元素或父元素的位置和尺寸也可能需要重新计算。这个连锁反应会涉及到渲染树的多个部分，甚至整个渲染树，这是一个代价较高的操作。
+
+以下是一些常见的触发重排的操作：
+
+- 改变元素的**尺寸**（width、height、padding、margin、border 等）
+- 改变元素的**位置**（left、top、right、bottom、position 为 absolute 或 fixed 等）
+- 改变元素的**可见性**（display 为 none）
+- 改变**字体大小**
+- 添加或删除 **DOM 元素**
+- 内容发生改变（例如，用户在 input 框中输入文本）
+- 浏览器窗口尺寸改变（resize）
+- 滚动条的出现
+- 获取某些布局信息（offsetWidth、offsetHeight、scrollTop、scrollLeft、clientWidth、clientHeight、getComputedStyle 等）
+## 3. 什么是重绘（Repaint）？
+
+**重绘（Repaint）**是指当元素的**样式**发生改变，但不会影响其在文档流中的位置和尺寸时，浏览器重新绘制元素的过程。例如，改变元素的颜色、背景色、字体样式等只会触发重绘。
+
+**与重排相比，重绘的开销要小得多**，因为它不需要重新计算元素的布局，只需要根据新的样式重新绘制即可。
+
+以下是一些常见的触发重绘的操作：
+
+- 改变元素的 **color、background、opacity、visibility（当不改变布局时）、outline、text-decoration** 等样式。
+
+## 4. 重排必然导致重绘，但重绘不一定导致重排
+
+一个非常重要的结论是：**任何导致元素布局发生改变的操作都会触发重排，而重排结束后通常会伴随着重绘**。但改变元素的某些样式属性（如颜色、背景色等）只会触发重绘，而不会触发重排，因为这些改变不会影响元素的布局。
+
+**因此，我们应该尽可能避免触发重排，因为它比重绘的开销更大，对性能的影响也更显著。**
+
+## 5. 如何减少重排和重绘？性能优化策略
+
+了解了重排和重绘的原因和影响后，我们就可以采取一些策略来优化网页性能，减少它们的发生：
+
+### 批量修改 DOM
+
+当需要进行多次 DOM 操作时，尽量将这些操作合并为一次。例如，可以使用 `DocumentFragment` 或在修改前将元素设置为 `display: none`，完成修改后再显示。
+
+**错误的做法：**
+
+```js
+const container = document.getElementById('container')
+for (let i = 0; i < 100; i++) {
+  const li = document.createElement('li')
+  li.textContent = `Item ${i}`
+  container.appendChild(li) // 每次循环都触发重排
+}
+```
+**正确的做法：**
+
+```js
+const container = document.getElementById('container');
+const fragment = document.createDocumentFragment();
+for (let i = 0; i < 100; i++) {
+  const li = document.createElement('li');
+  li.textContent = `Item ${i}`;
+  fragment.appendChild(li); // 先添加到文档片段中
+}
+container.appendChild(fragment); // 一次性添加到 DOM 中，只触发一次重排
+```
+
+### 避免频繁操作元素的样式
+
+尽量一次性修改元素的多个样式，而不是多次修改单个样式。可以使用 `className` 或 `style.cssText` 来实现。
+
+**错误的做法：**
+
+```javascript
+const element = document.getElementById('myElement');
+element.style.width = '100px'; // 触发重排
+element.style.height = '200px'; // 再次触发重排
+element.style.backgroundColor = 'red'; // 触发重绘
+```
+
+**正确的做法：**
+
+```javascript
+// 使用 style.cssText
+const element = document.getElementById('myElement');
+element.style.cssText = 'width: 100px; height: 200px; background-color: red;'; // 只触发一次重排和一次重绘
+
+// 或者使用 CSS 类 (推荐)
+element.className = 'new-style'; // 提前定义好 new-style 的样式
+```
+
+### 使用 `will-change` 属性
+
+对于即将发生动画或频繁变化的元素，可以使用 `will-change` 属性提前告知浏览器，让浏览器可以提前进行优化。但要谨慎使用，过度使用可能会导致性能问题。
+
+```css
+.moving-element {
+  will-change: transform; /* 告知浏览器该元素将要进行 transform 动画 */
+}
+```
+
+### 避免在循环中读取布局属性
+
+在循环中读取像 `offsetWidth`、`offsetHeight` 等布局属性会导致浏览器强制进行同步布局计算，从而引起性能问题。应该先将这些值缓存起来再使用。
+
+**错误的做法：**
+
+```javascript
+for (let i = 0; i < elements.length; i++) {
+  console.log(elements[i].offsetWidth); // 每次循环都可能触发重排
+  // ... 其他操作
+}
+```
+
+**正确的做法：**
+
+```javascript
+const widths = Array.from(elements).map(el => el.offsetWidth);
+for (let i = 0; i < elements.length; i++) {
+  console.log(widths[i]); // 使用缓存的值
+  // ... 其他操作
+}
+```
+
+### 使用 `transform` 和 `opacity` 进行动画
+
+这两个属性的修改通常只会触发合成（Composite），而不会触发重排和重绘，因为它们是由 GPU 处理的。
+
+```css
+.animate {
+  transition: transform 0.3s ease-in-out;
+}
+
+.fade {
+  transition: opacity 0.3s ease-in-out;
+}
+```
+
+### 其他策略
+
+- **避免使用表格布局（table layout）**：表格布局的计算往往比较复杂，一个小小的改动可能会导致整个表格的重新布局。尽量使用 CSS flexbox 或 grid 布局。
+- **减少 CSS 选择器的复杂性**：复杂的 CSS 选择器会增加浏览器匹配元素的成本，间接影响渲染性能。
+- **使用事件委托**：将事件监听器添加到父元素上，而不是为每个子元素都添加监听器，可以减少 DOM 操作，从而减少重排和重绘的发生。
+
+## 6. 总结
+1. **重排 (Reflow / 回流)**
+   - **本质**：当 DOM 元素的**几何属性**（如宽度、高度、内外边距、位置等）发生变化，导致浏览器需要重新计算元素在设备视口（viewport）内的准确大小和位置时，这个过程就是重排。
+   - **影响**：重排是一个成本非常高的操作。一个元素的重排通常会影响其所有子元素、祖先元素以及文档流中的兄弟元素，导致它们也发生重排。
+   - **比喻**：好比你改变了一栋建筑的承重墙或房间大小，整个楼层的布局都需要重新规划计算。
+2. **重绘 (Repaint)**
+   - **本质**：当 DOM 元素的**外观样式**（如颜色 `color`、背景色 `background-color`、`visibility` 等）发生变化，但**不影响其几何布局**时，浏览器会跳过布局计算，直接重新绘制元素的外观。
+   - **影响**：重绘的成本相对较低，因为它不涉及几何计算。
+   - **重要关联**：**重排必然会触发重绘**，但重绘不一定会触发重排。
+   - **比喻**：好比你只是给一栋建筑的墙壁刷上一层新颜色的油漆，建筑的结构和布局完全不受影响。

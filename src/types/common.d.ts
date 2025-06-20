@@ -8,20 +8,20 @@ declare interface TagsColors {
 
   // --- 工具与生态 ---
   Tailwind: string
-  Electron: string
-  Echarts: string
-  D3: string
+  // Electron: string
+  // Echarts: string
+  // D3: string
 
   // --- 基础 ---
   HTML: string
   CSS: string
+  浏览器: string
 
   // --- 后端及其他 ---
   // Java: string
   // Python: string
   // 'Node.js': string
 }
-
 
 declare interface TableOfContentsType {
   level: number

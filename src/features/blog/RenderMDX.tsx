@@ -1,5 +1,6 @@
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import rehypePrettyCode from 'rehype-pretty-code'
+import remarkGfm from 'remark-gfm'
 
 import MDXComponents from '@/components/MDXComponents'
 
@@ -22,6 +23,7 @@ export default function RenderMDX({ content }: { content: string }) {
         components={MDXComponents}
         options={{
           mdxOptions: {
+            remarkPlugins: [remarkGfm],
             rehypePlugins: [[rehypePrettyCode, options]]
           }
         }}

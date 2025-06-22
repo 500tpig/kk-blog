@@ -1,93 +1,10 @@
 @import 'tailwindcss';
 
-/* @custom-variant dark (&:where(.dark, .dark *)); */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
-
-@theme {
-  /* 布局尺寸 */
-  --site-width: 1400px;
-  --sidebar-width: 24.375rem;
-
-  /* 主色调 */
-  --accent-color: #ff5671;
-  --term-color: #26bda7;
-  --accent-color-alt: #fff;
-  --second-color: #ff5671;
-  --second-color-alt: #fff;
-  --button-bg: var(--accent-color);
-  --button-bg-hover: #373c41;
-
-  /* 基础样式 */
-  --body-color: #474c5d;
-  --headings-color: #2f2e35;
-  --body-bg-color: #f5f5fa;
-  --card-bg: #fff;
-  --shadow-soft: 0 4px 25px #25252e1f;
-  --soft-radius: 12px;
-  --btn-radius: 50px;
-  --body-line-height: 1.8;
-
-  /* 过渡动画 */
-  --transition-duration: 0.6s;
-  --transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-
-  /* 代码高亮颜色 */
-  --code-bg: #f8f9fa;
-  --code-color: #383a42;
-  --code-border: #e5e7eb;
-  --code-highlight-bg: rgba(255, 86, 113, 0.1);
-  --code-inline-bg: rgba(175, 184, 193, 0.2);
-  --code-inline-color: #e11d48;
-
-  --color-tag-javascript: #f7df1e;
-  --color-tag-react: #61dafb;
-  --color-tag-vue: #41b883;
-  --color-tag-next: #8b5cf6;
-  --color-tag-tailwind: #38b2ac;
-  --color-tag-electron: #47848f;
-  --color-tag-echarts: #c23531;
-  --color-tag-d3: #f9a03c;
-  --color-tag-html: #fc490b;
-  --color-tag-css: #1572b6;
-}
-
-@variant dark {
-  --body-bg-color: #1f2328;
-  --body-color: #e3e7ed;
-  --headings-color: #fff;
-  --card-bg: #272c31;
-  --soft-white: #ffffff0f;
-  --soft-black: #0000000f;
-
-  /* 暗色模式代码高亮 */
-  --code-bg: #1e1e1e;
-  --code-color: #d4d4d4;
-  --code-border: #374151;
-  --code-highlight-bg: rgba(255, 86, 113, 0.15);
-  --code-inline-bg: rgba(110, 118, 129, 0.4);
-  --code-inline-color: #ff7b72;
-}
 
 :root {
   --site-width: 1400px;
   --sidebar-width: 24.375rem;
-
-  --accent-color-alt: #fff;
-  --second-color: #ff5671;
-  --second-color-alt: #fff;
-  --button-bg: var(--accent-color);
-  --button-bg-hover: #373c41;
-  --body-color: #474c5d;
-  --headings-color: #2f2e35;
-  --shadow-soft: 0 4px 25px #25252e1f;
-  --soft-radius: 12px;
-  --btn-radius: 50px;
-  --body-line-height: 1.8;
-  --card-bg: #fff;
-
-  /* 为过渡动画定义持续时间和缓动函数 (可选, 方便管理) */
-  --transition-duration: 0.6s;
-  --transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }
 
 @theme inline {
@@ -97,21 +14,16 @@
   --color-accent: var(--accent-color);
   --color-term: var(--term-color);
   --color-card-bg: var(--card-bg);
-  --width-content-width: min(100%, var(--site-width, 1140px));
+  --width-content-width: min(100%, var(--site-width));
   --width-sidebar-width: var(--sidebar-width);
-
   --color-divider: #7f818540;
-  --color-soft-white: var(--soft-white);
 }
 
 /* 亮色模式 */
 [data-theme='light'] {
   --body-bg-color: #f5f5fa;
-  --accent-color-alt: #fff;
-  --second-color: #ff5671;
-  --second-color-alt: #fff;
-  --button-bg: var(--accent-color);
-  --button-bg-hover: #373c41;
+  --accent-color: #ff5671;
+  --term-color: #26bda7;
   --body-color: #474c5d;
   --headings-color: #2f2e35;
   --shadow-soft: 0 4px 25px #25252e1f;
@@ -119,19 +31,12 @@
   --btn-radius: 50px;
   --body-line-height: 1.8;
   --card-bg: #fff;
-
-  /* 为过渡动画定义持续时间和缓动函数 (可选, 方便管理) */
-  --transition-duration: 0.6s;
-  --transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }
 
 /* 深色模式 */
 [data-theme='dark'] {
-  --accent-color-alt: #fff;
-  --second-color: #ff5671;
-  --second-color-alt: #fff;
-  --button-bg: var(--accent-color);
-  --button-bg-hover: #373c41;
+  --accent-color: #ff5671;
+  --term-color: #26bda7;
   --soft-radius: 12px;
   --btn-radius: 50px;
   --body-line-height: 1.8;
@@ -144,8 +49,4 @@
   --soft-black-2: #31384030;
   --shadow-soft: none;
   --card-bg: #272c31;
-
-  /* 为过渡动画定义持续时间和缓动函数 (可选) */
-  --transition-duration: 0.6s;
-  --transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }

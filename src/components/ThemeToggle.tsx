@@ -12,8 +12,8 @@ export default function ThemeToggle() {
     <Switch
       checked={theme === 'dark'}
       onChange={(event: ReactMouseEvent<HTMLDivElement>) => toggleTheme(event)}
-      leftIcon={<SunIcon className="text-[#ffb300]" />}
-      rightIcon={<MoonIcon className="text-[#1f2328]" />}
+      leftIcon={<SunIcon className="text-yellow-500" />}
+      rightIcon={<MoonIcon className="text-slate-700 dark:text-slate-300" />}
     />
   )
 }

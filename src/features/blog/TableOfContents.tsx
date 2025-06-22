@@ -121,7 +121,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
         }`}
       >
         <div className="overflow-hidden">
-          <div className="p-4 sm:p-6 bg-card-bg">
+          <div className="p-4 sm:p-6 dark:bg-body-bg">
             {renderHeadings(nestedHeadings)}
           </div>
         </div>

@@ -41,7 +41,7 @@ const MDXComponents: MDXComponentsProps = {
   h4: props => <Heading level={4} className="text-xl font-semibold mt-6 mb-4" {...props} />,
   h5: props => <Heading level={5} className="text-lg font-semibold mt-6 mb-4" {...props} />,
   h6: props => <Heading level={6} className="text-base font-semibold mt-6 mb-4" {...props} />,
-  hr: props => <hr className="border-t border-gray-600" {...props} />,
+  hr: props => <hr className="border-t border-gray-600 my-6" {...props} />,
   p: props => <p className="mt-4 mb-4" {...props} />,
   a: props => (
     <a className="link-underline" target="_blank" rel="noopener noreferrer nofollow" {...props} />
@@ -52,26 +52,33 @@ const MDXComponents: MDXComponentsProps = {
   code: props => <code {...props} />,
   pre: props => <pre className="relative" {...props} />,
   blockquote: props => (
-    <blockquote className="pl-4 border-l-4 border-gray-200 my-4 text-gray-300 italic" {...props} />
+    <blockquote
+      className="px-4 sm:pl-6 my-4 italic py-3
+               rounded-r-lg
+               border-l-4
+               bg-slate-100 dark:bg-[#363B40]
+               border-accent"
+      {...props}
+    />
   ),
   // eslint-disable-next-line @next/next/no-img-element
-  img: props => <img width="100%" alt='' className="rounded" {...props} />,
+  img: props => <img width="100%" alt="" className="rounded" {...props} />,
   strong: props => <strong className="font-bold" {...props} />,
   table: props => (
     <div className="my-6 w-full overflow-x-auto">
-      <table className="w-full text-gray-200 bg-gray-800 shadow-lg rounded-lg" {...props} />
+      <table className="w-full" {...props} />
     </div>
   ),
-  tr: props => <tr className="border-t border-gray-500" {...props} />,
+  tr: props => <tr className="border-b border-gray-200 dark:border-gray-700" {...props} />,
   th: props => (
     <th
-      className="px-4 py-2 font-bold text-left bg-gray-900 text-white [&[align=center]]:text-center [&[align=right]]:text-right"
+      className="px-4 py-3 font-semibold text-left text-gray-900 dark:text-gray-100 [&[align=center]]:text-center [&[align=right]]:text-right"
       {...props}
     />
   ),
   td: props => (
     <td
-      className="px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right"
+      className="px-4 py-3 text-left text-gray-700 dark:text-gray-300 [&[align=center]]:text-center [&[align=right]]:text-right"
       {...props}
     />
   )

@@ -5,6 +5,7 @@
 :root {
   --site-width: 1400px;
   --sidebar-width: 24.375rem;
+  --accent-color: #ff5671;
 }
 
 @theme inline {
@@ -22,7 +23,6 @@
 /* 亮色模式 */
 [data-theme='light'] {
   --body-bg-color: #f5f5fa;
-  --accent-color: #ff5671;
   --term-color: #26bda7;
   --body-color: #474c5d;
   --headings-color: #2f2e35;
@@ -35,7 +35,6 @@
 
 /* 深色模式 */
 [data-theme='dark'] {
-  --accent-color: #ff5671;
   --term-color: #26bda7;
   --soft-radius: 12px;
   --btn-radius: 50px;

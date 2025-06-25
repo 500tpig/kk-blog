@@ -21,9 +21,9 @@ React 的核心设计哲学可以精炼地概括为 **UI = f(state)**。
   - **Vue 在 MVVM 架构下，核心是 ViewModel**，它通过双向绑定机制连接了 View（视图）和 Model（数据）。这意味着 View 上的用户输入能自动更新 Model，Model 的变化也能自动反映到 View 上。这在处理表单等场景时提供了极大的便利，但在复杂应用中可能导致数据流向不够清晰。
 - **核心定位与生态：**
   - **React 更像一个纯粹的 UI 库。** 它的核心职责是高效地渲染 UI。路由、全局状态管理、网络请求等功能都交由社区生态来解决（例如 React Router, Zustand, TanStack Query 等），这提供了极高的灵活性和选择空间。
-  - **Vue 是一个“渐进式框架”。** 它提供了一套更完整的官方解决方案，包括 Vue Router（路由）和 Pinia（状态管理），为开发者提供了一个更统一、开箱即用的“全家桶”体验。
+  - **Vue 是一个"渐进式框架"。** 它提供了一套更完整的官方解决方案，包括 Vue Router（路由）和 Pinia（状态管理），为开发者提供了一个更统一、开箱即用的"全家桶"体验。
 - **实现思想：**
-  - **React 秉承“All in JS”的理念。** 它不创造新的模板语法，而是通过 JSX 这一语法扩展，让我们可以在 JavaScript 中以声明式的方式描述 UI 结构、逻辑甚至是样式（通过 CSS-in-JS 方案），最大化地利用 JavaScript 的编程能力。
+  - **React 秉承"All in JS"的理念。** 它不创造新的模板语法，而是通过 JSX 这一语法扩展，让我们可以在 JavaScript 中以声明式的方式描述 UI 结构、逻辑甚至是样式（通过 CSS-in-JS 方案），最大化地利用 JavaScript 的编程能力。
   - **Vue 则倾向于分离关注点**，将 HTML 结构、JavaScript 逻辑和 CSS 样式分别放在 `<template>`、`<script>` 和 `<style>` 标签中。这种方式对于有传统 Web 开发背景的开发者来说，通常更加直观和易于上手。
 
 ##  2. 什么是 JSX？它和 Vue 的模板 (template) 有什么本质区别？
@@ -42,23 +42,31 @@ JSX (JavaScript XML) 是 JavaScript 的一个语法扩展，它允许我们在 J
 - **逻辑实现方式不同：**
 
   - 在 JSX中实现条件或列表渲染，我们使用的是原生的 JavaScript 语法，例如 ```&&```、三元运算符 (```? :```) 或数组的 ```.map()```方法。
-    ```js
-    // 条件渲染
-    {isLoggedIn && <p>Welcome!</p>}
-
-    // 列表渲染
-    <ul>
-      {items.map(item => <li key={item.id}>{item.name}</li>)}
-    </ul>
+    ```jsx
+    function UserList({ users, isLoggedIn }) {
+      return (
+        <div>
+          {/* 条件渲染 */}
+          {isLoggedIn && <p>Welcome!</p>}
+          
+          {/* 列表渲染 */}
+          <ul>
+            {users.map(user => <li key={user.id}>{user.name}</li>)}
+          </ul>
+        </div>
+      );
+    }
     ```
 
   - 在 Vue 模板中，则必须使用其特定的指令来完成同样的工作。
     ```html
-    <p v-if="isLoggedIn">Welcome!</p>
-    
-    <ul>
-      <li v-for="item in items" :key="item.id">{{ item.name }}</li>
-    </ul>
+    <template>
+      <p v-if="isLoggedIn">Welcome!</p>
+      
+      <ul>
+        <li v-for="user in users" :key="user.id">{{ user.name }}</li>
+      </ul>
+    </template>
     ```
 
 - **属性绑定与事件处理：**
@@ -72,15 +80,16 @@ JSX (JavaScript XML) 是 JavaScript 的一个语法扩展，它允许我们在 J
 
 **定义：** 它就是一个普通的 JavaScript 函数。该函数接收一个包含组件属性的 `props` 对象作为其唯一参数，并返回一个 React 元素（通常是用 JSX 编写的）来声明性地描述 UI 的外观。
 ```tsx
-// 使用 tsx Interface 来定义 props 的类型，这是最佳实践
+// 使用 TypeScript Interface 来定义 props 的类型，这是最佳实践
 interface UserProfileProps {
   name: string;
   avatarUrl: string;
   isActive: boolean;
+  onContact?: () => void; // 可选的事件处理函数
 }
 
 // 一个典型的函数式组件
-function UserProfile({ name, avatarUrl, isActive }: UserProfileProps): JSX.Element {
+function UserProfile({ name, avatarUrl, isActive, onContact }: UserProfileProps) {
   const statusClass = isActive ? 'active' : 'inactive';
 
   return (
@@ -88,7 +97,28 @@ function UserProfile({ name, avatarUrl, isActive }: UserProfileProps): JSX.Eleme
       <img src={avatarUrl} alt={`${name}'s avatar`} />
       <h2>{name}</h2>
       <p>Status: {isActive ? 'Online' : 'Offline'}</p>
+      {onContact && (
+        <button onClick={onContact} className="contact-btn">
+          Contact {name}
+        </button>
+      )}
     </div>
+  );
+}
+
+// 使用示例
+function App() {
+  const handleContact = (userName: string) => {
+    console.log(`Contacting ${userName}...`);
+  };
+
+  return (
+    <UserProfile
+      name="张三"
+      avatarUrl="/avatars/zhangsan.jpg"
+      isActive={true}
+      onContact={() => handleContact("张三")}
+    />
   );
 }
 ```
@@ -118,13 +148,14 @@ import { ReactNode } from 'react';
 interface CardProps {
   title: string;
   children: ReactNode;
+  className?: string; // 允许自定义样式
 }
 
-export function Card({ title, children }: CardProps) {
+export function Card({ title, children, className = '' }: CardProps) {
   return (
-    <div className="card-container">
-      <h3 className="card-title">{title}</h3>
-      <div className="card-content">
+    <div className={`bg-white rounded-lg shadow-md border border-gray-200 p-6 ${className}`}>
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">{title}</h3>
+      <div className="text-gray-600">
         {children} {/* 这里渲染传递进来的内容，相当于 Vue 的默认插槽 <slot /> */}
       </div>
     </div>
@@ -134,21 +165,38 @@ export function Card({ title, children }: CardProps) {
 // 如何使用这个 Card 组件
 function App() {
   return (
-    <Card title="User Information">
-      {/* 👇 这里的所有内容都会作为 children prop 传递给 Card 组件 */}
-      <p>This is some information about the user.</p>
-      <button>Contact</button>
-    </Card>
+    <div className="space-y-4">
+      <Card title="用户信息">
+        {/* 👇 这里的所有内容都会作为 children prop 传递给 Card 组件 */}
+        <p>这是关于用户的一些信息。</p>
+        <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          联系用户
+        </button>
+      </Card>
+      
+      <Card title="统计数据" className="bg-blue-50">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">1,234</div>
+            <div className="text-sm text-gray-500">总用户数</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">89%</div>
+            <div className="text-sm text-gray-500">活跃率</div>
+          </div>
+        </div>
+      </Card>
+    </div>
   );
 }
 ```
 
-在这个例子中，`<p>` 和 `<button>` 元素被作为 `children` 属性传递给了 `Card` 组件，并被渲染在 `card-content` div 内部。这是一种极其强大和灵活的模式，是构建可复用和可维护 React 应用的基石。
+在这个例子中，`<p>` 和 `<button>` 元素被作为 `children` 属性传递给了 `Card` 组件，并被渲染在卡片内容区域内部。我们还展示了如何通过 `className` prop 来自定义卡片的样式。这是一种极其强大和灵活的模式，是构建可复用和可维护 React 应用的基石。
 
 ------
 
 **本篇总结：**
 
-- **思维转变：** 从 Vue 的双向绑定和模板指令，转向 React 的单向数据流和 “All in JS” 的 JSX 模式。
+- **思维转变：** 从 Vue 的双向绑定和模板指令，转向 React 的单向数据流和 "All in JS" 的 JSX 模式。
 - **JSX 本质：** 它不是 HTML，而是创建 JavaScript 对象的语法糖，给予你 JavaScript 的全部能力。
 - **组件模型：** 拥抱简洁、无 `this` 的函数式组件，并利用 `props`（尤其是 `props.children`）通过组合来构建复杂的 UI。

@@ -9,7 +9,7 @@ slug: 'Study-React-03'
 
 ## `useContext` - 终结 Prop Drilling
 
-- **核心目的：** 干掉“道具钻探”（Prop Drilling）。当数据需要跨越多个层级时，用它来建立一个“直通车”，避免中间组件无意义的透传。
+- **核心目的：** 干掉"道具钻探"（Prop Drilling）。当数据需要跨越多个层级时，用它来建立一个"直通车"，避免中间组件无意义的透传。
 
 - **关键坑点与解决方案：性能问题** `useContext` 的大坑在于，只要 `Provider` 的 `value` 引用地址一变，所有消费这个 Context 的组件都会重渲染。
 
@@ -44,7 +44,7 @@ slug: 'Study-React-03'
   }
   ```
 
-  **解决方案：拆分 Context，或对 value 进行 `useMemo` 缓存** 这是解决上述性能问题的最佳实践。把“不变的”和“常变的”数据分开。
+  **解决方案：拆分 Context，或对 value 进行 `useMemo` 缓存** 这是解决上述性能问题的最佳实践。把"不变的"和"常变的"数据分开。
 
   ```tsx
   // 最佳实践：拆分 Context
@@ -70,6 +70,198 @@ slug: 'Study-React-03'
 ## `useReducer` - 替代繁杂的 `useState`
 
 - **使用时机：** 当一个状态有多种更新逻辑，或者下一个状态依赖于复杂的前置状态时，用 `useReducer` 会让代码更清晰。
+
+**核心语法：**
+
+```tsx
+const [state, dispatch] = useReducer(reducer, initialState, init?)
+```
+
+**实际使用示例：购物车状态管理**
+
+```tsx
+import { useReducer } from 'react';
+
+// 定义状态类型
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+interface CartState {
+  items: CartItem[];
+  total: number;
+}
+
+// 定义操作类型
+type CartAction = 
+  | { type: 'ADD_ITEM'; payload: Omit<CartItem, 'quantity'> }
+  | { type: 'REMOVE_ITEM'; payload: number }
+  | { type: 'UPDATE_QUANTITY'; payload: { id: number; quantity: number } }
+  | { type: 'CLEAR_CART' };
+
+// 初始状态
+const initialState: CartState = {
+  items: [],
+  total: 0
+};
+
+// Reducer 函数
+function cartReducer(state: CartState, action: CartAction): CartState {
+  switch (action.type) {
+    case 'ADD_ITEM': {
+      const existingItem = state.items.find(item => item.id === action.payload.id);
+      
+      if (existingItem) {
+        // 如果商品已存在，增加数量
+        const updatedItems = state.items.map(item =>
+          item.id === action.payload.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+        
+        return {
+          items: updatedItems,
+          total: updatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+        };
+      } else {
+        // 如果商品不存在，添加新商品
+        const newItem = { ...action.payload, quantity: 1 };
+        const updatedItems = [...state.items, newItem];
+        
+        return {
+          items: updatedItems,
+          total: updatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+        };
+      }
+    }
+    
+    case 'REMOVE_ITEM': {
+      const updatedItems = state.items.filter(item => item.id !== action.payload);
+      
+      return {
+        items: updatedItems,
+        total: updatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      };
+    }
+    
+    case 'UPDATE_QUANTITY': {
+      const updatedItems = state.items.map(item =>
+        item.id === action.payload.id
+          ? { ...item, quantity: Math.max(0, action.payload.quantity) }
+          : item
+      ).filter(item => item.quantity > 0); // 移除数量为 0 的商品
+      
+      return {
+        items: updatedItems,
+        total: updatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      };
+    }
+    
+    case 'CLEAR_CART':
+      return initialState;
+      
+    default:
+      return state;
+  }
+}
+
+// 购物车组件
+function ShoppingCart() {
+  const [state, dispatch] = useReducer(cartReducer, initialState);
+
+  const addItem = (item: Omit<CartItem, 'quantity'>) => {
+    dispatch({ type: 'ADD_ITEM', payload: item });
+  };
+
+  const removeItem = (id: number) => {
+    dispatch({ type: 'REMOVE_ITEM', payload: id });
+  };
+
+  const updateQuantity = (id: number, quantity: number) => {
+    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+  };
+
+  const clearCart = () => {
+    dispatch({ type: 'CLEAR_CART' });
+  };
+
+  return (
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">购物车</h2>
+      
+      {state.items.length === 0 ? (
+        <p className="text-gray-500">购物车是空的</p>
+      ) : (
+        <>
+          <div className="space-y-2 mb-4">
+            {state.items.map(item => (
+              <div key={item.id} className="flex justify-between items-center p-2 border rounded">
+                <div>
+                  <h3 className="font-medium">{item.name}</h3>
+                  <p className="text-sm text-gray-600">¥{item.price}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    className="px-2 py-1 bg-gray-200 rounded"
+                  >
+                    -
+                  </button>
+                  <span className="w-8 text-center">{item.quantity}</span>
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    className="px-2 py-1 bg-gray-200 rounded"
+                  >
+                    +
+                  </button>
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    className="ml-2 text-red-500"
+                  >
+                    删除
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <p className="text-lg font-bold">总计: ¥{state.total}</p>
+            <button
+              onClick={clearCart}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              清空购物车
+            </button>
+          </div>
+        </>
+      )}
+      
+      {/* 示例商品 */}
+      <div className="mt-6">
+        <h3 className="font-bold mb-2">添加商品:</h3>
+        <div className="space-y-2">
+          <button
+            onClick={() => addItem({ id: 1, name: '苹果', price: 5 })}
+            className="block w-full text-left p-2 border rounded hover:bg-gray-50"
+          >
+            苹果 - ¥5
+          </button>
+          <button
+            onClick={() => addItem({ id: 2, name: '香蕉', price: 3 })}
+            className="block w-full text-left p-2 border rounded hover:bg-gray-50"
+          >
+            香蕉 - ¥3
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
 
 ## `useMemo` & `useCallback` - 性能优化工具
 
@@ -225,3 +417,124 @@ slug: 'Study-React-03'
     );
   }
   ```
+
+## 实用技巧与最佳实践
+
+### 1. 何时使用不同的 Hooks
+
+- **useState**: 简单的组件状态管理
+- **useReducer**: 复杂的状态逻辑，多种操作类型
+- **useContext**: 跨组件共享数据，避免 prop drilling
+- **useMemo/useCallback**: 性能优化，配合 React.memo 使用
+
+### 2. 自定义 Hooks 的设计原则
+
+- **单一职责**: 每个 Hook 只处理一个特定的逻辑
+- **可复用性**: 设计通用的接口，避免硬编码
+- **类型安全**: 使用 TypeScript 提供完整的类型支持
+
+```tsx
+// 好的自定义 Hook 设计
+function useLocalStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error(error);
+      return initialValue;
+    }
+  });
+
+  const setValue = (value: T | ((val: T) => T)) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return [storedValue, setValue] as const;
+}
+
+// 使用示例
+function UserSettings() {
+  const [theme, setTheme] = useLocalStorage('theme', 'light');
+  const [language, setLanguage] = useLocalStorage('language', 'zh-CN');
+
+  return (
+    <div>
+      <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+        <option value="light">浅色主题</option>
+        <option value="dark">深色主题</option>
+      </select>
+      
+      <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+        <option value="zh-CN">中文</option>
+        <option value="en-US">English</option>
+      </select>
+    </div>
+  );
+}
+```
+
+### 3. 性能优化的最佳实践
+
+- **避免过早优化**: 先确保功能正确，再考虑性能
+- **使用 React DevTools Profiler**: 识别真正的性能瓶颈
+- **合理使用 React.memo**: 配合 useCallback 和 useMemo 使用
+
+```tsx
+// 性能优化的正确方式
+import { memo, useCallback, useMemo } from 'react';
+
+// 使用 memo 包装组件
+const ExpensiveComponent = memo(({ data, onItemClick }) => {
+  // 使用 useMemo 缓存计算结果
+  const processedData = useMemo(() => {
+    return data.map(item => ({
+      ...item,
+      processed: item.value * 2
+    }));
+  }, [data]);
+
+  return (
+    <div>
+      {processedData.map(item => (
+        <div key={item.id} onClick={() => onItemClick(item.id)}>
+          {item.name}: {item.processed}
+        </div>
+      ))}
+    </div>
+  );
+});
+
+function ParentComponent() {
+  const [data, setData] = useState([]);
+  
+  // 使用 useCallback 缓存函数
+  const handleItemClick = useCallback((id) => {
+    console.log('Item clicked:', id);
+  }, []);
+
+  return (
+    <ExpensiveComponent 
+      data={data} 
+      onItemClick={handleItemClick} 
+    />
+  );
+}
+```
+
+------
+
+**本篇总结：**
+
+- **状态管理进阶**: 使用 `useReducer` 处理复杂状态逻辑，`useContext` 解决跨组件数据共享
+- **性能优化**: 合理使用 `useMemo` 和 `useCallback`，避免不必要的重新渲染
+- **逻辑复用**: 通过自定义 Hooks 封装和复用复杂逻辑
+- **最佳实践**: 遵循单一职责、类型安全、性能优化的原则
+
+掌握这些高级 Hooks，你就能构建出更加健壮、高效和可维护的 React 应用！

@@ -19,7 +19,9 @@ export const sidebarNav: NavSection[] = [
     items: [
       { title: 'React 学习笔记 Vue 转向 React', href: '/blog/Study-React-01' },
       { title: 'React 学习笔记 状态与生命周期', href: '/blog/Study-React-02' },
-      { title: 'React 学习笔记 React的一些Hooks', href: '/blog/Study-React-03' }
+      { title: 'React 学习笔记 React的一些Hooks', href: '/blog/Study-React-03' },
+      { title: 'React 学习笔记 状态管理进阶', href: '/blog/Study-React-04' },
+      { title: 'React 学习笔记 性能优化实战', href: '/blog/Study-React-05' }
     ]
   },
   {

@@ -1,7 +1,7 @@
 import Divider from '@/components/ui/Divider'
 import { ScrollToTopButton } from '@/components/ui/ScrollToTopButton'
 
-import { BlogCards } from '@/features/blog/server'
+import { BlogCardsData } from '@/features/blog/server'
 import { HeroSection } from '@/features/home'
 import { PersonalServices } from '@/features/home'
 import { SkillsMarquee } from '@/features/home'
@@ -30,7 +30,7 @@ export default function page() {
             <div className="heading-divider"></div>
             <h3 className="ml-3 text-lg lg:text-xl">My Blogs</h3>
           </div>
-          <BlogCards />
+          <BlogCardsData />
         </div>
       </div>
 

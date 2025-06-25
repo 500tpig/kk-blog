@@ -1,5 +1,5 @@
 import { Inter } from 'next/font/google'
-import { cookies } from 'next/headers'
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
 
 import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
 
@@ -17,6 +17,7 @@ const inter = Inter({
   display: 'swap', // display策略
   variable: '--font-inter' // 可以通过CSS 变量使用它
 })
+
 export const metadata: Metadata = {
   title: 'kk博客',
   description: 'kk博客',
@@ -26,32 +27,34 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png'
   }
 }
-export default async function RootLayout({
+
+export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // 在服务器端读取 cookie
-  const cookieStore = await cookies()
-  const themeCookie = cookieStore.get('theme')
-  const initialTheme = themeCookie?.value === 'dark' ? 'dark' : 'light'
   return (
-    // 将主题直接应用到 <html> 标签
-    <html lang="zh-cn" className={`${inter.variable}`} data-theme={initialTheme}>
+    <html lang="zh-cn" className={`${inter.variable}`} suppressHydrationWarning>
       <body className="antialiased">
-        {/* 将 initialTheme 传递给 ThemeProvider */}
-        <ThemeProvider initialTheme={initialTheme}>
-          <ScrollProvider>
-            <SmoothScrollProvider>
-              <div className="flex min-h-screen flex-col items-start h-full">
-                <StaticHeader />
-                <StickyHeader />
-                <main className="flex-grow w-full h-full">{children}</main>
-                <Footer />
-              </div>
-            </SmoothScrollProvider>
-          </ScrollProvider>
-        </ThemeProvider>
+        <NextThemesProvider
+          attribute="data-theme"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange={false}
+        >
+          <ThemeProvider>
+            <ScrollProvider>
+              <SmoothScrollProvider>
+                <div className="flex min-h-screen flex-col items-start h-full">
+                  <StaticHeader />
+                  <StickyHeader />
+                  <main className="flex-grow w-full h-full">{children}</main>
+                  <Footer />
+                </div>
+              </SmoothScrollProvider>
+            </ScrollProvider>
+          </ThemeProvider>
+        </NextThemesProvider>
       </body>
     </html>
   )

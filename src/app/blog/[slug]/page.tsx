@@ -79,6 +79,38 @@ function Sidebar() {
   )
 }
 
+/**
+ * 从 markdown 内容中提取标题信息
+ * @param content markdown 内容
+ * @returns 标题数组
+ */
+function extractHeadings(content: string): TableOfContentsType[] {
+  const headingRegex = /^(#{1,3})\s+(.*)/gm
+  let match
+  const headings: TableOfContentsType[] = []
+  
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length
+    let text = match[2].trim()
+    
+    // 清理文本：移除 markdown 语法标记
+    text = text
+      .replace(/\*\*(.*?)\*\*/g, '$1') // 移除加粗标记
+      .replace(/\*(.*?)\*/g, '$1')     // 移除斜体标记
+      .replace(/`(.*?)`/g, '$1')       // 移除行内代码标记
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1') // 移除链接，保留文本
+      .trim()
+    
+    const id = slugify(text)
+    
+    if (id) {
+      headings.push({ level, text, id })
+    }
+  }
+  
+  return headings
+}
+
 export default async function Page({ params }: { params: Params }) {
   const { slug } = await params
   const post = await getBlogPost(slug)
@@ -88,15 +120,7 @@ export default async function Page({ params }: { params: Params }) {
   }
 
   const { content, metadata } = post
-  const headingRegex = /^(#{1,3})\s+(.*)/gm
-  let match
-  const headings: TableOfContentsType[] = []
-  while ((match = headingRegex.exec(content)) !== null) {
-    const level = match[1].length
-    const text = match[2].trim()
-    const id = slugify(text)
-    headings.push({ level, text, id })
-  }
+  const headings = extractHeadings(content)
 
   const structuredData = {
     '@context': 'https://schema.org',

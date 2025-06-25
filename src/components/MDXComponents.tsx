@@ -4,6 +4,7 @@
 import { JSX, ReactNode } from 'react'
 
 import { slugify, getTextFromChildren } from '@/lib/utils'
+
 interface HeadingProps {
   level: 1 | 2 | 3 | 4 | 5 | 6
   className: string
@@ -12,10 +13,17 @@ interface HeadingProps {
 
 const Heading: React.FC<HeadingProps> = ({ level, className, children }) => {
   const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements
-
-  // 使用新的工具函数来生成可靠的 ID
   const textContent = getTextFromChildren(children)
   const headingId = slugify(textContent)
+
+  // 确保 ID 存在
+  if (!headingId) {
+    return (
+      <HeadingTag className={className}>
+        {children}
+      </HeadingTag>
+    )
+  }
 
   return (
     <HeadingTag id={headingId} className={className}>

@@ -47,19 +47,30 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
   const handleLinkClick = (e: MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
-    const element = document.getElementById(id)
-    if (element) {
-      const offset = 100 // 预留 100px 的顶部空间
-      const bodyRect = document.body.getBoundingClientRect().top
-      const elementRect = element.getBoundingClientRect().top
-      const elementPosition = elementRect - bodyRect
-      const offsetPosition = elementPosition - offset
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      })
+    
+    // 尝试查找目标元素
+    let element = document.getElementById(id)
+    
+    if (!element) {
+      // 如果直接查找失败，尝试使用 querySelector
+      element = document.querySelector(`[id="${id}"]`)
     }
+    
+    if (!element) {
+      return
+    }
+
+    // 计算滚动位置
+    const offset = 100 // 预留 100px 的顶部空间
+    const bodyRect = document.body.getBoundingClientRect().top
+    const elementRect = element.getBoundingClientRect().top
+    const elementPosition = elementRect - bodyRect
+    const offsetPosition = elementPosition - offset
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    })
   }
 
   // 递归渲染组件，用于生成嵌套列表
@@ -81,6 +92,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
                   href={`#${heading.id}`}
                   onClick={e => handleLinkClick(e, heading.id)}
                   className="text-sm sm:text-base text-body-color hover:text-accent transition-colors block hover:underline"
+                  title={`跳转到: ${cleanedText}`}
                 >
                   {cleanedText}
                 </a>

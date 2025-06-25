@@ -133,8 +133,299 @@ slug: 'Study-Next-05'
 
 - **使用时机：** 当一个组件有非常复杂、独特的样式逻辑，尤其是包含**动画、伪类、或多层嵌套**，用 Tailwind 工具类写起来非常繁琐时，就是使用 CSS Modules 的最佳时机。
 
-## 总结与推荐策略
+## 🎨 Tailwind CSS 进阶技巧
 
-- **默认使用 Tailwind CSS**：对于 90% 的场景，包括布局、颜色、间距、字体等，直接在 JSX 中使用工具类。
-- **全局样式 `globals.css`**：用于定义应用的基础（`body`, `h1-h6` 等）、CSS 变量（主题化），以及引入外部 CSS（如字体、代码高亮主题）。
-- **CSS Modules `.module.css`**：作为“逃生舱”，用于处理那些用工具类难以表达的、与特定组件强绑定的复杂样式。
+### 响应式设计最佳实践
+```tsx
+// 移动优先的响应式设计
+function ResponsiveCard() {
+  return (
+    <div className={`
+      w-full          // 默认全宽
+      p-4             // 默认内边距
+      sm:w-1/2        // 小屏幕时占一半
+      md:w-1/3        // 中屏幕时占三分之一
+      lg:w-1/4        // 大屏幕时占四分之一
+      sm:p-6          // 小屏幕时增加内边距
+      lg:p-8          // 大屏幕时再增加内边距
+    `}>
+      响应式内容
+    </div>
+  );
+}
+
+// 复杂布局的响应式示例
+function ResponsiveLayout() {
+  return (
+    <div className="
+      flex flex-col       // 默认垂直布局
+      gap-4              // 元素间距
+      md:flex-row        // 中屏幕时改为水平布局
+      md:gap-8           // 中屏幕时增加间距
+      lg:max-w-6xl       // 大屏幕时限制最大宽度
+      lg:mx-auto         // 大屏幕时居中
+    ">
+      <main className="flex-1 md:order-2">主内容</main>
+      <aside className="w-full md:w-64 md:order-1">侧边栏</aside>
+    </div>
+  );
+}
+```
+
+### 状态变体的高级用法
+```tsx
+function InteractiveButton() {
+  return (
+    <button className="
+      px-6 py-3 
+      bg-blue-500 text-white rounded-lg
+      
+      // 悬停状态
+      hover:bg-blue-600 
+      hover:shadow-lg
+      hover:scale-105
+      
+      // 焦点状态  
+      focus:outline-none
+      focus:ring-2
+      focus:ring-blue-500
+      focus:ring-offset-2
+      
+      // 激活状态
+      active:scale-95
+      
+      // 禁用状态
+      disabled:opacity-50
+      disabled:cursor-not-allowed
+      disabled:hover:bg-blue-500
+      disabled:hover:scale-100
+      
+      // 过渡动画
+      transition-all duration-200 ease-in-out
+      
+      // 深色模式支持
+      dark:bg-blue-600
+      dark:hover:bg-blue-700
+    ">
+      交互按钮
+    </button>
+  );
+}
+```
+
+### 自定义工具类
+```css
+/* globals.css 或自定义 CSS 文件 */
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .bg-gradient-brand {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+```
+
+### 使用 CSS Grid 的复杂布局
+```tsx
+function GridLayout() {
+  return (
+    <div className="
+      grid 
+      grid-cols-1        // 默认单列
+      sm:grid-cols-2     // 小屏幕两列
+      lg:grid-cols-3     // 大屏幕三列
+      xl:grid-cols-4     // 超大屏幕四列
+      gap-4 
+      auto-rows-fr       // 等高行
+    ">
+      <div className="col-span-full">页头 - 占满整行</div>
+      <div className="lg:col-span-2">主要内容 - 大屏幕时占两列</div>
+      <div className="lg:col-span-1">侧边栏</div>
+      <div className="sm:col-span-2 lg:col-span-3">底部 - 占多列</div>
+    </div>
+  );
+}
+```
+
+## 🛠️ 开发调试工具
+
+### Tailwind CSS IntelliSense 配置
+```json
+// .vscode/settings.json
+{
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    "cn\\(([^)]*)\\)",  // 支持 cn() 函数
+    "clsx\\(([^)]*)\\)" // 支持 clsx() 函数
+  ]
+}
+```
+
+### 样式调试技巧
+```tsx
+// 临时边框调试
+function DebugLayout() {
+  const debug = process.env.NODE_ENV === 'development';
+  
+  return (
+    <div className={`
+      grid grid-cols-3 gap-4
+      ${debug ? 'border border-red-500' : ''}
+    `}>
+      <div className={debug ? 'border border-blue-500' : ''}>
+        Box 1
+      </div>
+      <div className={debug ? 'border border-blue-500' : ''}>
+        Box 2  
+      </div>
+      <div className={debug ? 'border border-blue-500' : ''}>
+        Box 3
+      </div>
+    </div>
+  );
+}
+```
+
+### 主题切换调试
+```tsx
+// 主题预览组件
+function ThemePreview() {
+  return (
+    <div className="p-4 space-y-4">
+      <div className="bg-background text-foreground p-4 rounded">
+        背景色和前景色
+      </div>
+      <div className="bg-primary text-primary-foreground p-4 rounded">
+        主要色彩
+      </div>
+      <div className="bg-secondary text-secondary-foreground p-4 rounded">
+        次要色彩
+      </div>
+      <div className="bg-accent text-accent-foreground p-4 rounded">
+        强调色彩
+      </div>
+    </div>
+  );
+}
+```
+
+## 📱 移动端适配策略
+
+### 安全区域处理
+```css
+/* 处理 iPhone 刘海屏等 */
+.safe-area-padding {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+```
+
+### 触摸友好的设计
+```tsx
+function MobileFriendlyButton() {
+  return (
+    <button className="
+      min-h-[44px]       // 最小点击区域 44px (iOS 标准)
+      px-4 py-3
+      text-base          // 不小于 16px 避免 iOS 自动缩放
+      bg-blue-500 text-white rounded-lg
+      active:bg-blue-600 // 提供触摸反馈
+      select-none        // 防止长按选中文字
+    ">
+      移动端按钮
+    </button>
+  );
+}
+```
+
+## ⚠️ 常见问题与解决
+
+### 问题1：Tailwind 类名不生效
+**原因：** 可能是类名被 PurgeCSS 误删
+**解决：**
+```js
+// tailwind.config.js
+module.exports = {
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    // 确保包含所有可能使用 Tailwind 类名的文件
+  ],
+  safelist: [
+    // 动态生成的类名需要加入安全列表
+    'bg-red-500',
+    'bg-green-500',
+    /^bg-(red|green|blue)-(100|500|900)$/
+  ]
+}
+```
+
+### 问题2：CSS 变量在 Tailwind 中不工作
+**解决：** 使用方括号语法
+```tsx
+// ❌ 不工作
+<div className="bg-var(--primary-color)">
+
+// ✅ 正确方式  
+<div className="bg-[var(--primary-color)]">
+```
+
+### 问题3：深色模式切换不平滑
+**解决：** 添加过渡动画
+```css
+/* globals.css */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+```
+
+## 📝 性能优化建议
+
+### 减少包大小
+```js
+// tailwind.config.js - 只启用需要的功能
+module.exports = {
+  corePlugins: {
+    float: false,        // 禁用不需要的插件
+    clear: false,
+    skew: false,
+  }
+}
+```
+
+### CSS-in-JS 的性能考量
+```tsx
+// ❌ 避免内联样式
+<div style={{ marginTop: '20px', color: 'red' }}>
+
+// ✅ 使用 Tailwind 类名
+<div className="mt-5 text-red-500">
+
+// ✅ 复杂样式使用 CSS Modules
+<div className={styles.complexComponent}>
+```
+
+## 💡 最佳实践总结
+
+1. **移动优先**：从小屏幕开始设计，逐步增强
+2. **一致性**：建立设计系统，使用统一的间距、颜色等
+3. **可维护性**：大型项目中适当使用 `@apply` 和组件抽象
+4. **性能**：监控 CSS 包大小，移除未使用的样式
+5. **可访问性**：确保足够的对比度，合理的字体大小
+6. **调试**：使用浏览器开发工具和 Tailwind IntelliSense
+7. **团队协作**：统一代码风格，使用 Prettier 格式化

@@ -193,3 +193,259 @@ slug: 'Study-Next-03'
      ```
 
   现在，这个表单拥有了自动的 pending 状态管理和来自服务端的状态消息反馈，而无需手写任何 `useState` 或 `fetch` 逻辑。
+
+## 🚀 数据获取最佳实践
+
+### 并行数据获取
+```tsx
+// ❌ 串行获取（慢）
+export default async function PostPage({ params }: { params: { id: string } }) {
+  const post = await fetch(`/api/posts/${params.id}`).then(r => r.json());
+  const comments = await fetch(`/api/posts/${params.id}/comments`).then(r => r.json());
+  
+  return <PostWithComments post={post} comments={comments} />;
+}
+
+// ✅ 并行获取（快）
+export default async function PostPage({ params }: { params: { id: string } }) {
+  const [post, comments] = await Promise.all([
+    fetch(`/api/posts/${params.id}`).then(r => r.json()),
+    fetch(`/api/posts/${params.id}/comments`).then(r => r.json())
+  ]);
+  
+  return <PostWithComments post={post} comments={comments} />;
+}
+```
+
+### 错误处理与重试
+```tsx
+// 健壮的数据获取函数
+async function fetchWithRetry(url: string, retries = 3): Promise<any> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.warn(`Attempt ${i + 1} failed:`, error);
+      
+      if (i === retries - 1) throw error; // 最后一次重试失败时抛出错误
+      
+      // 指数退避
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
+    }
+  }
+}
+
+// 在组件中使用
+export default async function ReliableDataPage() {
+  try {
+    const data = await fetchWithRetry('https://api.example.com/data');
+    return <DataDisplay data={data} />;
+  } catch (error) {
+    return <ErrorMessage error={error.message} />;
+  }
+}
+```
+
+### 数据库查询优化
+```tsx
+// ❌ N+1 查询问题
+export default async function PostsPage() {
+  const posts = await db.post.findMany();
+  
+  const postsWithAuthors = await Promise.all(
+    posts.map(async (post) => ({
+      ...post,
+      author: await db.user.findUnique({ where: { id: post.authorId } })
+    }))
+  );
+  
+  return <PostsList posts={postsWithAuthors} />;
+}
+
+// ✅ 使用 include 一次性获取关联数据
+export default async function PostsPage() {
+  const postsWithAuthors = await db.post.findMany({
+    include: {
+      author: true,
+      comments: {
+        take: 5, // 只获取前5条评论
+        orderBy: { createdAt: 'desc' }
+      }
+    }
+  });
+  
+  return <PostsList posts={postsWithAuthors} />;
+}
+```
+
+## 🛠️ Server Actions 进阶技巧
+
+### 表单验证
+```tsx
+// lib/validations.ts
+import { z } from 'zod';
+
+export const CreatePostSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(100),
+  content: z.string().min(10, 'Content too short'),
+  tags: z.string().optional()
+});
+
+// lib/actions.ts
+'use server';
+import { CreatePostSchema } from './validations';
+
+export async function createPost(previousState: any, formData: FormData) {
+  const rawData = {
+    title: formData.get('title') as string,
+    content: formData.get('content') as string,
+    tags: formData.get('tags') as string
+  };
+  
+  // 验证数据
+  const validation = CreatePostSchema.safeParse(rawData);
+  
+  if (!validation.success) {
+    return {
+      status: 'error',
+      errors: validation.error.flatten().fieldErrors,
+      message: 'Validation failed'
+    };
+  }
+  
+  try {
+    await db.post.create({ data: validation.data });
+    revalidatePath('/posts');
+    return { status: 'success', message: 'Post created!' };
+  } catch (error) {
+    return { status: 'error', message: 'Failed to create post' };
+  }
+}
+```
+
+### 渐进式增强
+```tsx
+// components/DeleteButton.tsx
+'use client';
+import { useActionState, useOptimistic } from 'react';
+import { deletePost } from '@/lib/actions';
+
+export function DeleteButton({ postId, onDelete }: { postId: string, onDelete?: () => void }) {
+  const [state, formAction, isPending] = useActionState(deletePost, { status: '', message: '' });
+  
+  // 乐观更新：立即响应用户操作
+  const [optimisticDeleted, setOptimisticDeleted] = useOptimistic(false);
+  
+  if (optimisticDeleted) {
+    return <span className="text-gray-500">Deleted...</span>;
+  }
+  
+  return (
+    <form action={async (formData) => {
+      setOptimisticDeleted(true);
+      onDelete?.(); // 立即从 UI 中移除
+      await formAction(formData);
+    }}>
+      <input type="hidden" name="postId" value={postId} />
+      <button 
+        type="submit" 
+        disabled={isPending}
+        className="text-red-500 hover:text-red-700"
+      >
+        {isPending ? 'Deleting...' : 'Delete'}
+      </button>
+    </form>
+  );
+}
+```
+
+## ⚠️ 常见问题与调试
+
+### 问题1：缓存过度积极
+**现象：** 数据更新了但页面没有反映
+**调试：**
+```tsx
+// 在开发环境禁用缓存来测试
+const data = await fetch('/api/data', { 
+  cache: process.env.NODE_ENV === 'development' ? 'no-store' : 'default' 
+});
+```
+
+### 问题2：Server Action 不生效
+**现象：** 表单提交没有执行 Action
+**检查清单：**
+- 确保函数标记了 `'use server'`
+- 确保在 form 的 action 属性中使用
+- 检查 Next.js 版本（需要 13.4+）
+
+### 问题3：数据获取时间过长
+**调试工具：**
+```tsx
+export default async function SlowPage() {
+  const start = Date.now();
+  
+  try {
+    const data = await fetch('/api/slow-endpoint');
+    const duration = Date.now() - start;
+    
+    console.log(`Data fetching took ${duration}ms`);
+    return <DataDisplay data={data} />;
+  } catch (error) {
+    console.error('Data fetching failed:', error);
+    throw error;
+  }
+}
+```
+
+## 💡 性能监控
+
+### 添加性能追踪
+```tsx
+// lib/performance.ts
+export function withPerformanceTracking<T extends any[], R>(
+  fn: (...args: T) => Promise<R>,
+  name: string
+) {
+  return async (...args: T): Promise<R> => {
+    const start = performance.now();
+    try {
+      const result = await fn(...args);
+      const duration = performance.now() - start;
+      
+      // 发送到监控服务
+      console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`);
+      
+      return result;
+    } catch (error) {
+      console.error(`[Performance] ${name} failed:`, error);
+      throw error;
+    }
+  };
+}
+
+// 使用示例
+const trackedFetch = withPerformanceTracking(
+  async (url: string) => {
+    const response = await fetch(url);
+    return response.json();
+  },
+  'API_FETCH'
+);
+```
+
+## 📝 最佳实践检查表
+
+- ✅ **优先使用 RSC 中的 `async/await` 进行数据获取**
+- ✅ **合理设置缓存策略**（`revalidate`, `no-store`, `tags`）
+- ✅ **并行获取相互独立的数据**
+- ✅ **在 Server Actions 中添加错误处理和验证**
+- ✅ **使用 `useActionState` 处理表单状态**
+- ✅ **监控数据获取性能**
+- ✅ **设置合理的超时时间**
+- ✅ **为慢查询添加 loading 状态**

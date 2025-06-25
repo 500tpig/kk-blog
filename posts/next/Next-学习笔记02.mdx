@@ -42,7 +42,7 @@ slug: 'Study-Next-02'
 
 ## 什么是客户端组件 (Client Components)？
 
-- **核心定义：** 我们过去几年一直在写的“传统” React 组件。它们的 JS 代码会被发送到浏览器，并通过一个称为“水合 (Hydration)”的过程变得可交互。
+- **核心定义：** 我们过去几年一直在写的"传统" React 组件。它们的 JS 代码会被发送到浏览器，并通过一个称为"水合 (Hydration)"的过程变得可交互。
 
 - **如何创建：** 在文件的**最顶部**添加 `'use client'` 指令。一旦一个文件被标记为客户端组件，它里面导入的所有其他组件也都会被视为客户端组件。
 
@@ -78,7 +78,7 @@ slug: 'Study-Next-02'
   1. 服务端组件 **可以** 导入并使用客户端组件。
   2. 客户端组件 **不能** 直接导入服务端组件。（因为服务端组件的代码可能包含无法在浏览器运行的服务器端逻辑）。
 
-- **解决“客户端组件中需要服务端内容”的问题：** **“插槽”模式** (Passing RSCs as `children` to Client Components)。
+- **解决"客户端组件中需要服务端内容"的问题：** **"插槽"模式** (Passing RSCs as `children` to Client Components)。
 
   - **问题场景：** 有一个带 Tab 切换的布局（客户端组件），但希望每个 Tab 的内容是静态的、从服务端获取的（服务端组件）。
 
@@ -134,9 +134,9 @@ slug: 'Study-Next-02'
 
 - **陷阱一：在顶层滥用 `'use client'`** 刚上手时，很容易因为某个组件需要交互，就在 `layout.tsx` 或顶层 `page.tsx` 中加上 `'use client'`。这会导致整个应用或整个页面树都变成了客户端组件，完全丧失了 RSC 带来的性能优势。
 
-  **最佳实践：** 尽可能地将 `'use client'` **下沉**到组件树的“叶子”节点。也就是说，让页面布局、静态内容展示等保持为 RSC，只把你真正需要交互的那个最小单元（比如一个按钮、一个搜索框）做成客户端组件。
+  **最佳实践：** 尽可能地将 `'use client'` **下沉**到组件树的"叶子"节点。也就是说，让页面布局、静态内容展示等保持为 RSC，只把你真正需要交互的那个最小单元（比如一个按钮、一个搜索框）做成客户端组件。
 
-- **陷阱二：习惯性地在客户端 `useEffect` 中获取数据** 虽然在客户端组件里用 `useEffect` + `fetch` 依然可以获取数据，但这在 App Router 中是**反模式**。它会导致“请求瀑布”：页面 HTML 先加载 -> 页面 JS 再加载 -> 然后才能开始 `fetch` 数据，整个过程非常缓慢。
+- **陷阱二：习惯性地在客户端 `useEffect` 中获取数据** 虽然在客户端组件里用 `useEffect` + `fetch` 依然可以获取数据，但这在 App Router 中是**反模式**。它会导致"请求瀑布"：页面 HTML 先加载 -> 页面 JS 再加载 -> 然后才能开始 `fetch` 数据，整个过程非常缓慢。
 
   **最佳实践：** **在父级服务端组件中获取数据，然后通过 props 传递给子级客户端组件。**
 
@@ -174,3 +174,46 @@ slug: 'Study-Next-02'
   ```
 
   这个模式让数据获取和服务端渲染并行，用户能更快地看到有内容的页面。
+
+## 常见问题与解决
+
+### 问题1：水合不一致错误
+**现象：** 控制台报错 "Hydration failed because the initial UI does not match"
+**原因：** 服务端和客户端渲染结果不一致
+**解决：**
+```tsx
+// 方案1：使用 suppressHydrationWarning（谨慎使用）
+<div suppressHydrationWarning>
+  {new Date().toLocaleString()}
+</div>
+
+// 方案2：条件渲染
+'use client';
+import { useState, useEffect } from 'react';
+
+export default function TimeDisplay() {
+  const [time, setTime] = useState('');
+  
+  useEffect(() => {
+    setTime(new Date().toLocaleString());
+  }, []);
+  
+  return <div>{time || 'Loading...'}</div>;
+}
+```
+
+### 问题2：在 RSC 中误用客户端 API
+**现象：** `ReferenceError: window is not defined`
+**解决：** 检查是否在服务端组件中使用了浏览器 API
+
+### 问题3：客户端组件无法导入 RSC
+**现象：** TypeError 或渲染异常
+**解决：** 使用 children 模式或重新设计组件结构
+
+## 总结
+
+1. **默认使用 RSC**：除非需要交互，否则保持服务端组件
+2. **精准使用 'use client'**：只在最小粒度的交互组件上使用
+3. **数据获取在服务端**：避免客户端的请求瀑布
+4. **善用 children 模式**：在客户端组件中嵌入服务端内容
+5. **监控 bundle 大小**：定期检查客户端 JS 包大小

@@ -1,11 +1,12 @@
 // 通用组件导出
 export { default as MDXComponents } from './MDXComponents';
-export { SmoothScrollProvider } from './SmoothScrollProvider';
 export { default as ThemeToggle } from './ThemeToggle';
 export { default as SearchBar } from './SearchBar';
 
 // UI 组件导出
 export { ScrollToTopButton } from './ui/ScrollToTopButton';
+export { ImageModal } from './ui/ImageModal';
+export { ImageWithModal } from './ui/ImageWithModal';
 export { default as CrossLine } from './ui/CrossLine';
 export { default as Switch } from './ui/Switch';
 export { default as Divider } from './ui/Divider';

@@ -34,6 +34,8 @@ import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
+import matter from 'gray-matter'
+
 const postsDirectory = path.join(process.cwd(), 'posts')
 const diagramsDirectory = path.join(process.cwd(), 'public', 'diagrams')
 
@@ -41,6 +43,7 @@ const diagramsDirectory = path.join(process.cwd(), 'public', 'diagrams')
 async function processFile(filePath) {
   try {
     const content = await fs.readFile(filePath, 'utf8')
+    const { data } = matter(content)
     
     // 查找 Mermaid 代码块
     const mermaidRegex = /```mermaid\s*\n([\s\S]*?)\n```/g
@@ -53,11 +56,19 @@ async function processFile(filePath) {
       const fullMatch = match[0]
       const mermaidContent = match[1].trim()
       
-      // 生成对应的 SVG 文件名
-      const relativePath = path.relative(postsDirectory, filePath)
-      const fileName = path.basename(filePath, path.extname(filePath))
-      const category = path.dirname(relativePath)
-      const svgFileName = `${category}-${fileName}-${blockIndex}.svg`
+      // 使用 slug 生成对应的 SVG 文件名
+      let slug
+      if (data.slug) {
+        slug = data.slug
+      } else {
+        // 如果没有 slug，回退到原来的命名方式
+        const relativePath = path.relative(postsDirectory, filePath)
+        const fileName = path.basename(filePath, path.extname(filePath))
+        const category = path.dirname(relativePath)
+        slug = `${category}-${fileName}`
+      }
+      
+      const svgFileName = `${slug}-${blockIndex.toString().padStart(2, '0')}.svg`
       const svgPath = `/diagrams/${svgFileName}`
       
       // 检查 SVG 文件是否存在

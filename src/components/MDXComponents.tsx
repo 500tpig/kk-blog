@@ -1,7 +1,6 @@
-// import { Aside } from '@/components/mdx/Aside'
-// import { Callout } from '@/components/mdx/Callout'
-// import { MdxCard } from '@/components/mdx/MdxCard'
 import { JSX, ReactNode } from 'react'
+
+import { ImageWithModal } from '@/components/ui/ImageWithModal'
 
 import { slugify, getTextFromChildren } from '@/lib/utils'
 
@@ -26,6 +25,86 @@ const Heading: React.FC<HeadingProps> = ({ level, className, children }) => {
       {children}
     </HeadingTag>
   )
+}
+
+// 定义图片属性接口
+interface ImageProps {
+  src?: string
+  alt?: string
+  className?: string
+  [key: string]: any
+}
+
+// 为图片解析可能的样式参数
+function parseImgProps(props: ImageProps): ImageProps {
+  // 如果没有alt属性，直接返回原始props
+  if (!props.alt) return props
+  
+  // 分割alt文本，检查是否包含样式参数
+  const parts = props.alt.split('|')
+  if (parts.length <= 1) return props // 没有样式参数
+  
+  // 提取实际描述和样式参数
+  const actualAlt = parts[0]
+  const styleParams = parts.slice(1)
+  
+  // 常用样式映射
+  const styleMap: Record<string, string> = {
+    'full': 'w-full',
+    'center': 'mx-auto',
+    'shadow-lg': 'shadow-lg',
+    'border': 'border border-gray-200 dark:border-gray-700',
+    'w-full': 'w-full',
+    'lg:w-1/2': 'lg:w-1/2',
+    'lg:w-1/3': 'lg:w-1/3',
+    'lg:w-2/3': 'lg:w-2/3',
+    'lg:w-3/4': 'lg:w-3/4',
+    'max-w-3xl': 'max-w-3xl',
+    'max-w-4xl': 'max-w-4xl',
+    'max-w-5xl': 'max-w-5xl',
+    'w-64': 'w-64',
+    'w-96': 'w-96',
+    'w-32': 'w-32'
+  }
+  
+  // 收集样式类
+  const classNames: string[] = []
+  let allowZoom = true
+  
+  // 处理样式参数
+  styleParams.forEach((param: string) => {
+    const trimmed = param.trim()
+    const lowerTrimmed = trimmed.toLowerCase()
+    
+    if (lowerTrimmed === 'no-zoom') {
+      allowZoom = false
+    } else if (styleMap[trimmed]) {
+      // 直接映射已知的样式关键词，保持原始大小写
+      classNames.push(styleMap[trimmed])
+    } else if (trimmed) {
+      // 处理可能包含冒号的Tailwind类
+      // 直接添加原始类名，不做任何转义处理
+      classNames.push(trimmed)
+    }
+  })
+  
+  // 默认添加样式
+  if (!classNames.includes('mx-auto')) {
+    classNames.push('mx-auto')
+  }
+  
+  // 默认添加圆角
+  classNames.push('rounded')
+  classNames.push('cursor-pointer')
+  
+  // 返回处理后的props
+  return {
+    ...props,
+    alt: actualAlt,
+    // 这里直接设置所有需要的样式类名
+    className: classNames.join(' '),
+    'data-allow-zoom': allowZoom
+  }
 }
 
 interface MDXComponentsProps {
@@ -68,8 +147,11 @@ const MDXComponents: MDXComponentsProps = {
       {...props}
     />
   ),
-  // eslint-disable-next-line @next/next/no-img-element
-  img: props => <img width="100%" alt="" className="rounded" {...props} />,
+  // 修改img组件，在这里直接处理样式参数
+  img: props => {
+    const processedProps = parseImgProps(props)
+    return <ImageWithModal {...processedProps} />
+  },
   strong: props => <strong className="font-bold" {...props} />,
   table: props => (
     <div className="my-6 w-full overflow-x-auto">

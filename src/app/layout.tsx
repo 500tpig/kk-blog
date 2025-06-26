@@ -1,8 +1,6 @@
 import { Inter } from 'next/font/google'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 
-import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
-
 import { ScrollProvider } from '@/contexts/ScrollContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { Footer, StaticHeader, StickyHeader } from '@/features/layout'
@@ -44,14 +42,12 @@ export default function RootLayout({
         >
           <ThemeProvider>
             <ScrollProvider>
-              <SmoothScrollProvider>
-                <div className="flex min-h-screen flex-col items-start h-full">
-                  <StaticHeader />
-                  <StickyHeader />
-                  <main className="flex-grow w-full h-full">{children}</main>
-                  <Footer />
-                </div>
-              </SmoothScrollProvider>
+              <div className="flex min-h-screen flex-col items-start h-full">
+                <StaticHeader />
+                <StickyHeader />
+                <main className="flex-grow w-full h-full">{children}</main>
+                <Footer />
+              </div>
             </ScrollProvider>
           </ThemeProvider>
         </NextThemesProvider>

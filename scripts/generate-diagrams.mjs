@@ -29,6 +29,8 @@ import { execSync } from 'child_process'
 import fs from 'fs/promises'
 import path from 'path'
 
+import matter from 'gray-matter'
+
 const postsDirectory = path.join(process.cwd(), 'posts')
 const outputDirectory = path.join(process.cwd(), 'public', 'diagrams')
 
@@ -76,9 +78,20 @@ async function extractMermaidBlocks(filePath) {
 
 // 生成单个文件的 SVG
 async function generateSVGForFile(filePath) {
-  const relativePath = path.relative(postsDirectory, filePath)
-  const fileName = path.basename(filePath, path.extname(filePath))
-  const category = path.dirname(relativePath)
+  const content = await fs.readFile(filePath, 'utf8')
+  const { data } = matter(content)
+  
+  // 使用 slug 生成文件名
+  let slug
+  if (data.slug) {
+    slug = data.slug
+  } else {
+    // 如果没有 slug，回退到原来的命名方式
+    const relativePath = path.relative(postsDirectory, filePath)
+    const fileName = path.basename(filePath, path.extname(filePath))
+    const category = path.dirname(relativePath)
+    slug = `${category}-${fileName}`
+  }
   
   const mermaidBlocks = await extractMermaidBlocks(filePath)
   
@@ -86,12 +99,12 @@ async function generateSVGForFile(filePath) {
     return 0
   }
 
-  console.log(`📄 处理文件: ${relativePath} (${mermaidBlocks.length} 个图表)`)
+  console.log(`📄 处理文件: ${slug} (${mermaidBlocks.length} 个图表)`)
   
   let generatedCount = 0
   
   for (const block of mermaidBlocks) {
-    const svgFileName = `${category}-${fileName}-${block.index}.svg`
+    const svgFileName = `${slug}-${block.index.toString().padStart(2, '0')}.svg`
     const svgPath = path.join(outputDirectory, svgFileName)
     
     try {

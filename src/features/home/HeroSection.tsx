@@ -22,9 +22,7 @@ export default function HeroSection({ experienceYears }: HeroSectionProps) {
         <span>的小破站</span>
       </h2>
       <div className="text-[#6A6D85] text-base">
-        (AI总结)拥有 {experienceYears}
-        年从业经验，我对技术充满热情，具备从前端、后端到客户端和部署的完整项目经验（不，我不会后端）。尤其擅长
-        Vue 和 Electron，并能快速上手 React/Next.js 等新技术栈，致力于创造卓越的用户体验。
+        为了记录和学习一些技术和知识，我创建了这个小破站，顺便搬一搬之前写的笔记。
       </div>
     </>
   )

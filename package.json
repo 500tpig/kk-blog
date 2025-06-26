@@ -4,17 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "install-puppeteer": "cross-env PUPPETEER_SKIP_DOWNLOAD=true yarn add -D puppeteer",
-
+    "install-puppeteer": "cross-env PUPPETEER_SKIP_DOWNLOAD=false yarn add -D puppeteer",
     "generate-diagrams": "node ./scripts/generate-diagrams.mjs",
-    "generate-diagrams:file": "node ./scripts/generate-diagrams.mjs",
-    "generate-diagrams:force": "node ./scripts/generate-diagrams.mjs --force",
-
     "replace-mermaid": "node ./scripts/replace-mermaid.mjs",
-    "replace-mermaid:file": "node ./scripts/replace-mermaid.mjs",
-    "replace-mermaid:force": "node ./scripts/replace-mermaid.mjs --force",
-
-    "prebuild": "yarn generate-diagrams && yarn replace-mermaid && node ./scripts/generate-search-index.mjs",
+    "prebuild": "node ./scripts/generate-search-index.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint --dir src"

@@ -1,28 +1,33 @@
 /**
  * 需求：
- * - 将 MDX 文件中的 Mermaid 代码块替换为对应的静态 SVG 图片
+ * - 将 MDX 文件中的 Mermaid 代码块后插入对应的静态 SVG 图片
  * - 提高页面加载性能，避免客户端渲染 Mermaid 图表
  * - 保持文档的可读性和 SEO 友好性
- * - 支持增量处理，避免重复替换未修改的文件
+ * - 保留原始 Mermaid 代码块，便于后续编辑和维护
  * - 为图片提供有意义的 alt 文本
  * 
  * 功能：
  * - 扫描 posts 目录下的所有 MDX 文件
  * - 查找文件中的 Mermaid 代码块
- * - 将代码块替换为对应的 img 标签
+ * - 在代码块后插入对应的 img 标签（保留原始代码块）
  * - 生成有意义的 alt 文本描述
- * - 创建文件备份，支持回滚操作
  * - 支持处理单个文件或批量处理所有文件
+ * 
+ * 工作流程：
+ * 1. 本地编写包含 Mermaid 代码块的 MDX 文件
+ * 2. 运行 yarn generate-diagrams 生成 SVG 文件
+ * 3. 运行 yarn replace-mermaid 插入 SVG 图片
+ * 4. 提交所有文件到 git 仓库
+ * 5. Vercel 自动部署（无需云端生成）
  * 
  * 实现方案：
  * - 使用 fs/promises 进行异步文件操作
  * - 通过正则表达式匹配 Mermaid 代码块
  * - 基于文件路径和块索引生成 SVG 文件路径
  * - 从 Mermaid 内容智能生成 alt 文本
- * - 实现文件时间戳比较进行增量处理
- * - 支持命令行参数：文件路径和 --force 标志
+ * - 支持命令行参数：文件路径
  * - 生成的文件命名规则：{category}-{filename}-{blockIndex}.svg
- * - 替换后的 img 标签包含响应式样式类
+ * - 插入的 img 标签包含响应式样式类
  */
 
 import fs from 'fs/promises'
@@ -32,31 +37,10 @@ import { fileURLToPath } from 'url'
 const postsDirectory = path.join(process.cwd(), 'posts')
 const diagramsDirectory = path.join(process.cwd(), 'public', 'diagrams')
 
-// 检查文件是否需要重新处理
-async function needsReplacement(mdxPath, backupPath) {
-  try {
-    const mdxStats = await fs.stat(mdxPath)
-    const backupStats = await fs.stat(backupPath)
-    return mdxStats.mtime > backupStats.mtime
-  } catch {
-    return true // 如果备份文件不存在，需要处理
-  }
-}
-
 // 处理单个文件
-async function processFile(filePath, force = false) {
+async function processFile(filePath) {
   try {
     const content = await fs.readFile(filePath, 'utf8')
-    const backupPath = filePath + '.backup'
-    
-    // 检查是否需要重新处理
-    if (!force && !(await needsReplacement(filePath, backupPath))) {
-      console.log(`⏭️  跳过已处理的文件: ${path.relative(process.cwd(), filePath)}`)
-      return false
-    }
-    
-    // 创建备份
-    await fs.writeFile(backupPath, content)
     
     // 查找 Mermaid 代码块
     const mermaidRegex = /```mermaid\s*\n([\s\S]*?)\n```/g
@@ -82,12 +66,15 @@ async function processFile(filePath, force = false) {
         // 生成 alt 文本（从 Mermaid 内容中提取）
         const altText = generateAltText(mermaidContent)
         
-        // 替换 Mermaid 代码块为 img 标签
-        const imgTag = `<img src="${svgPath}" alt="${altText}" className="w-full" />`
-        newContent = newContent.replace(fullMatch, imgTag)
+        // HTML 转义 alt 文本中的特殊字符
+        const escapedAltText = altText.replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+        // 在原始 Mermaid 代码块后插入 SVG 图片，保留原始代码块
+        const imgTag = `<img src="${svgPath}" alt="${escapedAltText}" className="w-full lg:w-3/5 mx-auto my-6 rounded-lg" />`
+        const insertion = `${fullMatch}\n\n${imgTag}`
+        newContent = newContent.replace(fullMatch, insertion)
         hasChanges = true
         
-        console.log(`🔄 替换图表: ${svgFileName}`)
+        console.log(`🔄 插入图表: ${svgFileName}`)
       } else {
         console.warn(`⚠️  SVG 文件不存在: ${svgFileName}`)
       }
@@ -100,8 +87,6 @@ async function processFile(filePath, force = false) {
       console.log(`✅ 处理完成: ${path.relative(process.cwd(), filePath)}`)
       return true
     } else {
-      // 如果没有变化，删除备份文件
-      await fs.unlink(backupPath).catch(() => {})
       return false
     }
   } catch (error) {
@@ -160,7 +145,7 @@ function generateAltText(mermaidContent) {
   // 生成 alt 文本
   if (nodeNames.length > 0) {
     const uniqueNames = [...new Set(nodeNames)].slice(0, 3) // 最多取3个
-    return `${chartType}：${uniqueNames.join('、')}`
+    return `${chartType}：${uniqueNames.join('、').replace(/"/g, "'")}`
   }
   
   return chartType
@@ -174,7 +159,6 @@ async function replaceMermaid() {
     // 获取命令行参数
     const args = process.argv.slice(2)
     const targetFile = args[0] // 如果提供了文件路径
-    const force = args.includes('--force') // 强制重新处理
     
     if (targetFile) {
       // 处理单个文件
@@ -187,14 +171,14 @@ async function replaceMermaid() {
         process.exit(1)
       }
       
-      const processed = await processFile(fullPath, force)
+      const processed = await processFile(fullPath)
       if (processed) {
         console.log('🎉 单个文件处理完成！')
       } else {
         console.log('ℹ️  文件无需处理。')
       }
     } else {
-      // 处理所有文件（保持向后兼容）
+      // 处理所有文件
       const entries = await fs.readdir(postsDirectory, { withFileTypes: true })
       const mdxFiles = entries
         .filter(entry => entry.isDirectory())
@@ -211,7 +195,7 @@ async function replaceMermaid() {
       
       let processedCount = 0
       for (const filePath of allFiles) {
-        if (await processFile(filePath, force)) {
+        if (await processFile(filePath)) {
           processedCount++
         }
       }

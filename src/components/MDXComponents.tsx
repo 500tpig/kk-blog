@@ -18,11 +18,7 @@ const Heading: React.FC<HeadingProps> = ({ level, className, children }) => {
 
   // 确保 ID 存在
   if (!headingId) {
-    return (
-      <HeadingTag className={className}>
-        {children}
-      </HeadingTag>
-    )
+    return <HeadingTag className={className}>{children}</HeadingTag>
   }
 
   return (
@@ -58,7 +54,10 @@ const MDXComponents: MDXComponentsProps = {
   ol: props => <ol className="list-decimal pl-5 mt-0 mb-4" {...props} />,
   li: props => <li className="mb-2" {...props} />,
   code: props => <code {...props} />,
-  pre: props => <pre className="relative" {...props} />,
+  pre: props => {
+    if (props['data-language'] === 'mermaid') return <></>
+    return <pre className="relative" {...props} />
+  },
   blockquote: props => (
     <blockquote
       className="px-4 sm:pl-6 my-4 italic py-3

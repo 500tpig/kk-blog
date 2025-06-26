@@ -18,13 +18,11 @@ Diff算法是Virtual DOM的核心，用来比较新旧虚拟节点树的差异�
 - 先判断节点类型是否相同
 - 通过key值快速识别可复用的节点
 
----
-
 ## Diff算法整体流程
 
 ```mermaid
 flowchart TD
-    Start["开始diff"] 
+    Start["开始diff"]
     CheckSame{"新旧节点是否相同？"}
     ReturnOld["直接返回旧节点"]
     CheckChildren{"是否都有子节点？"}
@@ -61,6 +59,12 @@ flowchart TD
     style End fill:#D1FAE5,stroke:#10B981,stroke-width:2px
 ```
 
+<img
+  src="/diagrams/vue-Vue2 Diff算法原理详解-0.svg"
+  alt="流程图：'开始diff'、'直接返回旧节点'、'updateChildren'"
+  className="w-full max-w-4xl mx-auto my-6 rounded"
+/>
+
 ## 节点比较策略
 
 ```mermaid
@@ -84,6 +88,12 @@ flowchart TD
 
 ```
 
+<img
+  src="/diagrams/vue-Vue2 Diff算法原理详解-1.svg"
+  alt="流程图：比较两个节点、直接替换节点、B"
+  className="w-full lg:w-3/4 mx-auto my-6 rounded"
+/>
+
 ## patch函数 - 入口函数
 
 ```js
@@ -104,8 +114,6 @@ function patch(oldVnode, vnode) {
 }
 ```
 
----
-
 ## sameVnode - 判断是否为相同节点
 
 ```js
@@ -119,8 +127,6 @@ function sameVnode(a, b) {
   )
 }
 ```
-
----
 
 ## patchVnode - 比较相同节点
 
@@ -148,8 +154,6 @@ function patchVnode(oldVnode, vnode) {
 }
 ```
 
----
-
 ## updateChildren - 双端比较算法
 
 ### 算法流程图
@@ -174,7 +178,11 @@ flowchart TD
     style G fill:#DDD6FE,stroke:#7C3AED,stroke-width:2px
 ```
 
----
+<img
+  src="/diagrams/vue-Vue2 Diff算法原理详解-2.svg"
+  alt="流程图：比较两个节点、直接替换节点、B"
+  className="w-full lg:w-3/4 mx-auto my-6 rounded"
+/>
 
 ## 逐步对比演示
 
@@ -208,6 +216,12 @@ graph TD
     style N4 fill:#93C5FD,stroke:#2563EB,stroke-width:2px
 ```
 
+<img
+  src="/diagrams/vue-Vue2 Diff算法原理详解-3.svg"
+  alt="流程图：A key=a、B key=b、C key=c"
+  className="w-full my-4"
+/>
+
 #### 步骤1：尾头比较 D vs D，匹配，移动D到A前面
 
 ```mermaid
@@ -220,6 +234,12 @@ graph TD
     style N1 fill:#A7F3D0,stroke:#10B981,stroke-width:2px
     style O1 fill:#FCA5A5,stroke:#EF4444,stroke-width:2px
 ```
+
+<img
+  src="/diagrams/vue-Vue2 Diff算法原理详解-4.svg"
+  alt="流程图：D key=d"
+  className="w-full lg:w-3/5 mx-auto my-6 rounded"
+/>
 
 操作：`insertBefore(D, A)`，指针移动 oldEnd--, newStart++
 
@@ -234,6 +254,14 @@ graph TD
     style N2 fill:#A7F3D0,stroke:#10B981,stroke-width:2px
 ```
 
+<div className="flex justify-center">
+  <img
+    src="/diagrams/vue-Vue2 Diff算法原理详解-5.svg"
+    alt="流程图：A key=a"
+    className="w-1/2 lg:w-1/4 mx-auto my-6 rounded"
+  />
+</div>
+
 #### 步骤3：头尾比较 B vs B，匹配，移动B到C后面
 
 ```mermaid
@@ -247,6 +275,14 @@ graph TD
     style O3 fill:#FCA5A5,stroke:#EF4444,stroke-width:2px
 ```
 
+<div className="flex justify-center">
+  <img
+    src="/diagrams/vue-Vue2 Diff算法原理详解-6.svg"
+    alt="流程图：B key=b"
+    className="w-full lg:w-3/5 mx-auto my-6 rounded"
+  />
+</div>
+
 #### 步骤4：头头比较 C vs C，匹配，指针右移
 
 ```mermaid
@@ -257,6 +293,14 @@ graph TD
     style O3 fill:#A7F3D0,stroke:#10B981,stroke-width:2px
     style N3 fill:#A7F3D0,stroke:#10B981,stroke-width:2px
 ```
+
+<div className="flex justify-center">
+  <img
+    src="/diagrams/vue-Vue2 Diff算法原理详解-7.svg"
+    alt="流程图：C key=c"
+    className="w-3/5 lg:w-1/3 mx-auto my-6 rounded"
+  />
+</div>
 
 #### 最终结果
 
@@ -271,87 +315,121 @@ graph TD
     style D4 fill:#DDD6FE,stroke:#7C3AED,stroke-width:2px
 ```
 
----
+<div className="flex justify-center">
+  <img
+    src="/diagrams/vue-Vue2 Diff算法原理详解-8.svg"
+    alt="流程图：D"
+    className="w-1/4 lg:w-1/6 mx-auto my-6 rounded"
+  />
+</div>
 
 ## updateChildren核心代码
 
 ```js
 function updateChildren(parentElm, oldCh, newCh) {
-  let oldStartIdx = 0
-  let newStartIdx = 0
-  let oldEndIdx = oldCh.length - 1
-  let oldStartVnode = oldCh[0]
-  let oldEndVnode = oldCh[oldEndIdx]
-  let newEndIdx = newCh.length - 1
-  let newStartVnode = newCh[0]
-  let newEndVnode = newCh[newEndIdx]
+  // 初始化双端比较的指针
+  let oldStartIdx = 0                    // 旧子节点数组的起始索引
+  let newStartIdx = 0                    // 新子节点数组的起始索引
+  let oldEndIdx = oldCh.length - 1       // 旧子节点数组的结束索引
+  let oldStartVnode = oldCh[0]           // 旧子节点数组的第一个节点
+  let oldEndVnode = oldCh[oldEndIdx]     // 旧子节点数组的最后一个节点
+  let newEndIdx = newCh.length - 1       // 新子节点数组的结束索引
+  let newStartVnode = newCh[0]           // 新子节点数组的第一个节点
+  let newEndVnode = newCh[newEndIdx]     // 新子节点数组的最后一个节点
+  
+  // 用于key查找的辅助变量
   let oldKeyToIdx, idxInOld, vnodeToMove, refElm
 
+  // 创建key到索引的映射表，用于快速查找
   function createKeyToOldIdx(children, beginIdx, endIdx) {
     let i, key
     const map = {}
     for (i = beginIdx; i <= endIdx; ++i) {
       key = children[i].key
-      if (isDef(key)) map[key] = i
+      if (isDef(key)) map[key] = i  // 将key作为键，索引作为值
     }
     return map
   }
 
+  // 双端比较的主循环
   while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+    // 情况1：跳过已处理的旧节点（被设置为undefined）
     if (isUndef(oldStartVnode)) {
       oldStartVnode = oldCh[++oldStartIdx]
     } else if (isUndef(oldEndVnode)) {
       oldEndVnode = oldCh[--oldEndIdx]
-    } else if (sameVnode(oldStartVnode, newStartVnode)) {
-      patchVnode(oldStartVnode, newStartVnode)
-      oldStartVnode = oldCh[++oldStartIdx]
-      newStartVnode = newCh[++newStartIdx]
-    } else if (sameVnode(oldEndVnode, newEndVnode)) {
-      patchVnode(oldEndVnode, newEndVnode)
-      oldEndVnode = oldCh[--oldEndIdx]
-      newEndVnode = newCh[--newEndIdx]
-    } else if (sameVnode(oldStartVnode, newEndVnode)) {
-      patchVnode(oldStartVnode, newEndVnode)
+    } 
+    // 情况2：头头比较 - 新旧起始节点相同
+    else if (sameVnode(oldStartVnode, newStartVnode)) {
+      patchVnode(oldStartVnode, newStartVnode)  // 更新节点
+      oldStartVnode = oldCh[++oldStartIdx]      // 旧起始指针右移
+      newStartVnode = newCh[++newStartIdx]      // 新起始指针右移
+    } 
+    // 情况3：尾尾比较 - 新旧结束节点相同
+    else if (sameVnode(oldEndVnode, newEndVnode)) {
+      patchVnode(oldEndVnode, newEndVnode)      // 更新节点
+      oldEndVnode = oldCh[--oldEndIdx]          // 旧结束指针左移
+      newEndVnode = newCh[--newEndIdx]          // 新结束指针左移
+    } 
+    // 情况4：头尾比较 - 旧起始节点与新结束节点相同
+    else if (sameVnode(oldStartVnode, newEndVnode)) {
+      patchVnode(oldStartVnode, newEndVnode)    // 更新节点
+      // 将旧起始节点移动到旧结束节点之后
       api.insertBefore(parentElm, oldStartVnode.el, api.nextSibling(oldEndVnode.el))
-      oldStartVnode = oldCh[++oldStartIdx]
-      newEndVnode = newCh[--newEndIdx]
-    } else if (sameVnode(oldEndVnode, newStartVnode)) {
-      patchVnode(oldEndVnode, newStartVnode)
+      oldStartVnode = oldCh[++oldStartIdx]      // 旧起始指针右移
+      newEndVnode = newCh[--newEndIdx]          // 新结束指针左移
+    } 
+    // 情况5：尾头比较 - 旧结束节点与新起始节点相同
+    else if (sameVnode(oldEndVnode, newStartVnode)) {
+      patchVnode(oldEndVnode, newStartVnode)    // 更新节点
+      // 将旧结束节点移动到旧起始节点之前
       api.insertBefore(parentElm, oldEndVnode.el, oldStartVnode.el)
-      oldEndVnode = oldCh[--oldEndIdx]
-      newStartVnode = newCh[++newStartIdx]
-    } else {
+      oldEndVnode = oldCh[--oldEndIdx]          // 旧结束指针左移
+      newStartVnode = newCh[++newStartIdx]      // 新起始指针右移
+    } 
+    // 情况6：四种双端比较都不匹配，使用key查找
+    else {
+      // 懒加载创建key映射表
       if (isUndef(oldKeyToIdx)) {
         oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx)
       }
+      
+      // 根据新起始节点的key在旧节点中查找
       idxInOld = isDef(newStartVnode.key)
-        ? oldKeyToIdx[newStartVnode.key]
-        : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx)
+        ? oldKeyToIdx[newStartVnode.key]  // 有key时直接查找
+        : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx)  // 无key时遍历查找
+      
+      // 在旧节点中找不到相同key的节点
       if (isUndef(idxInOld)) {
-        createElm(newStartVnode, parentElm, oldStartVnode.el)
+        createElm(newStartVnode, parentElm, oldStartVnode.el)  // 创建新节点
       } else {
+        // 找到了相同key的旧节点
         vnodeToMove = oldCh[idxInOld]
         if (sameVnode(vnodeToMove, newStartVnode)) {
-          patchVnode(vnodeToMove, newStartVnode)
-          oldCh[idxInOld] = undefined
-          api.insertBefore(parentElm, vnodeToMove.el, oldStartVnode.el)
+          // 节点类型也相同，可以复用
+          patchVnode(vnodeToMove, newStartVnode)  // 更新节点
+          oldCh[idxInOld] = undefined             // 标记旧节点已处理
+          api.insertBefore(parentElm, vnodeToMove.el, oldStartVnode.el)  // 移动到新位置
         } else {
+          // 节点类型不同，创建新节点
           createElm(newStartVnode, parentElm, oldStartVnode.el)
         }
       }
-      newStartVnode = newCh[++newStartIdx]
+      newStartVnode = newCh[++newStartIdx]  // 新起始指针右移
     }
   }
+  
+  // 处理剩余节点
   if (oldStartIdx > oldEndIdx) {
+    // 旧节点处理完毕，新节点还有剩余，需要添加
     refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].el
     addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx)
   } else if (newStartIdx > newEndIdx) {
+    // 新节点处理完毕，旧节点还有剩余，需要删除
     removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)
   }
 }
 ```
-
----
 
 ## key的重要性对比
 
@@ -389,8 +467,6 @@ function updateChildren(parentElm, oldCh, newCh) {
 // 只需创建1个节点，其他节点直接复用
 ```
 
----
-
 ## 算法复杂度与优化
 
 ```mermaid
@@ -412,7 +488,11 @@ graph TD
     style D1 fill:#93C5FD,stroke:#2563EB,stroke-width:2px
 ```
 
----
+<img
+  src="/diagrams/vue-Vue2 Diff算法原理详解-9.svg"
+  alt="流程图：'Diff算法复杂度'、'最坏 O(n²)'、'平均 O(n)'"
+  className="w-full mx-auto my-6 rounded"
+/>
 
 ## 面试总结
 
@@ -422,15 +502,11 @@ graph TD
 - 实际开发中，key应选用唯一且稳定的标识
 - Vue3在此基础上引入了最长递增子序列优化节点移动
 
----
-
 **记忆口诀：**
 
 - 同层比较不跨级
 - 双端比较四种情况
 - key值定位要精确
 - 就地复用性能好
-
----
 
 这就是Vue2 Diff算法的核心原理和执行流程，配合流程图和例子，面试时可以自信讲解。

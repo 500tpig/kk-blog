@@ -4,8 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node ./scripts/generate-search-index.mjs",
-    "build": "npm run prebuild && next build",
+    "install-puppeteer": "cross-env PUPPETEER_SKIP_DOWNLOAD=true yarn add -D puppeteer",
+
+    "generate-diagrams": "node ./scripts/generate-diagrams.mjs",
+    "generate-diagrams:file": "node ./scripts/generate-diagrams.mjs",
+    "generate-diagrams:force": "node ./scripts/generate-diagrams.mjs --force",
+
+    "replace-mermaid": "node ./scripts/replace-mermaid.mjs",
+    "replace-mermaid:file": "node ./scripts/replace-mermaid.mjs",
+    "replace-mermaid:force": "node ./scripts/replace-mermaid.mjs --force",
+
+    "prebuild": "yarn generate-diagrams && yarn replace-mermaid && node ./scripts/generate-search-index.mjs",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint --dir src"
   },
@@ -32,6 +42,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@mermaid-js/mermaid-cli": "^11.6.0",
     "@next/eslint-plugin-next": "^15.3.4",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.16",
@@ -41,12 +52,14 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.30.1",
     "@typescript-eslint/parser": "^8.30.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-next": "15.3.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.2.6",
     "prettier": "^3.5.3",
+    "puppeteer": "^24.10.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

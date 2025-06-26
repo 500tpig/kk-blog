@@ -22,14 +22,67 @@ Diff算法是Virtual DOM的核心，用来比较新旧虚拟节点树的差异�
 
 ## Diff算法整体流程
 
-![Diff算法整体流程](/images/vue2-diff-algorithm/image1.svg)
+```mermaid
+flowchart TD
+    Start["开始diff"] 
+    CheckSame{"新旧节点是否相同？"}
+    ReturnOld["直接返回旧节点"]
+    CheckChildren{"是否都有子节点？"}
+    UpdateChildren["updateChildren"]
+    AddChildren["添加新子节点"]
+    RemoveChildren["删除旧子节点"]
+    UpdateText["更新文本内容"]
+    UpdateDom["更新DOM"]
+    End["结束"]
 
+    Start --> CheckSame
+    CheckSame -- 相同 --> ReturnOld
+    CheckSame -- 不同 --> CheckChildren
+    CheckChildren -- 都有 --> UpdateChildren
+    CheckChildren -- 只有新节点有 --> AddChildren
+    CheckChildren -- 只有旧节点有 --> RemoveChildren
+    CheckChildren -- 都没有 --> UpdateText
+    UpdateChildren --> UpdateDom
+    AddChildren --> UpdateDom
+    RemoveChildren --> UpdateDom
+    UpdateText --> UpdateDom
+    UpdateDom --> End
+
+    %% 下面是加颜色的部分
+    style Start fill:#6EE7B7,stroke:#22223B,stroke-width:2px
+    style CheckSame fill:#FDE68A,stroke:#F59E42,stroke-width:2px
+    style ReturnOld fill:#A7F3D0,stroke:#10B981,stroke-width:2px
+    style CheckChildren fill:#FDE68A,stroke:#F59E42,stroke-width:2px
+    style UpdateChildren fill:#93C5FD,stroke:#2563EB,stroke-width:2px
+    style AddChildren fill:#FCA5A5,stroke:#EF4444,stroke-width:2px
+    style RemoveChildren fill:#FCA5A5,stroke:#EF4444,stroke-width:2px
+    style UpdateText fill:#FBCFE8,stroke:#DB2777,stroke-width:2px
+    style UpdateDom fill:#DDD6FE,stroke:#7C3AED,stroke-width:2px
+    style End fill:#D1FAE5,stroke:#10B981,stroke-width:2px
+```
 
 ## 节点比较策略
 
-<div className="flex justify-center">
-  <img src="/images/vue2-diff-algorithm/image2.svg" alt="Diff算法整体流程" className="w-1/2" />
-</div>
+```mermaid
+flowchart TD
+    A[比较两个节点] --> B{tag相同}
+    B -- 否 --> C[直接替换节点]
+    B -- 是 --> D{key相同}
+    D -- 否 --> C
+    D -- 是 --> E[复用节点<br/>继续比较属性和子节点]
+    E --> F[更新属性]
+    F --> G[比较子节点]
+
+    %% 颜色美化
+    style A fill:#6EE7B7,stroke:#10B981,stroke-width:2px
+    style B fill:#FDE68A,stroke:#F59E42,stroke-width:2px
+    style C fill:#FCA5A5,stroke:#EF4444,stroke-width:2px
+    style D fill:#FDE68A,stroke:#F59E42,stroke-width:2px
+    style E fill:#A7F3D0,stroke:#10B981,stroke-width:2px
+    style F fill:#93C5FD,stroke:#2563EB,stroke-width:2px
+    style G fill:#DDD6FE,stroke:#7C3AED,stroke-width:2px
+
+```
 
 ## patch函数 - 入口函数
 
@@ -101,7 +154,25 @@ function patchVnode(oldVnode, vnode) {
 
 ### 算法流程图
 
-![Diff算法整体流程](/images/vue2-diff-algorithm/image3.svg)
+```mermaid
+flowchart TD
+    A[比较两个节点] --> B{tag相同}
+    B -- 否 --> C[直接替换节点]
+    B -- 是 --> D{key相同}
+    D -- 否 --> C
+    D -- 是 --> E[复用节点<br/>继续比较属性和子节点]
+    E --> F[更新属性]
+    F --> G[比较子节点]
+
+    %% 颜色美化
+    style A fill:#6EE7B7,stroke:#10B981,stroke-width:2px
+    style B fill:#FDE68A,stroke:#F59E42,stroke-width:2px
+    style C fill:#FCA5A5,stroke:#EF4444,stroke-width:2px
+    style D fill:#FDE68A,stroke:#F59E42,stroke-width:2px
+    style E fill:#A7F3D0,stroke:#10B981,stroke-width:2px
+    style F fill:#93C5FD,stroke:#2563EB,stroke-width:2px
+    style G fill:#DDD6FE,stroke:#7C3AED,stroke-width:2px
+```
 
 ---
 

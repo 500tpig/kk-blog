@@ -1,0 +1,12 @@
+{
+  "markdown-mermaid.initialize": "https://mermaid.js.org/init.js",
+  "markdown-mermaid.theme": "default",
+  "markdown-mermaid.backgroundColor": "transparent",
+  "files.associations": {
+    "*.mdx": "markdown"
+  },
+  "emmet.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  }
+} 

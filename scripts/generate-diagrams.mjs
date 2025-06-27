@@ -3,12 +3,13 @@
  * - 将 MDX 文件中的 Mermaid 代码块转换为静态 SVG 图片
  * - 支持处理单个文件或批量处理所有文件
  * - 为生成的 SVG 文件提供合理的命名规则
+ * - 按文章创建子文件夹，使用简单的文件名
  * 
  * 功能：
  * - 扫描 posts 目录下的所有 MDX 文件
  * - 提取文件中的 Mermaid 代码块
  * - 使用 mermaid-cli (mmdc) 将 Mermaid 代码转换为 SVG
- * - 将生成的 SVG 文件保存到 public/diagrams 目录
+ * - 将生成的 SVG 文件保存到 public/diagrams/{article-folder} 目录
  * 
  * 工作流程：
  * 1. 本地编写包含 Mermaid 代码块的 MDX 文件
@@ -22,7 +23,7 @@
  * - 通过正则表达式解析 Mermaid 代码块
  * - 使用 execSync 调用 mmdc 命令行工具生成 SVG
  * - 支持命令行参数：文件路径
- * - 生成的文件命名规则：{category}-{filename}-{blockIndex}.svg
+ * - 生成的文件命名规则：{article-folder}/image{index}.svg
  */
 
 import { execSync } from 'child_process'
@@ -81,16 +82,16 @@ async function generateSVGForFile(filePath) {
   const content = await fs.readFile(filePath, 'utf8')
   const { data } = matter(content)
   
-  // 使用 slug 生成文件名
-  let slug
+  // 使用 slug 生成文件夹名
+  let folderName
   if (data.slug) {
-    slug = data.slug
+    folderName = data.slug
   } else {
     // 如果没有 slug，回退到原来的命名方式
     const relativePath = path.relative(postsDirectory, filePath)
     const fileName = path.basename(filePath, path.extname(filePath))
     const category = path.dirname(relativePath)
-    slug = `${category}-${fileName}`
+    folderName = `${category}-${fileName}`
   }
   
   const mermaidBlocks = await extractMermaidBlocks(filePath)
@@ -99,21 +100,25 @@ async function generateSVGForFile(filePath) {
     return 0
   }
 
-  console.log(`📄 处理文件: ${slug} (${mermaidBlocks.length} 个图表)`)
+  console.log(`📄 处理文件: ${folderName} (${mermaidBlocks.length} 个图表)`)
+  
+  // 创建文章专属的文件夹
+  const articleOutputDir = path.join(outputDirectory, folderName)
+  await fs.mkdir(articleOutputDir, { recursive: true })
   
   let generatedCount = 0
   
   for (const block of mermaidBlocks) {
-    const svgFileName = `${slug}-${block.index.toString().padStart(2, '0')}.svg`
-    const svgPath = path.join(outputDirectory, svgFileName)
+    const svgFileName = `image${block.index + 1}.svg`
+    const svgPath = path.join(articleOutputDir, svgFileName)
     
     try {
       // 创建临时文件
-      const tempFile = path.join(outputDirectory, `temp-${svgFileName}.mmd`)
+      const tempFile = path.join(articleOutputDir, `temp-${svgFileName}.mmd`)
       await fs.writeFile(tempFile, block.content)
       
       // 生成 SVG
-      console.log(`🔄 生成图表: ${svgFileName}`)
+      console.log(`🔄 生成图表: ${folderName}/${svgFileName}`)
       execSync(`npx mmdc -i "${tempFile}" -o "${svgPath}"`, { 
         stdio: 'inherit',
         cwd: process.cwd()
@@ -123,9 +128,9 @@ async function generateSVGForFile(filePath) {
       await fs.unlink(tempFile)
       
       generatedCount++
-      console.log(`✅ 生成 SVG: ${svgFileName}`)
+      console.log(`✅ 生成 SVG: ${folderName}/${svgFileName}`)
     } catch (error) {
-      console.error(`❌ 生成 SVG 失败: ${svgFileName}`, error)
+      console.error(`❌ 生成 SVG 失败: ${folderName}/${svgFileName}`, error)
     }
   }
   
@@ -146,12 +151,23 @@ async function generateDiagrams() {
     
     if (targetFile) {
       // 处理单个文件
-      const fullPath = path.isAbsolute(targetFile) 
-        ? targetFile 
-        : path.join(postsDirectory, targetFile)
+      let fullPath
+      if (path.isAbsolute(targetFile)) {
+        fullPath = targetFile
+      } else {
+        // 如果是相对路径，先检查是否已经是相对于posts目录的路径
+        const testPath = path.join(postsDirectory, targetFile)
+        if (await fs.stat(testPath).catch(() => false)) {
+          fullPath = testPath
+        } else {
+          // 如果不是，直接使用提供的路径
+          fullPath = path.resolve(targetFile)
+        }
+      }
       
       if (!(await fs.stat(fullPath)).isFile()) {
         console.error(`❌ 文件不存在: ${targetFile}`)
+        console.error(`尝试的路径: ${fullPath}`)
         process.exit(1)
       }
       

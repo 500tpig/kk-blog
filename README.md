@@ -171,10 +171,10 @@ graph TD
 
 ```bash
 # 生成单个文件的 SVG 图表
-yarn generate-diagrams "posts/vue/某个文件.mdx"
+yarn generate-diagrams "vue/某个文件.mdx"
 
 # 替换单个文件的 Mermaid 代码块
-yarn replace-mermaid "posts/vue/某个文件.mdx"
+yarn replace-mermaid "vue/某个文件.mdx"
 ```
 
 #### 2. 生产构建

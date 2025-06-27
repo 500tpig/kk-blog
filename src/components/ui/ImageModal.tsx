@@ -206,7 +206,7 @@ export function ImageModal({ src, alt, onClose }: ImageModalProps) {
       {/* 关闭按钮 */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-[10000] w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+        className="absolute top-4 right-4 z-[10000] w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer"
         aria-label="关闭图片"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -218,7 +218,7 @@ export function ImageModal({ src, alt, onClose }: ImageModalProps) {
       <div className="absolute top-4 left-4 z-[10000] flex flex-col gap-2">
         <button
           onClick={useCallback(() => setScale(prev => Math.min(prev + 0.1, 3)), [])}
-          className="w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+          className="w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer"
           aria-label="放大"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -230,7 +230,7 @@ export function ImageModal({ src, alt, onClose }: ImageModalProps) {
         </button>
         <button
           onClick={useCallback(() => setScale(prev => Math.max(prev - 0.1, 0.5)), [])}
-          className="w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+          className="w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer"
           aria-label="缩小"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -244,7 +244,7 @@ export function ImageModal({ src, alt, onClose }: ImageModalProps) {
             setScale(1)
             setPosition({ x: 0, y: 0 })
           }, [])}
-          className="w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors text-xs"
+          className="w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors text-xs cursor-pointer"
           aria-label="重置"
         >
           1:1

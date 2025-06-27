@@ -26,7 +26,7 @@
  * - 基于文件路径和块索引生成 SVG 文件路径
  * - 从 Mermaid 内容智能生成 alt 文本
  * - 支持命令行参数：文件路径
- * - 生成的文件命名规则：{category}-{filename}-{blockIndex}.svg
+ * - 生成的文件命名规则：{article-folder}/image{index}.svg
  * - 插入的 img 标签包含响应式样式类
  */
 
@@ -56,23 +56,23 @@ async function processFile(filePath) {
       const fullMatch = match[0]
       const mermaidContent = match[1].trim()
       
-      // 使用 slug 生成对应的 SVG 文件名
-      let slug
+      // 使用 slug 生成对应的文件夹名
+      let folderName
       if (data.slug) {
-        slug = data.slug
+        folderName = data.slug
       } else {
         // 如果没有 slug，回退到原来的命名方式
         const relativePath = path.relative(postsDirectory, filePath)
         const fileName = path.basename(filePath, path.extname(filePath))
         const category = path.dirname(relativePath)
-        slug = `${category}-${fileName}`
+        folderName = `${category}-${fileName}`
       }
       
-      const svgFileName = `${slug}-${blockIndex.toString().padStart(2, '0')}.svg`
-      const svgPath = `/diagrams/${svgFileName}`
+      const svgFileName = `image${blockIndex + 1}.svg`
+      const svgPath = `/diagrams/${folderName}/${svgFileName}`
       
       // 检查 SVG 文件是否存在
-      const fullSvgPath = path.join(diagramsDirectory, svgFileName)
+      const fullSvgPath = path.join(diagramsDirectory, folderName, svgFileName)
       if (await fs.stat(fullSvgPath).catch(() => false)) {
         // 生成 alt 文本（从 Mermaid 内容中提取）
         const altText = generateAltText(mermaidContent)
@@ -80,14 +80,14 @@ async function processFile(filePath) {
         // HTML 转义 alt 文本中的特殊字符
         const escapedAltText = altText.replace(/"/g, '&quot;').replace(/'/g, '&#39;')
         // 在原始 Mermaid 代码块后插入 SVG 图片，保留原始代码块
-        const imgTag = `<img src="${svgPath}" alt="${escapedAltText}" className="w-full lg:w-3/5 mx-auto my-6 rounded-lg" />`
+        const imgTag = `![${escapedAltText}|w-full|lg:w-3/4](${svgPath})`
         const insertion = `${fullMatch}\n\n${imgTag}`
         newContent = newContent.replace(fullMatch, insertion)
         hasChanges = true
         
-        console.log(`🔄 插入图表: ${svgFileName}`)
+        console.log(`🔄 插入图表: ${folderName}/${svgFileName}`)
       } else {
-        console.warn(`⚠️  SVG 文件不存在: ${svgFileName}`)
+        console.warn(`⚠️  SVG 文件不存在: ${folderName}/${svgFileName}`)
       }
       
       blockIndex++

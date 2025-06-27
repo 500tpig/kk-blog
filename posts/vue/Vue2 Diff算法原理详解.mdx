@@ -57,7 +57,7 @@ flowchart TD
     style End fill:#D1FAE5,stroke:#10B981,stroke-width:2px
 ```
 
-![流程图：'开始diff'、'直接返回旧节点'、'updateChildren'|w-full|max-w-4xl|shadow-lg](/diagrams/vue2-diff-algorithm-00.svg)
+![流程图：'开始diff'、'直接返回旧节点'、'updateChildren'|w-full|max-w-4xl|shadow-lg](/diagrams/vue2-diff-algorithm/vue2-diff-algorithm-00.svg)
 
 ## 节点比较策略
 
@@ -81,7 +81,7 @@ flowchart TD
     style G fill:#DDD6FE,stroke:#7C3AED,stroke-width:2px
 ```
 
-![流程图：比较两个节点、直接替换节点、B|w-full|lg:w-3/4](/diagrams/vue2-diff-algorithm-01.svg)
+![流程图：比较两个节点、直接替换节点、B|w-full|lg:w-3/4](/diagrams/vue2-diff-algorithm/vue2-diff-algorithm-01.svg)
 
 ## patch函数 - 入口函数
 
@@ -225,7 +225,7 @@ flowchart TD
     style U fill:#D1FAE5,stroke:#10B981,stroke-width:2px
 ```
 
-![流程图：双端比较算法流程 - 这是一个复杂的算法流程图|w-full|max-w-5xl|border|shadow-lg|bg-white|p-4](/diagrams/vue2-diff-algorithm-02.svg)
+![流程图：双端比较算法流程 - 这是一个复杂的算法流程图|w-full|max-w-5xl|border|shadow-lg|bg-white|p-4](/diagrams/vue2-diff-algorithm/vue2-diff-algorithm-02.svg)
 
 ## 逐步对比演示
 
@@ -259,7 +259,7 @@ graph TD
     style N4 fill:#93C5FD,stroke:#2563EB,stroke-width:2px
 ```
 
-![流程图：A key=a、B key=b、C key=c|w-full](/diagrams/vue2-diff-algorithm-03.svg)
+![流程图：A key=a、B key=b、C key=c|w-full](/diagrams/vue2-diff-algorithm/vue2-diff-algorithm-03.svg)
 
 #### 步骤1：尾头比较 D vs D，匹配，移动D到A前面
 
@@ -274,7 +274,7 @@ graph TD
     style O1 fill:#FCA5A5,stroke:#EF4444,stroke-width:2px
 ```
 
-![流程图：D key=d|w-full|lg:w-1/2](/diagrams/vue2-diff-algorithm-04.svg)
+![流程图：D key=d|w-full|lg:w-1/2](/diagrams/vue2-diff-algorithm/vue2-diff-algorithm-04.svg)
 
 操作：`insertBefore(D, A)`，指针移动 oldEnd--, newStart++
 
@@ -289,7 +289,7 @@ graph TD
     style N2 fill:#A7F3D0,stroke:#10B981,stroke-width:2px
 ```
 
-![流程图：A key=a|w-full|lg:w-1/3](/diagrams/vue2-diff-algorithm-05.svg)
+![流程图：A key=a|w-full|lg:w-1/3](/diagrams/vue2-diff-algorithm/vue2-diff-algorithm-05.svg)
 
 #### 步骤3：头尾比较 B vs B，匹配，移动B到C后面
 
@@ -304,7 +304,7 @@ graph TD
     style O3 fill:#FCA5A5,stroke:#EF4444,stroke-width:2px
 ```
 
-![流程图：B key=b|w-full|lg:w-1/2](/diagrams/vue2-diff-algorithm-06.svg)
+![流程图：B key=b|w-full|lg:w-1/2](/diagrams/vue2-diff-algorithm/vue2-diff-algorithm-06.svg)
 
 #### 步骤4：头头比较 C vs C，匹配，指针右移
 
@@ -317,7 +317,7 @@ graph TD
     style N3 fill:#A7F3D0,stroke:#10B981,stroke-width:2px
 ```
 
-![流程图：C key=c|w-64](/diagrams/vue2-diff-algorithm-07.svg)
+![流程图：C key=c|w-64](/diagrams/vue2-diff-algorithm/vue2-diff-algorithm-07.svg)
 
 #### 最终结果
 
@@ -332,7 +332,7 @@ graph TD
     style D4 fill:#DDD6FE,stroke:#7C3AED,stroke-width:2px
 ```
 
-![流程图：D|w-32](/diagrams/vue2-diff-algorithm-08.svg)
+![流程图：D|w-32](/diagrams/vue2-diff-algorithm/vue2-diff-algorithm-08.svg)
 
 ## updateChildren核心代码
 
@@ -508,7 +508,7 @@ graph TD
     style D1 fill:#93C5FD,stroke:#2563EB,stroke-width:2px
 ```
 
-![流程图：Diff算法复杂度|w-full|max-w-3xl](/diagrams/vue2-diff-algorithm-09.svg)
+![流程图：Diff算法复杂度|w-full|max-w-3xl](/diagrams/vue2-diff-algorithm/vue2-diff-algorithm-09.svg)
 
 ## 面试总结
 

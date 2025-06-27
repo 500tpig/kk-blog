@@ -59,6 +59,7 @@ function parseImgProps(props: ImageProps): ImageProps {
     'lg:w-1/3': 'lg:w-1/3',
     'lg:w-2/3': 'lg:w-2/3',
     'lg:w-3/4': 'lg:w-3/4',
+    'lg:w-3/5': 'lg:w-3/5',
     'max-w-3xl': 'max-w-3xl',
     'max-w-4xl': 'max-w-4xl',
     'max-w-5xl': 'max-w-5xl',

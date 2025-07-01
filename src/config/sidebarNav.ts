@@ -15,6 +15,14 @@ export const sidebarNav: NavSection[] = [
     items: [{ title: 'Promise笔记', href: '/blog/Promise-note' }]
   },
   {
+    title: 'Vue',
+    items: [
+      { title: '之前做的大屏项目展示', href: '/blog/Large-Screen-Display-Showcase' },
+      { title: 'Vue2 Diff算法原理详解', href: '/blog/vue2-diff-algorithm' },
+      { title: 'Vue3 Diff算法原理详解', href: '/blog/vue3-diff-algorithm' }
+    ]
+  },
+  {
     title: 'React',
     items: [
       { title: 'React 学习笔记 Vue 转向 React', href: '/blog/Study-React-01' },
